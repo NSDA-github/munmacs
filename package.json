@@ -1,0 +1,28 @@
+{
+  "name": "munmacs",
+  "version": "0.1.0",
+  "description": "Model United Nations Management and Communication System",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yerzhan0/munmacs.git"
+  },
+  "keywords": [
+    "mun"
+  ],
+  "author": "Yerzhan Zhamashev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yerzhan0/munmacs/issues"
+  },
+  "homepage": "https://github.com/yerzhan0/munmacs#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.3"
+  }
+}
