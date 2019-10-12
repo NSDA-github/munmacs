@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Formik } from "formik";
-import Select from "react-select";
 import { Form } from "react-bootstrap";
 import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
@@ -13,29 +12,57 @@ const Registration = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
 
   const schema = yup.object({
-    firstName: yup.string().required("Please Enter your first name"),
-    lastName: yup.string().required("Please Enter your last name"),
-    username: yup.string().required("Please Enter your username"),
+    firstName: yup
+      .string()
+      .required()
+      .min(2)
+      .label("First name"),
+    lastName: yup
+      .string()
+      .required()
+      .min(2)
+      .label("First name"),
+    username: yup
+      .string()
+      .required()
+      .min(3)
+      .label("First name"),
     password: yup
       .string()
-      .required("Please Enter your password")
+      .required()
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
         "Must Contain 8 Characters, One Uppercase, One Lowercase and One Number"
-      ),
+      )
+      .label("Password"),
     password2: yup
       .string()
       .required()
-      .label("Confirm password")
       .test("passwords-match", "Passwords must match", function(value) {
         return this.parent.password === value;
-      }),
+      })
+      .label("Password confirmation"),
     email: yup
       .string()
-      .email("Email must be valid")
-      .required("Please Enter your email"),
-    country: yup.string().required("Please Select the country"),
-    terms: yup.bool().required()
+      .email()
+      .required()
+      .label("Email"),
+    school: yup
+      .string()
+      .min(3)
+      .required()
+      .label("School"),
+    country: yup
+      .string()
+      .required()
+      .label("Country"),
+    terms: yup
+      .bool()
+      .required()
+      .label("Terms")
+      .test("terms-accpeted", "Terms must be accepted", function() {
+        return this.parent.test === true;
+      })
   });
 
   const options = [
@@ -51,14 +78,27 @@ const Registration = () => {
     console.log(selectedCountry);
   };
 
+  const submit = async e => {
+    console.log(e);
+  };
+
   return (
     <Formik
       validationSchema={schema}
-      onSubmit={console.log}
+      onSubmit={submit}
       validateOnChange={false}
       initialValues={{
         grade: "12",
-        gradeLabel: "A"
+        gradeLabel: "A",
+        firstName: "",
+        lastName: "",
+        username: "",
+        password: "",
+        password2: "",
+        email: "",
+        school: "",
+        terms: false,
+        country: ""
       }}
     >
       {({
@@ -97,6 +137,7 @@ const Registration = () => {
               <Form.Control
                 type="text"
                 name="firstName"
+                placeholder="Steve"
                 value={values.firstName}
                 onChange={handleChange}
                 isInvalid={!!errors.firstName}
@@ -111,6 +152,7 @@ const Registration = () => {
               <Form.Control
                 type="text"
                 name="lastName"
+                placeholder="Jobs"
                 value={values.lastName}
                 onChange={handleChange}
                 isInvalid={!!errors.lastName}
@@ -192,7 +234,7 @@ const Registration = () => {
               <Form.Label>Email</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Email"
+                placeholder="someone@example.com"
                 name="email"
                 value={values.email}
                 onChange={handleChange}
@@ -203,7 +245,23 @@ const Registration = () => {
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group as={Col} md="3" controlId="validationFormik08">
-              <Form.Label>Country</Form.Label>
+              <Form.Label>School</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Example School in Somewhere"
+                name="school"
+                value={values.school}
+                onChange={handleChange}
+                isInvalid={!!errors.school}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.school}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Form.Row>
+          <Form.Row>
+            <Form.Group as={Col} md="3" controlId="validationFormik09">
+              <Form.Label>Country you represent</Form.Label>
               <CustomSelect
                 name="country"
                 onChange={selectedOption => {
@@ -236,6 +294,9 @@ const Registration = () => {
               feedback={errors.terms}
               id="validationFormik0"
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.terms}
+            </Form.Control.Feedback>
           </Form.Group>
           <Button type="submit">Submit form</Button>
         </Form>
