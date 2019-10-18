@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Formik } from "formik";
-import { Form } from "react-bootstrap";
+import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -8,9 +8,35 @@ import schema from "./YupSchema";
 
 import CustomSelect from "../../components/CustomSelect";
 
-const Registration = ({ getCountries, register }) => {
+const Registration = ({ getCountries }) => {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [countries, setCountries] = useState([]);
+  const [usernameAvailable, setUsernameAvailable] = useState(true);
+  const [countryAvailable, setCountryAvailable] = useState(true);
+  const [emailAvailable, setEmailAvailable] = useState(true);
+
+  const register = async e => {
+    console.log(e);
+    const rawResponse = await fetch("/api/register/", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(e)
+    });
+    const content = await rawResponse.json();
+    if (!content.usernameAvailable) {
+      setUsernameAvailable(false);
+    }
+    if (!content.emailAvailable) {
+      setEmailAvailable(false);
+    }
+    if (!content.countryAvailable) {
+      setCountryAvailable(false);
+    }
+    console.log(content);
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -25,12 +51,19 @@ const Registration = ({ getCountries, register }) => {
       setCountries(arr);
     }
     fetchData();
-    //const values = queryString.parse(location.search);
   }, [getCountries]);
 
   const handleCountryChange = (selectedOption, values) => {
     values.country = selectedOption.value;
     setSelectedCountry(selectedOption);
+    setCountryAvailable(true);
+  };
+
+  const handleUsernameChange = () => {
+    setUsernameAvailable(true);
+  };
+  const handleEmailChange = () => {
+    setEmailAvailable(true);
   };
 
   const submit = e => {
@@ -79,11 +112,16 @@ const Registration = ({ getCountries, register }) => {
                   aria-describedby="inputGroupPrepend"
                   name="username"
                   value={values.username}
-                  onChange={handleChange}
-                  isInvalid={!!errors.username}
+                  onChange={e => {
+                    handleChange(e);
+                    handleUsernameChange();
+                  }}
+                  isInvalid={!!errors.username || !usernameAvailable}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {errors.username}
+                  {usernameAvailable
+                    ? errors.username
+                    : "Username is not available"}
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
@@ -192,11 +230,14 @@ const Registration = ({ getCountries, register }) => {
                 placeholder="someone@example.com"
                 name="email"
                 value={values.email}
-                onChange={handleChange}
-                isInvalid={!!errors.email}
+                onChange={e => {
+                  handleChange(e);
+                  handleEmailChange();
+                }}
+                isInvalid={!!errors.email || !usernameAvailable}
               />
               <Form.Control.Feedback type="invalid">
-                {errors.email}
+                {usernameAvailable ? errors.email : "Email is not available"}
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group as={Col} md="3" controlId="validationFormik08">
@@ -225,7 +266,7 @@ const Registration = ({ getCountries, register }) => {
                   handleChange();
                 }}
                 value={selectedCountry}
-                isValid={!errors.country}
+                isValid={!errors.country || countryAvailable}
                 options={countries}
               />
               <p
@@ -235,7 +276,9 @@ const Registration = ({ getCountries, register }) => {
                   marginTop: "4px"
                 }}
               >
-                {errors.country}
+                {countryAvailable
+                  ? errors.country
+                  : "Country is already unavailable"}
               </p>
             </Form.Group>
           </Form.Row>

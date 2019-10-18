@@ -9,18 +9,6 @@ import ResetCountries from "./tools/ResetCountries";
 const history = createBrowserHistory();
 
 const App = () => {
-  const register = async e => {
-    const rawResponse = await fetch("/api/register/", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(e)
-    });
-    const content = await rawResponse.json();
-    console.log(content);
-  };
   const resetCountries = async adminPass => {
     const rawResponse = await fetch("/api/resetcountries", {
       method: "POST",
@@ -50,7 +38,7 @@ const App = () => {
     <Router history={history}>
       <div className="App">
         <Route exact path="/">
-          <Registration register={register} getCountries={availableCountries} />
+          <Registration getCountries={availableCountries} />
         </Route>
         <Route
           path="/resetcountries"
