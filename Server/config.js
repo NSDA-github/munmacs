@@ -1,8 +1,12 @@
 var dotenv = require("dotenv");
-var config = module.exports;
 var PRODUCTION = process.env.NODE_ENV === "production";
 
 dotenv.config();
+
+var config = module.exports;
+console.log(process.env.MYSQL_PASSWORD);
+
+config.adminPass = process.env.ADMIN_PASS;
 
 config.express = {
   port: process.env.PORT || 3001,
@@ -19,5 +23,6 @@ else
   config.db = {
     host: "localhost",
     user: "root",
-    password: process.env.MYSQL_PASSWORD
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.DATABASE
   };

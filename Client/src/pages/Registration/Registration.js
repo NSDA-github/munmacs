@@ -1,85 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Formik } from "formik";
 import { Form } from "react-bootstrap";
 import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
-import * as yup from "yup";
+import schema from "./YupSchema";
 
-import CustomSelect from "../components/CustomSelect";
+import CustomSelect from "../../components/CustomSelect";
 
-const Registration = () => {
+const Registration = ({ getCountries, register }) => {
   const [selectedCountry, setSelectedCountry] = useState("");
+  const [countries, setCountries] = useState([]);
 
-  const schema = yup.object({
-    firstName: yup
-      .string()
-      .required()
-      .min(2)
-      .label("First name"),
-    lastName: yup
-      .string()
-      .required()
-      .min(2)
-      .label("First name"),
-    username: yup
-      .string()
-      .required()
-      .min(3)
-      .label("First name"),
-    password: yup
-      .string()
-      .required()
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
-        "Must Contain 8 Characters, One Uppercase, One Lowercase and One Number"
-      )
-      .label("Password"),
-    password2: yup
-      .string()
-      .required()
-      .test("passwords-match", "Passwords must match", function(value) {
-        return this.parent.password === value;
-      })
-      .label("Password confirmation"),
-    email: yup
-      .string()
-      .email()
-      .required()
-      .label("Email"),
-    school: yup
-      .string()
-      .min(3)
-      .required()
-      .label("School"),
-    country: yup
-      .string()
-      .required()
-      .label("Country"),
-    terms: yup
-      .bool()
-      .required()
-      .label("Terms")
-      .test("terms-accpeted", "Terms must be accepted", function() {
-        return this.parent.test === true;
-      })
-  });
-
-  const options = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "strawberry", label: "Strawberry" },
-    { value: "vanilla", label: "Vanilla" }
-  ];
+  useEffect(() => {
+    async function fetchData() {
+      const results = await getCountries();
+      const arr = [];
+      for (var i = 0; i < results.length; i++) {
+        arr.push({
+          value: results[i].country_name,
+          label: results[i].country_name
+        });
+      }
+      setCountries(arr);
+    }
+    fetchData();
+    //const values = queryString.parse(location.search);
+  }, [getCountries]);
 
   const handleCountryChange = (selectedOption, values) => {
     values.country = selectedOption.value;
-    console.log(selectedOption);
     setSelectedCountry(selectedOption);
-    console.log(selectedCountry);
   };
 
-  const submit = async e => {
-    console.log(e);
+  const submit = e => {
+    register(e);
   };
 
   return (
@@ -89,7 +44,7 @@ const Registration = () => {
       validateOnChange={false}
       initialValues={{
         grade: "12",
-        gradeLabel: "A",
+        gradeLetter: "A",
         firstName: "",
         lastName: "",
         username: "",
@@ -186,7 +141,7 @@ const Registration = () => {
               <Form.Control
                 type="text"
                 name="gradeLabel"
-                value={values.gradeLabel}
+                value={values.gradeLetter}
                 onChange={handleChange}
                 as="select"
               >
@@ -271,7 +226,7 @@ const Registration = () => {
                 }}
                 value={selectedCountry}
                 isValid={!errors.country}
-                options={options}
+                options={countries}
               />
               <p
                 style={{

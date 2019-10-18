@@ -4,28 +4,35 @@ client = require("../db");
 const signToken = require("../serverAuth").signToken;
 
 router.post("/api/register/", (req, res) => {
-  console.log(req.body);
-  const { username, password, email } = req.body;
-  const hash = bcrypt.hashSync(password, 10);
-  const date = new Date();
-  client.query(
-    "INSERT INTO users (username, email, password, created_on) VALUES($1, $2, $3, $4)",
-    [username, email, hash, date],
-    (err, data) => {
-      if (err) {
-        console.log(err.stack);
-        res.send(JSON.stringify({ ok: false }));
-      } else {
-        console.log(data);
-        res.send(JSON.stringify({ ok: true }));
-      }
-    }
-  );
+  const {
+    username,
+    password,
+    email,
+    school,
+    grade,
+    gradeLetter,
+    firstName,
+    lastName,
+    country
+  } = req.body;
+  const user = req.body;
+  //const hash = bcrypt.hashSync(password, 10);
 });
 
 router.post("/api/login/", (req, res) => {
   console.log(req.body);
-  var { username, password } = req.body;
+  var {
+    username,
+    firstName,
+    lastName,
+    password,
+    email,
+    school,
+    country,
+    terms,
+    grade,
+    gradeLetter
+  } = req.body;
   client.query(
     "SELECT * FROM users WHERE username = $1",
     [username],

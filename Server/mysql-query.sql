@@ -1,0 +1,1 @@
+SELECT * FROM `munmacs`.`chair` LIMIT 1000;
