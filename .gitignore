@@ -12,6 +12,8 @@
 # production
 /build
 /.vscode
+/generated-conf
+/bin
 
 # misc
 .DS_Store

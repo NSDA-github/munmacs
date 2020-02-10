@@ -1,10 +1,6 @@
 <?php
 class Countries
 {
-    public static function show()
-    {
-        readfile(__DIR__ . "/nav.html");
-    }
     public static function getCountries()
     {
         $dom = new DOMDocument();
@@ -22,9 +18,9 @@ class Countries
                 $val = $node->nodeValue;
                 array_push($countries, $val);
             }
-            echo json_encode($countries, JSON_UNESCAPED_UNICODE);
+            return $countries;
         } else {
-            echo "Fail2";
+            return NULL;
         }
     }
 }

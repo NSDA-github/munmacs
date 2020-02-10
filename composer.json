@@ -1,6 +1,14 @@
 {
-    "require": {
-        "klein/klein": "^2.1",
-        "snapappointments/bootstrap-select": "^1.13"
-    }
+  "require": {
+    "klein/klein": "^2.1",
+    "snapappointments/bootstrap-select": "^1.13",
+    "propel/propel": "~2.0@dev"
+  },
+  "autoload": {
+    "classmap": [
+      "db/db",
+      "db/db/Base/",
+      "db/db/Map/"
+    ]
+  }
 }

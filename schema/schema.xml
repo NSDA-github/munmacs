@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="default" defaultIdMethod="native" namespace="db" defaultPhpNamingMethod="underscore">
+  <table name="countries" idMethod="native" phpName="Countries" namespace="db">
+    <column name="country_id" phpName="CountryId" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="country_name" phpName="CountryName" type="VARCHAR" size="60" required="true"/>
+    <column name="available" phpName="Available" type="BOOLEAN" size="1" required="true" defaultValue="true"/>
+    <column name="reserved" phpName="Reserved" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <unique name="country_name">
+      <unique-column name="country_name"/>
+    </unique>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="registrant_roles" idMethod="native" phpName="RegistrantRoles" namespace="db">
+    <column name="registrant_id" phpName="RegistrantId" type="INTEGER" primaryKey="true" required="true"/>
+    <column name="role_id" phpName="RoleId" type="INTEGER" primaryKey="true" required="true"/>
+    <foreign-key foreignTable="registrants" name="registrant_roles_ibfk_1">
+      <reference local="registrant_id" foreign="registrant_id"/>
+    </foreign-key>
+    <foreign-key foreignTable="roles" name="registrant_roles_ibfk_2">
+      <reference local="role_id" foreign="role_id"/>
+    </foreign-key>
+    <index name="role_id">
+      <index-column name="role_id"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="registrants" idMethod="native" phpName="Registrants" namespace="db">
+    <column name="registrant_id" phpName="RegistrantId" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="institution" phpName="Institution" type="VARCHAR" size="40" required="true"/>
+    <column name="email" phpName="Email" type="VARCHAR" size="40" required="true"/>
+    <column name="name" phpName="Name" type="VARCHAR" size="30" required="true"/>
+    <column name="surname" phpName="Surname" type="VARCHAR" size="30" required="true"/>
+    <column name="tel" phpName="Tel" type="VARCHAR" size="17" required="true"/>
+    <column name="country" phpName="Country" type="INTEGER" required="true"/>
+    <column name="country_reserved" phpName="CountryReserved" type="INTEGER"/>
+    <column name="last_update" phpName="LastUpdate" type="TIMESTAMP" required="true" defaultExpr="CURRENT_TIMESTAMP"/>
+    <foreign-key foreignTable="countries" name="registrants_ibfk_1">
+      <reference local="country" foreign="country_id"/>
+    </foreign-key>
+    <foreign-key foreignTable="countries" name="registrants_ibfk_2">
+      <reference local="country_reserved" foreign="country_id"/>
+    </foreign-key>
+    <unique name="country">
+      <unique-column name="country"/>
+    </unique>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="roles" idMethod="native" phpName="Roles" namespace="db">
+    <column name="role_id" phpName="RoleId" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="role_name" phpName="RoleName" type="VARCHAR" size="15" required="true"/>
+    <unique name="role_name">
+      <unique-column name="role_name"/>
+    </unique>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="students" idMethod="native" phpName="Students" namespace="db">
+    <column name="registrant_id" phpName="RegistrantId" type="INTEGER" primaryKey="true" required="true"/>
+    <column name="grade" phpName="Grade" type="TINYINT" size="2"/>
+    <column name="gradeletter" phpName="Gradeletter" type="CHAR"/>
+    <foreign-key foreignTable="registrants" name="students_ibfk_1">
+      <reference local="registrant_id" foreign="registrant_id"/>
+    </foreign-key>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="teachers" idMethod="native" phpName="Teachers" namespace="db">
+    <column name="registrant_id" phpName="RegistrantId" type="INTEGER" primaryKey="true" required="true"/>
+    <column name="subject" phpName="Subject" type="VARCHAR" size="40"/>
+    <foreign-key foreignTable="registrants" name="teachers_ibfk_1">
+      <reference local="registrant_id" foreign="registrant_id"/>
+    </foreign-key>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>

@@ -8,27 +8,104 @@
     <link href="./dist/css/bootstrap-select.min.css" rel="stylesheet" />
     <script src="./dist/js/bootstrap-select.min.js"></script>
     <script>
-      function countryfix() {
-        if (!$("#country").valid()) {
-          $(".dropdown-toggle.btn-light").addClass("is-invalid");
-          $(".dropdown-toggle.btn-light").after($("label#country-error"));
-          console.log();
-        } else {
-          $(".dropdown-toggle.btn-light").removeClass("is-invalid");
-        }
+      function legalfix() {
         if (!$("#legal").valid()) {
           $(".form-check-label").after($("label#legal-error"));
           console.log();
         }
       }
+      function countryfix() {
+        console.log("cout-avail");
+        if (!$("#country").valid()) {
+          $(".dropdown-toggle.btn-light")
+            .eq(0)
+            .addClass("is-invalid");
+          $(".dropdown-toggle.btn-light")
+            .eq(0)
+            .after($("label#country-error"));
+          console.log();
+        } else {
+          $(".dropdown-toggle.btn-light")
+            .eq(0)
+            .removeClass("is-invalid");
+        }
+      }
       $(document).ready(function() {
+        data = Array(2);
+        data[0] = Object({ name: "action", value: "get" });
+        data[1] = Object({ name: "available", value: "1" });
+        console.log(data);
+        $.ajax({
+          type: "POST",
+          url: "/api/countries",
+          data: data,
+          dataType: "json",
+          success: function(data) {
+            if (data.success) {
+              data.countries.map(function(country) {
+                console.log(country);
+                $("#country").append(
+                  `<option value=${country[0]}>${country[1]}</option>`
+                );
+              });
+              $("#country").selectpicker({
+                liveSearch: true,
+                dropupAuto: false,
+                size: 6
+              });
+            } else {
+              alert(data.msg);
+            }
+          },
+          error: function(data) {
+            alert(data.msg);
+          }
+        });
+
+        data = Array(2);
+        data[0] = Object({ name: "action", value: "get" });
+        data[1] = Object({ name: "reserved", value: "1" });
+        console.log(data);
+        $.ajax({
+          type: "POST",
+          url: "/api/countries",
+          data: data,
+          dataType: "json",
+          success: function(data) {
+            if (data.success) {
+              $("#reservedcountry").append(`<option value="">None</option>`);
+              data.countries.map(function(country) {
+                console.log(country);
+                $("#reservedcountry").append(
+                  `<option value=${country[0]}>${country[1]}</option>`
+                );
+              });
+              if (data.countries.length === 0) {
+                $("#reservedcountry").append(
+                  `<option value="">No reserved countries</option>`
+                );
+              }
+              $("#reservedcountry").selectpicker({
+                liveSearch: true,
+                dropupAuto: false,
+                size: 6
+              });
+            } else {
+              alert(data.msg);
+            }
+          },
+          error: function(data) {
+            alert(data.msg);
+          }
+        });
+
         $.validator.addMethod(
           "regex",
           function(value, element, regexp) {
             var re = new XRegExp(regexp);
             return this.optional(element) || re.test(value);
           },
-          "Please check your input."
+          "Please check your input"
         );
         $("#need-validation").validate({
           rules: {
@@ -56,16 +133,23 @@
             },
             email: {
               email: true
+            },
+            confirmemail: {
+              equalTo: email
+            },
+            subject: {
+              maxlength: 40,
+              regex: "^((['`\\-\\p{L}])+[ ]?)*$"
             }
           },
           messages: {
             name: {
               regex: "Use only letters, space and -'` characters",
-              required: "Required to use in certificates and account info"
+              required: "Required for certificates and account info"
             },
             surname: {
               regex: "Use only letters, space and -'` characters",
-              required: "Required to use in certificates and account info"
+              required: "Required for certificates and account info"
             },
             institution: {
               regex: "Use only letters, space and -'`.,№# characters",
@@ -83,6 +167,9 @@
               email: "Must resemble name@domain.com format",
               required: "Required to send account information"
             },
+            country: {
+              required: "Required to assign you a country"
+            },
             legal: {
               required: "This agreement is required"
             }
@@ -90,26 +177,50 @@
           errorClass: "is-invalid"
         });
 
-        $(".country").selectpicker({
-          liveSearch: true,
-          dropupAuto: false,
-          size: 6
-        });
-
-        if ($("#occupation").val() === "student") {
+        if ($("#role").val() === "student") {
           $("#teacherfield").hide();
           $("#studentfield").show();
         } else {
           $("#studentfield").hide();
           $("#teacherfield").show();
         }
-        $("#occupation").on("change", function() {
+        $("#role").on("change", function() {
           if (this.value === "student") {
             $("#teacherfield").hide();
             $("#studentfield").show();
           } else {
             $("#studentfield").hide();
             $("#teacherfield").show();
+          }
+        });
+
+        $("#confirmemail").on("paste", function(event) {
+          event.preventDefault();
+        });
+
+        $("#need-validation").submit(function(event) {
+          event.preventDefault();
+          if ($(this).valid()) {
+            var data = $(this).serializeArray();
+            //data = encodeURIComponent(data);
+            console.log(data);
+            $.ajax({
+              type: "POST",
+              url: "/api/register",
+              data: data,
+              dataType: "json",
+              success: function(data) {
+                console.log(data);
+              },
+              error: function(data) {
+                console.log(data.responseJSON);
+                if (data.responseJSON.validity)
+                  data.responseJSON.validity.map(function(elname) {
+                    $("#" + elname).addClass("is-invalid");
+                    alert(data.responseJSON.msg);
+                  });
+              }
+            });
           }
         });
       });
@@ -127,9 +238,10 @@
           </h6>
           <form action="../app/register/index.php" id="need-validation">
             <div class="form-row">
-              <div class="form-group col-md-4">
+              <div class="form-group col-lg-3 col-md-6">
                 <label for="email"
-                  >Email <span class="attention">*</span></label
+                  >Email <span class="attention">*</span><br />
+                  <small>Used to cantact and send account info</small></label
                 >
                 <input
                   name="email"
@@ -139,9 +251,23 @@
                   required
                 />
               </div>
-              <div class="form-group col-md-4">
+              <div class="form-group col-lg-3 col-md-6">
+                <label for="confirmemail"
+                  >Confirm email <span class="attention">*</span><br />
+                  <small>Prevent any typo</small></label
+                >
+                <input
+                  name="confirmemail"
+                  type="text"
+                  class="form-control"
+                  id="confirmemail"
+                  required
+                />
+              </div>
+              <div class="form-group col-lg-3 col-md-6">
                 <label for="name"
-                  >First Name <span class="attention">*</span></label
+                  >First Name <span class="attention">*</span> <br />
+                  <small>Used in certificates, fill in carefully</small></label
                 >
                 <input
                   name="name"
@@ -151,9 +277,10 @@
                   required
                 />
               </div>
-              <div class="form-group col-md-4">
+              <div class="form-group col-lg-3 col-md-6">
                 <label for="surname"
-                  >Last Name <span class="attention">*</span></label
+                  >Last Name <span class="attention">*</span><br />
+                  <small>Used in certificates, fill in carefully</small></label
                 >
                 <input
                   name="surname"
@@ -165,7 +292,7 @@
               </div>
             </div>
             <div class="form-row">
-              <div class="form-group col-md-6">
+              <div class="form-group col-lg-3 col-md-6">
                 <label for="institution"
                   >Your School/College/Usniversity Name
                   <span class="attention">*</span></label
@@ -179,21 +306,14 @@
                   required
                 />
               </div>
-              <div class="form-group col-md-3">
-                <label for="occupation"
-                  >Occupation <span class="attention">*</span></label
-                >
-                <select
-                  name="occupation"
-                  class="custom-select"
-                  id="occupation"
-                  required
-                >
+              <div class="form-group col-md-2 col-lg-3">
+                <label for="role">Role <span class="attention">*</span></label>
+                <select name="role" class="custom-select" id="role" required>
                   <option value="student">Student</option>
                   <option value="teacher">Teacher</option>
                 </select>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-4 col-lg-3">
                 <div class="form-row" id="studentfield">
                   <div class="form-group col-md-6">
                     <label for="grade">Grade</label>
@@ -246,7 +366,7 @@
               <div class="form-group col-md-4">
                 <label for="topic">Topic Preference</label>
                 <select name="topic" class="custom-select" id="topic">
-                  <option value="7">No Preference</option>
+                  <option value="">No Preference</option>
                   <option value="climate"
                     >Climate Change Affecting Forest Fires</option
                   >
@@ -258,7 +378,7 @@
               </div>
               <div class="form-group col-md-4">
                 <label for="country"
-                  >Country to Represent <span class="attention">*</span></label
+                  >Select Your Country <span class="attention">*</span></label
                 >
                 <select
                   name="country"
@@ -269,11 +389,22 @@
                   required
                 >
                   <option value=""></option>
-                  <option value="Internet Explorer">Internet Explorer</option>
-                  <option value="Firefox">Firefox</option>
-                  <option value="Chrome">Chrome</option>
-                  <option value="Opera">Opera</option>
-                  <option value="Safari">Safari</option>
+                </select>
+              </div>
+              <div class="form-group col-md-4">
+                <label for="reservedcountry">Reserved countries</label>
+                <p>
+                  <i>
+                    You will be assigned to the selected country if it becomes
+                    available
+                  </i>
+                </p>
+                <select
+                  name="reservedcountry"
+                  type="text"
+                  class="country form-control"
+                  id="reservedcountry"
+                >
                 </select>
               </div>
             </div>
@@ -299,7 +430,7 @@
                 type="submit"
                 style="float:right;"
                 class="btn btn-md btn-primary"
-                onclick="countryfix()"
+                onclick="countryfix(); legalfix();"
               >
                 Submit
               </button>
