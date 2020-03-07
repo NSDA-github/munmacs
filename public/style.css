@@ -12,14 +12,50 @@ body {
   font-family: "Roboto", sans-serif;
 }
 
-h1,
-h1.display-4,
-.navbar-brand {
-  font-weight: 700;
+.img-hover {
+  transition: all 0.6s;
+  -webkit-transition: all 0.6s;
+  box-shadow: 0 0 5px 0px var(--un-dark-grey);
+}
+
+.img-hover:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px -5px var(--un-dark-grey);
 }
 
 .attention {
   color: red;
+}
+
+.card {
+  box-shadow: 0 0 5px 0px rgba(0, 0, 0, 0.25);
+}
+
+.display-4 {
+  font-weight: 700;
+}
+
+.jumbotron {
+  border-radius: 0;
+  margin-bottom: 0;
+  background-color: #e9ecefe1;
+  color: black;
+}
+
+.home-row {
+  margin: 0;
+  background-image: url(/imgs/index.jpg);
+  background-origin: content-box;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.delegate {
+  padding: 2rem;
+  background-image: url(/imgs/delegate.jpg);
+  background-origin: content-box;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .navbar {
@@ -62,6 +98,13 @@ h1.display-4,
   height: 8px;
 }
 
+.blue-break {
+  background-color: var(--un-blue);
+  width: 100%;
+  height: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
 label.is-invalid {
   width: 100%;
   margin-top: 0.25rem;
@@ -99,4 +142,204 @@ label.is-invalid {
 .btn-light.dropdown-toggle.is-invalid:focus {
   border-color: #dc3545 !important;
   box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+h1 {
+  font-weight: 700;
+  padding-bottom: 10px;
+}
+
+p.end {
+  margin-bottom: 2rem;
+}
+
+.home-welcome-sm {
+  display: none;
+  color: white;
+  font-weight: 700;
+  text-shadow: 0px 0px 2px black;
+  padding: 2rem 1rem;
+}
+
+.margin-top {
+  margin-top: 2rem;
+}
+
+.margin-bottom {
+  margin-bottom: 2rem;
+}
+
+.bg-light-grey {
+  background-color: var(--un-light-grey);
+}
+
+.break-box-shadow {
+  box-shadow: 0 0.2rem 0.4rem 0 rgba(0, 0, 0, 0.5);
+}
+
+.mun-heading {
+  padding-top: 7.2rem;
+  background: url(/imgs/logo-raw.svg) no-repeat left top;
+  background-size: 7rem auto;
+  margin-bottom: 30px;
+}
+
+.sdg-heading {
+  padding-top: 7.2rem;
+  background: url(https://www.un.org/sites/un2.un.org/themes/bootstrap_un2/images/sdg-wheel.svg)
+    no-repeat center top;
+  background-size: 6rem auto;
+}
+
+.sdg-colors-top-banner {
+  width: 100%;
+  height: 0.5rem;
+}
+
+.sdg-1,
+.sdg-2,
+.sdg-3,
+.sdg-4,
+.sdg-5,
+.sdg-6,
+.sdg-7,
+.sdg-8,
+.sdg-9,
+.sdg-10,
+.sdg-11,
+.sdg-12,
+.sdg-13,
+.sdg-14,
+.sdg-15,
+.sdg-16,
+.sdg-17 {
+  height: 0.5rem;
+  width: 5.8823%;
+  float: left;
+}
+
+.sdg-1 {
+  background-color: #e8203a;
+}
+
+.sdg-2 {
+  background-color: #dda63a;
+}
+
+.sdg-3 {
+  background-color: #4c9f38;
+}
+
+.sdg-4 {
+  background-color: #c5192d;
+}
+
+.sdg-5 {
+  background-color: #ff3a21;
+}
+
+.sdg-6 {
+  background-color: #26bde2;
+}
+
+.sdg-7 {
+  background-color: #fcc30b;
+}
+
+.sdg-8 {
+  background-color: #a21942;
+}
+
+.sdg-9 {
+  background-color: #ff6924;
+}
+
+.sdg-10 {
+  background-color: #dd1367;
+}
+
+.sdg-11 {
+  background-color: #ff9f24;
+}
+
+.sdg-12 {
+  background-color: #bf8b2e;
+}
+
+.sdg-13 {
+  background-color: #3f7e44;
+}
+
+.sdg-14 {
+  background-color: #0a97d9;
+}
+
+.sdg-15 {
+  background-color: #00689d;
+}
+
+.sdg-16 {
+  background-color: #56c22b;
+}
+
+.sdg-17 {
+  background-color: #19486a;
+}
+
+@media (max-width: 991.98px) {
+  .home-row {
+    background-image: url(/imgs/index.jpg);
+    background-origin: content-box;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  .jumbotron {
+    background-color: #e9ecef;
+  }
+  .home-img-sm {
+    height: 350px;
+    background-image: url(/imgs/index.jpg);
+    background-origin: content-box;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  .home-welcome-lg {
+    display: none;
+  }
+  .home-welcome-sm {
+    padding-top: 4rem;
+    display: block;
+  }
+  .navbar-dark .nav-link {
+    border-right: none;
+    border-top: 1px dotted var(--un-dark-grey);
+    padding-left: 1rem;
+  }
+  .navbar-dark .nav-first {
+    border-left: none;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .home-img-sm {
+    height: 230px;
+  }
+  .home-welcome-sm {
+    padding-top: 2rem;
+  }
+  .img-hover {
+    box-shadow: none;
+    transition: all 0.25s;
+    -webkit-transition: all 0.4s;
+  }
+  .img-hover:hover {
+    box-shadow: none;
+    transform: none;
+  }
+  .img-hover.focus {
+    transform: scale(0.97);
+  }
+  .display-4 {
+    font-size: 3rem;
+  }
 }

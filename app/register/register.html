@@ -216,6 +216,7 @@
                 console.log(data.responseJSON);
                 if (data.responseJSON.validity)
                   data.responseJSON.validity.map(function(elname) {
+                    if (elname == "country") $(".dropdown-toggle.btn-light").eq(0).addClass("is-invalid");
                     $("#" + elname).addClass("is-invalid");
                     alert(data.responseJSON.msg);
                   });
@@ -228,8 +229,9 @@
   </head>
 
   <body>
-    <div class="container">
-      <div class="card" style="width: 100%; margin-top: 50px;">
+    <div class="white container">
+      <h1 style="padding-top: 30px;">Model UN Uralsk Registration</h1>
+      <div class="card" style="width: 100%;">
         <div class="card-body">
           <h5 class="card-title">Model UN Delegate Registration Form</h5>
           <h6 class="card-subtitle mb-2 text-muted">
@@ -241,7 +243,7 @@
               <div class="form-group col-lg-3 col-md-6">
                 <label for="email"
                   >Email <span class="attention">*</span><br />
-                  <small>Used to cantact and send account info</small></label
+                  <small>Used to send important info</small></label
                 >
                 <input
                   name="email"
@@ -292,7 +294,7 @@
               </div>
             </div>
             <div class="form-row">
-              <div class="form-group col-lg-3 col-md-6">
+              <div class="form-group col-md-6">
                 <label for="institution"
                   >Your School/College/Usniversity Name
                   <span class="attention">*</span></label

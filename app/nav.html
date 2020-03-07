@@ -24,6 +24,14 @@
       else if (pathname === "/register") dir = "register";
       $('#' + dir).addClass("active");
       console.log(dir);
+
+      $(".img-hover").click(function(){
+        var el = this;
+        $(el).addClass("focus");
+        setTimeout(function(){
+          $(el).removeClass("focus");
+        }, 250);
+      });
     })
   </script>
 </head>
@@ -33,7 +41,7 @@
 <body>
   <nav>
     <div class="container">
-      <a style="width:100%; text-align: center;" class="navbar-brand" href="#">Model UN Uralsk</a>
+      <a style="width:100%;" class="navbar-brand" href="#"><img style="padding: 7px" height="70px" src="http://munmacs.com/logo.svg" alt="Model UN Uralsk"></a>
     </div>
   </nav>
   <div class="sticky-top">

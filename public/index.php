@@ -107,47 +107,57 @@ $klein->respond('POST', '/api/register', function($request, $response, $service)
         $response->json($res);
     } else {
         try {
-            $registrant = new db\db\Registrants();   
-            $countries = new db\db\CountriesQuery();
+            $registrant = new db\db\Registrants();
+            $registrantq = new db\db\RegistrantsQuery();  
+            $countriesq = new db\db\CountriesQuery();
             $student = new db\db\Students();
             $teacher = new db\db\Teachers();
             $role = new db\db\RegistrantRoles();
 
-            $registrant->setName($request->name);
-            $registrant->setSurname($request->surname);
-            $registrant->setEmail($request->email);
-            $registrant->setInstitution($request->institution);
-            $registrant->setCountry($request->country);
-            $countries->findPk($request->country)->setReserved(1)->save();
-            if($request->reservedcountry != ""){
-                $country = $countries->findPk($request->reservedcountry);
-                if ($country->getAvailable() == "1")
-                    $registrant->setCountryReserved($request->reservedcountry);
-                $countries->findPk($request->reservedcountry)->setReserved(1)->save();
-            }
-            $registrant->setTel($request->phone);
-            $registrant->save();
-    
-            if($request->role === "student"){
-                $role->setRoleId(2);
-                $role->setRegistrantId($registrant->getRegistrantId());
-                $role->save();
-                $student->setRegistrantId($registrant->getRegistrantId());
-                $student->setGrade($request->grade);
-                $student->setGradeletter($request->gradeletter);
-                $student->save();
-            } else if ($request->role === "teacher"){
-                $role->setRoleId(1);
-                $role->setRegistrantId($registrant->getRegistrantId());
-                $role->save();
-                $teacher->setRegistrantId($registrant->getRegistrantId());
-                $teacher->setSubject($request->subject);
-                $teacher->save();
-            }
-            $response->code(200);
-            $res["success"] = true;
-            $res["msg"] = "Success";
-            $response->json($res);
+            if (!is_null($registrantq->filterByCountry($request->country)->findOne())){
+                $validator->setInvalid("country");
+                $response->code(400);
+                $res["success"] = false;
+                $res["msg"] = "Selected Country No Longer Available";
+                $res["validity"] = $validator->invalidList();
+                $response->json($res);
+            } else {
+                $registrant->setName($request->name);
+                $registrant->setSurname($request->surname);
+                $registrant->setEmail($request->email);
+                $registrant->setInstitution($request->institution);
+                $registrant->setCountry($request->country);
+                $countriesq->findPk($request->country)->setReserved(1)->save();
+                if($request->reservedcountry != ""){
+                    $country = $countriesq->findPk($request->reservedcountry);
+                    if ($country->getAvailable() == "1")
+                        $registrant->setCountryReserved($request->reservedcountry);
+                    $countriesq->findPk($request->reservedcountry)->setReserved(1)->save();
+                }
+                $registrant->setTel($request->phone);
+                $registrant->save();
+        
+                if($request->role === "student"){
+                    $role->setRoleId(2);
+                    $role->setRegistrantId($registrant->getRegistrantId());
+                    $role->save();
+                    $student->setRegistrantId($registrant->getRegistrantId());
+                    $student->setGrade($request->grade);
+                    $student->setGradeletter($request->gradeletter);
+                    $student->save();
+                } else if ($request->role === "teacher"){
+                    $role->setRoleId(1);
+                    $role->setRegistrantId($registrant->getRegistrantId());
+                    $role->save();
+                    $teacher->setRegistrantId($registrant->getRegistrantId());
+                    $teacher->setSubject($request->subject);
+                    $teacher->save();
+                }
+                $response->code(200);
+                $res["success"] = true;
+                $res["msg"] = "Success";
+                $response->json($res);
+        }
         } catch (\Throwable $th) {
             $response->code(500);
             $res["success"] = false;

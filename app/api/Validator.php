@@ -28,6 +28,12 @@ class Validator {
         return $this;
     }
 
+    public function setInvalid($name){
+        $this->state[$name] = false;
+        $this->generalstate = false;
+        return $this;
+    }
+
     public function invalid($name = ""){
         if ($name)
             return $this->state[$name];
