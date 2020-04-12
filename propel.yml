@@ -5,6 +5,6 @@ propel:
                 adapter: mysql
                 dsn: mysql:host=localhost;port=3306;dbname=munmacs
                 user: yerzhan
-                password: Sr9vupYY
+                password: 55648452
                 settings:
                     charset: utf8

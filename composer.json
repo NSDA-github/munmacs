@@ -1,8 +1,11 @@
 {
+  "name": "munmacs",
+  "description": "Model United Nations Management and Communication System",
   "require": {
     "klein/klein": "^2.1",
     "snapappointments/bootstrap-select": "^1.13",
-    "propel/propel": "~2.0@dev"
+    "propel/propel": "~2.0@dev",
+    "phpoffice/phpspreadsheet": "^1.11"
   },
   "autoload": {
     "classmap": [

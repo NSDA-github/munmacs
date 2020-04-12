@@ -4,114 +4,199 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ---------------------------------------------------------------------
--- countries
+-- admin
 -- ---------------------------------------------------------------------
 
-DROP TABLE IF EXISTS `countries`;
+DROP TABLE IF EXISTS `admin`;
 
-CREATE TABLE `countries`
+CREATE TABLE `admin`
 (
-    `country_id` INTEGER NOT NULL AUTO_INCREMENT,
-    `country_name` VARCHAR(60) NOT NULL,
-    `available` TINYINT(1) DEFAULT 1 NOT NULL,
-    `reserved` TINYINT(1) DEFAULT 0 NOT NULL,
-    PRIMARY KEY (`country_id`),
-    UNIQUE INDEX `country_name` (`country_name`)
+    `admin_id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+    `username` VARCHAR(50) NOT NULL,
+    `password` VARCHAR(255) NOT NULL,
+    `access_level` tinyint(2) unsigned DEFAULT 1 NOT NULL,
+    PRIMARY KEY (`admin_id`),
+    UNIQUE INDEX `username` (`username`)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
--- registrant_roles
+-- country
 -- ---------------------------------------------------------------------
 
-DROP TABLE IF EXISTS `registrant_roles`;
+DROP TABLE IF EXISTS `country`;
 
-CREATE TABLE `registrant_roles`
+CREATE TABLE `country`
 (
-    `registrant_id` INTEGER NOT NULL,
-    `role_id` INTEGER NOT NULL,
-    PRIMARY KEY (`registrant_id`,`role_id`),
-    INDEX `role_id` (`role_id`),
-    CONSTRAINT `registrant_roles_ibfk_1`
-        FOREIGN KEY (`registrant_id`)
-        REFERENCES `registrants` (`registrant_id`),
-    CONSTRAINT `registrant_roles_ibfk_2`
-        FOREIGN KEY (`role_id`)
-        REFERENCES `roles` (`role_id`)
+    `country_id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+    `country_name` VARCHAR(90) NOT NULL,
+    PRIMARY KEY (`country_id`)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
--- registrants
+-- occupation
 -- ---------------------------------------------------------------------
 
-DROP TABLE IF EXISTS `registrants`;
+DROP TABLE IF EXISTS `occupation`;
 
-CREATE TABLE `registrants`
+CREATE TABLE `occupation`
 (
-    `registrant_id` INTEGER NOT NULL AUTO_INCREMENT,
-    `institution` VARCHAR(40) NOT NULL,
-    `email` VARCHAR(40) NOT NULL,
-    `name` VARCHAR(30) NOT NULL,
-    `surname` VARCHAR(30) NOT NULL,
-    `tel` VARCHAR(17) NOT NULL,
-    `country` INTEGER NOT NULL,
-    `country_reserved` INTEGER,
-    `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `occupation_id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+    `occupation_name` VARCHAR(15) NOT NULL,
+    PRIMARY KEY (`occupation_id`),
+    UNIQUE INDEX `occupation_name` (`occupation_name`)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- registrant
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `registrant`;
+
+CREATE TABLE `registrant`
+(
+    `registrant_id` smallint(4) unsigned NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(50) NOT NULL,
+    `surname` VARCHAR(50) NOT NULL,
+    `email` VARCHAR(80) NOT NULL,
+    `phone` VARCHAR(12) NOT NULL,
+    `institution` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`registrant_id`),
-    UNIQUE INDEX `country` (`country`),
-    INDEX `registrants_ibfi_2` (`country_reserved`),
-    CONSTRAINT `registrants_ibfk_1`
-        FOREIGN KEY (`country`)
-        REFERENCES `countries` (`country_id`),
-    CONSTRAINT `registrants_ibfk_2`
-        FOREIGN KEY (`country_reserved`)
-        REFERENCES `countries` (`country_id`)
+    INDEX `surname` (`surname`)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
--- roles
+-- registrant_event
 -- ---------------------------------------------------------------------
 
-DROP TABLE IF EXISTS `roles`;
+DROP TABLE IF EXISTS `registrant_event`;
 
-CREATE TABLE `roles`
+CREATE TABLE `registrant_event`
 (
-    `role_id` INTEGER NOT NULL AUTO_INCREMENT,
-    `role_name` VARCHAR(15) NOT NULL,
-    PRIMARY KEY (`role_id`),
-    UNIQUE INDEX `role_name` (`role_name`)
+    `registrant_id` smallint(4) unsigned NOT NULL,
+    `topic_id` tinyint(3) unsigned NOT NULL,
+    `country_id` tinyint(3) unsigned NOT NULL,
+    `registration_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `approved` TINYINT(1) DEFAULT 0 NOT NULL,
+    `approved_time` DATETIME,
+    `local` TINYINT(1),
+    `has_attended` TINYINT(1),
+    PRIMARY KEY (`registrant_id`),
+    UNIQUE INDEX `topic_id` (`topic_id`, `country_id`),
+    INDEX `country_id` (`country_id`),
+    CONSTRAINT `registrant_event_ibfk_1`
+        FOREIGN KEY (`country_id`)
+        REFERENCES `country` (`country_id`),
+    CONSTRAINT `registrant_event_ibfk_2`
+        FOREIGN KEY (`registrant_id`)
+        REFERENCES `registrant` (`registrant_id`),
+    CONSTRAINT `registrant_event_ibfk_3`
+        FOREIGN KEY (`topic_id`)
+        REFERENCES `topic` (`topic_id`)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
--- students
+-- registrant_occupation
 -- ---------------------------------------------------------------------
 
-DROP TABLE IF EXISTS `students`;
+DROP TABLE IF EXISTS `registrant_occupation`;
 
-CREATE TABLE `students`
+CREATE TABLE `registrant_occupation`
 (
-    `registrant_id` INTEGER NOT NULL,
+    `registrant_id` smallint(4) unsigned NOT NULL,
+    `occupation_id` tinyint(3) unsigned NOT NULL,
+    PRIMARY KEY (`registrant_id`),
+    INDEX `occupation_id` (`occupation_id`),
+    CONSTRAINT `registrant_occupation_ibfk_1`
+        FOREIGN KEY (`registrant_id`)
+        REFERENCES `registrant` (`registrant_id`),
+    CONSTRAINT `registrant_occupation_ibfk_2`
+        FOREIGN KEY (`occupation_id`)
+        REFERENCES `occupation` (`occupation_id`)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- registrant_school_student
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `registrant_school_student`;
+
+CREATE TABLE `registrant_school_student`
+(
+    `registrant_id` smallint(4) unsigned NOT NULL,
     `grade` TINYINT(2),
-    `gradeletter` CHAR,
+    `grade_letter` CHAR,
     PRIMARY KEY (`registrant_id`),
-    CONSTRAINT `students_ibfk_1`
+    CONSTRAINT `registrant_school_student_ibfk_1`
         FOREIGN KEY (`registrant_id`)
-        REFERENCES `registrants` (`registrant_id`)
+        REFERENCES `registrant` (`registrant_id`)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
--- teachers
+-- registrant_student
 -- ---------------------------------------------------------------------
 
-DROP TABLE IF EXISTS `teachers`;
+DROP TABLE IF EXISTS `registrant_student`;
 
-CREATE TABLE `teachers`
+CREATE TABLE `registrant_student`
 (
-    `registrant_id` INTEGER NOT NULL,
+    `registrant_id` smallint(4) unsigned NOT NULL,
+    `major_name` VARCHAR(40),
+    PRIMARY KEY (`registrant_id`),
+    CONSTRAINT `registrant_student_ibfk_1`
+        FOREIGN KEY (`registrant_id`)
+        REFERENCES `registrant` (`registrant_id`)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- registrant_teacher
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `registrant_teacher`;
+
+CREATE TABLE `registrant_teacher`
+(
+    `registrant_id` smallint(4) unsigned NOT NULL,
     `subject` VARCHAR(40),
     PRIMARY KEY (`registrant_id`),
-    CONSTRAINT `teachers_ibfk_1`
+    CONSTRAINT `registrant_teacher_ibfk_1`
         FOREIGN KEY (`registrant_id`)
-        REFERENCES `registrants` (`registrant_id`)
+        REFERENCES `registrant` (`registrant_id`)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- topic
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `topic`;
+
+CREATE TABLE `topic`
+(
+    `topic_id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+    `topic_name` VARCHAR(50) NOT NULL,
+    `max_participants` smallint(4) unsigned NOT NULL,
+    `close_date` DATE NOT NULL,
+    PRIMARY KEY (`topic_id`)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- topic_country
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `topic_country`;
+
+CREATE TABLE `topic_country`
+(
+    `topic_id` tinyint(3) unsigned NOT NULL,
+    `country_id` tinyint(3) unsigned NOT NULL,
+    `available` TINYINT(1) DEFAULT 1 NOT NULL,
+    PRIMARY KEY (`topic_id`,`country_id`),
+    INDEX `country_id` (`country_id`),
+    CONSTRAINT `topic_country_ibfk_1`
+        FOREIGN KEY (`topic_id`)
+        REFERENCES `topic` (`topic_id`),
+    CONSTRAINT `topic_country_ibfk_2`
+        FOREIGN KEY (`country_id`)
+        REFERENCES `country` (`country_id`)
 ) ENGINE=InnoDB;
 
 # This restores the fkey checks, after having unset them earlier

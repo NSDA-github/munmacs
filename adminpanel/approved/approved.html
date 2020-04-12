@@ -1,0 +1,355 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="/css/bootstrap.css" />
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="/js/sidebar.js"></script>
+
+    <link rel="stylesheet" href="/style.css" />
+    <title>SysAdmin Control Panel</title>
+
+    <script>
+      function viewButton(id) {
+        return `
+        <button
+          onclick="handleView(value)"
+          value="${id}"
+          class="btn btn-primary btn-sm"
+        >
+          View Details
+        </button>
+        `;
+      }
+
+      function updateRegistrants(searchText = "") {
+        data = Array(6);
+        data[0] = Object({ name: "action", value: "get" });
+        data[1] = Object({ name: "approved", value: 1 });
+        data[2] = Object({ name: "orderby", value: $("#orderby").val() });
+        data[3] = Object({
+          name: "topic",
+          value: $("#topic").val(),
+        });
+        data[4] = Object({ name: "local", value: $("#local").val() });
+        if (searchText != "")
+          data[5] = Object({ name: "search", value: searchText });
+
+        console.log(data);
+        $.ajax({
+          type: "POST",
+          url: "/api/registrants",
+          data: data,
+          dataType: "json",
+          success: function (data) {
+            if (data.success) {
+              $("#registrants-table").empty();
+              registrantsList = data.registrants;
+              data.registrants.map(function (registrant) {
+                $("#registrants-table").append(
+                  `<tr>
+                  <th scope="row">${registrant["registrant_id"]}</th>
+                  <td>${registrant["name"]}</td>
+                  <td>${registrant["surname"]}</td>
+                  <td>${registrant["country"]}</td>
+                  <td>${
+                    registrant["local"]
+                      ? '<span style="color: green;">Yes<span>'
+                      : '<span style="color: black;">No<span>'
+                  }</td>
+
+                  <td>${viewButton(registrant["registrant_id"])}</td>
+                </tr>`
+                );
+              });
+            } else {
+              alert(data.msg + "\n" + data.error);
+            }
+          },
+
+          error: function (data) {
+            alert(data.responseJSON.msg + "\n" + data.responseJSON.error);
+          },
+        });
+      }
+
+      function getTopics(arg1) {
+        data = Array(1);
+        data[0] = Object({ name: "action", value: "get" });
+        $.ajax({
+          type: "POST",
+          url: "/api/topics",
+          data: data,
+          dataType: "json",
+          success: function (data) {
+            if (data.success) {
+              data.topics.map(function (topic) {
+                $("#topic").append(
+                  `<option value=${topic[0]}>${topic[1]}</option>`
+                );
+              });
+              if (arg1.update) {
+                console.log("updated");
+                updateRegistrants();
+              }
+            }
+          },
+          error: function (data) {
+            alert(data.responseJSON.msg + "\n" + data.responseJSON.error);
+          },
+        });
+      }
+
+      function checkID(registrant) {
+        return registrant["registrant_id"] == this;
+      }
+
+      function search() {
+        console.log($("#search-text").val());
+        updateRegistrants($("#search-text").val());
+      }
+
+      $(document).ready(function () {
+        getTopics({ update: true });
+        $("#registrant-info").hide();
+      });
+
+      function handleView(id) {
+        if (id != 0) {
+          registrant = registrantsList.find(checkID, id);
+          selectedRegistrant = registrant;
+          $("#name").html(registrant["name"]);
+          $("#surname").html(registrant["surname"]);
+          fullinstitution =
+            registrant["institution"] +
+            " | " +
+            (registrant["role"] == "teacher"
+              ? "Teacher"
+              : registrant["role"] == "student"
+              ? "Student"
+              : "School Student");
+          $("#institution").html(fullinstitution);
+          $("#country").html(registrant["country"]);
+          $("#registrant-info").show();
+        } else {
+          $("#registrant-info").hide();
+        }
+      }
+
+      function confirmCheckIn(action) {
+        $("#confirm").modal("show");
+        $("#confirm-text").html(
+          `Do you want to set ${selectedRegistrant["name"]} 
+          ${selectedRegistrant["surname"]} to be
+          "${action}"?`
+        );
+        $("#confirm-btn").val(action);
+      }
+
+      function handleCheckIn(action) {
+        console.log(action);
+        data = Array(2);
+        data[0] = Object({ name: "action", value: action });
+        data[1] = Object({
+          name: "id",
+          value: selectedRegistrant["registrant_id"],
+        });
+        $.ajax({
+          type: "POST",
+          url: "/api/checkin",
+          data: data,
+          dataType: "json",
+          success: function (data) {
+            if (data.success) {
+              console.log(data);
+              updateRegistrants();
+              handleView(0);
+            } else {
+              alert(data.msg);
+              console.log(data.error);
+            }
+          },
+
+          error: function (data) {
+            alert(data.responseJSON.msg + "\n" + data.responseJSON.error);
+            console.log(data.responseJSON);
+          },
+        });
+      }
+    </script>
+  </head>
+  <body style="display: none;">
+    <div id="1" class="container-fluid">
+      <div id="2" class="row">
+        <div class="col-10">
+          <div
+            class="tab-content"
+            id="tabContent"
+            style="padding-top: 30px; padding-left: 30px;"
+          >
+            <h1>Approved Registrants</h1>
+            Order by
+            <select onchange="updateRegistrants()" name="orderby" id="orderby">
+              <option value="name">Name</option>
+              <option value="surname" selected>Surname</option>
+              <option value="country">Country</option>
+              <option value="time">Registration Time</option>
+              <option value="approvedtime">Approval Time</option>
+            </select>
+            with topic
+            <select onchange="updateRegistrants()" name="topic" id="topic">
+            </select>
+            who is
+            <select onchange="updateRegistrants()" name="local" id="local">
+              <option value="-1">anyone</option>
+              <option value="1">local</option>
+              <option value="0">foreign</option>
+            </select>
+            <div class="table-scroll mb-3">
+              <table class="table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th style="width: 20px;" scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Surname</th>
+                    <th scope="col">Country</th>
+                    <th scope="col">Local</th>
+                    <th style="width: 95px;" scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="registrants-table"></tbody>
+              </table>
+            </div>
+            <div class="input-group input-group-sm mb-3" style="width: 500px;">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-sm"
+                  >Search By Surname</span
+                >
+              </div>
+              <input
+                type="text"
+                class="form-control"
+                id="search-text"
+                aria-label="Sizing example input"
+                aria-describedby="inputGroup-sizing-sm"
+              />
+              <div class="input-group-append">
+                <button
+                  class="btn btn-secondary"
+                  type="button"
+                  id="search-btn"
+                  onclick="search()"
+                >
+                  Go
+                </button>
+              </div>
+            </div>
+            <div id="registrant-info">
+              <table class="table-borderless col-8 table-sm mb-4">
+                <thead>
+                  <th style="width: 100px;"></th>
+                  <th></th>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th>Name:</th>
+                    <td id="name">N/A</td>
+                  </tr>
+                  <tr>
+                    <th>Surname:</th>
+                    <td id="surname">N/A</td>
+                  </tr>
+                  <tr>
+                    <th></th>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <th>Institution:</th>
+                    <td id="institution">N/A</td>
+                  </tr>
+                  <tr>
+                    <th></th>
+                    <td id="name"></td>
+                  </tr>
+                  <tr>
+                    <th>Country:</th>
+                    <td id="country">N/A</td>
+                  </tr>
+                </tbody>
+              </table>
+              <button
+                class="btn btn-danger"
+                value="absent"
+                onclick="confirmCheckIn(value)"
+              >
+                Absent
+              </button>
+              <button
+                class="btn btn-success"
+                value="attended"
+                onclick="confirmCheckIn(value)"
+              >
+                Attended
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="modal fade"
+      id="confirm"
+      data-backdrop="static"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="staticBackdropLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">
+              Please Confirm Your Action
+            </h5>
+          </div>
+          <div id="confirm-text" class="modal-body"></div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+              autofocus
+            >
+              Cancel
+            </button>
+            <button
+              id="confirm-btn"
+              value=""
+              onclick="handleCheckIn(value)"
+              type="button"
+              class="btn btn-primary"
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

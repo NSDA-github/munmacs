@@ -12,7 +12,7 @@ propel:
         schemaDir: schema
 
         # The directory where Propel should output generated object model classes.
-        phpDir: /home/yerzhan/Projects/munmacs
+        phpDir: C:\Users\yerzh\Projects\munmacs
 
 #   database:
 #       connections:
