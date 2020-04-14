@@ -1,6 +1,9 @@
 <?php
+
 session_start();
+
 use Propel\Runtime\Propel;
+
 require_once __DIR__ . "/../Server.php";
 header('Content-Type: text/html; charset=utf-8');
 date_default_timezone_set('UTC');
@@ -8,32 +11,57 @@ date_default_timezone_set('UTC');
 $klein = new \Klein\Klein();
 
 $klein->respond('GET', '/', function () {
-    Home::show();
-});
-
-$klein->respond('GET', '/register', function () {
-    Register::show();
-});
-
-$klein->respond('GET', '/about', function () {
-    About::show();
-});
-
-$klein->respond('GET', '/adminlogin', function($request, $response, $service){
-    AdminLogin::show();
-});
-
-$klein->respond('GET', '/logout', function(){
-    header("Location: /api/logout");
+    header("Location: /home");
     exit();
 });
 
-$klein->respond('GET', '/adminregister', function($request, $response, $service){
-    AdminRegister::show();
+$klein->respond('GET', '/[a:action]', function ($request, $response, $service) {
+    switch ($request->action) {
+        case 'register':
+            Website::show("Register");
+            break;
+        case 'home':
+            Website::show("Home");
+            break;
+        case 'about':
+            Website::show("About");
+            break;
+        case 'adminlogin':
+            Website::show("Adminlogin");
+            break;
+        case 'adminregister':
+            Website::show("Adminregister");
+            break;
+        default:
+            # code...
+            break;
+    }
 });
 
-$klein->respond('GET', '/adminpanel[/]?', function($request, $response, $service){
-    if(isset($_SESSION["user"])){
+$klein->respond('GET', '/logout', function () {
+    $_SESSION = array();
+
+    // Delete all cookies
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(
+            session_name(),
+            '',
+            time() - 42000,
+            $params["path"],
+            $params["domain"],
+            $params["secure"],
+            $params["httponly"]
+        );
+    }
+
+    session_destroy();
+    header("Location: /");
+    exit();
+});
+
+$klein->respond('GET', '/adminpanel[/]?', function ($request, $response, $service) {
+    if (isset($_SESSION["user"])) {
         header("Location: /adminpanel/registrants");
     } else {
         header("Location: /adminlogin");
@@ -41,347 +69,329 @@ $klein->respond('GET', '/adminpanel[/]?', function($request, $response, $service
     exit();
 });
 
-$klein->respond('GET', '/adminpanel/[*:action]', function($request, $response, $service){
-    if(isset($_SESSION["user"])){
+$klein->respond('GET', '/adminpanel/[*:action]', function ($request, $response, $service) {
+    if (isset($_SESSION["user"])) {
         switch ($request->action) {
             case 'registrants':
-                Registrants::show();
+                AdminPanel::show("Registrants");
                 break;
             case 'settings':
-                Settings::show();
+                AdminPanel::show("Settings");
                 break;
             case 'approved':
-                Approved::show();
+                AdminPanel::show("Approved");
+                break;
+            case 'data':
+                AdminPanel::show("Data Export");
+                break;
+            case 'help':
+                AdminPanel::show("Help");
                 break;
             default:
                 return "404 Page not found";
                 break;
-        } 
+        }
     } else {
         header("Location: /adminlogin");
         exit();
     }
 });
 
-$klein->respond('GET', '/prohibited', function($request, $response, $service){
+$klein->respond('GET', '/prohibited', function ($request, $response, $service) {
     echo "Access Prohibited!";
 });
 
-$klein->respond('GET', '/api/test', function($request, $response, $service){
+$klein->respond('POST', '/api/reset/[:action]', function ($request, $response, $service) {
     try {
-        if (isset($request->action))
-        if ($request->action == 'get' && isset($request->approved)){
-            $registrants = Server::registrants($request);
-            $response->status(200);
-            $res["success"] = true;
-            $res["msg"] = "Success";
-            $res["registrants"] = $registrants;
-            $response->json($res);
-            exit();
-        }
-        $response->status(400);
-        $res["success"] = false;
-        $res["msg"] = "Bad user request";
-        $response->json($res);
-        exit();
-    } catch (\Throwable $th) {
-        $response->status(200);
-        $res["success"] = true;
-        $res["msg"] = "Internal Server Error";
-        $res["error"] = (string)$th;
-        $response->json($res);
-        exit();
-    }
-});
-
-$klein->respond('POST', '/api/topics', function($request, $response, $service){
-    if ($request->action == 'get'){
-        try {
-            $res["success"] = true;
-            $res["msg"] = "Operation completed successfully";
-            $res["topics"] = Server::topics();
-            $response->json($res);
-        } catch (\Throwable $th) {
-            $response->code(500);
-            $res["success"] = false;
-            $res["msg"] = "Internal Server Error";
-            $res["error"] = (string)$th;
-            $response->json($res);
-        }
-    }
-});
-
-$klein->respond('POST', '/api/countries', function($request, $response, $service){
-    //if (!$_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') die('Invalid request');
-    if ($request->action == 'reset'){
-        if (Server::adminPassCheck($request->password)){
-            try {
-                if(!!(db\db\RegistrantEventQuery::create()->findOne()) && !!(db\db\TopicCountryQuery::create()->findOne())){
+        switch ($request->action) {
+            case 'database':
+                if (Server::adminPassCheck($request->password)) {
+                    if (!!(db\db\RegistrantEventQuery::create()->findOne()) && !!(db\db\TopicCountryQuery::create()->findOne())) {
+                        $response->code(400);
+                        $res["success"] = false;
+                        $res["msg"] = "Countries data is in use!";
+                        $response->json($res);
+                        exit();
+                    } else {
+                        Server::resetDatabase();
+                        $res["success"] = true;
+                        $res["msg"] = "Operation completed successfully";
+                        $response->json($res);
+                        exit();
+                    }
+                } else {
                     $response->code(400);
                     $res["success"] = false;
-                    $res["msg"] = "Countries data is in use!";
+                    $res["msg"] = "Wrong Admin Password";
                     $response->json($res);
-                } else {
-                    Server::resetDatabase();
-                    $res["success"] = true;
-                    $res["msg"] = "Operation completed successfully";
-                    $response->json($res);
+                    exit();
                 }
-            } catch (\Throwable $th) {
-                $response->code(500);
-                $res["success"] = false;
-                $res["msg"] = "Internal Server Error";
-                $res["error"] = (string)$th;
-                $response->json($res);
-            }
+                break;
+
+            default:
+                $response->code(404);
+                break;
         }
-        else {
-            $response->code(400);
-            $res["success"] = false;
-            $res["msg"] = "Wrong Admin Password";
-            $response->json($res);
-        }
-    } else if ($request->action == 'get' && !!($request->topic)){
-        try {
-            $res["success"] = true;
-            $res["msg"] = "Operation completed successfully";
-            $res["countries"] = Server::countries($request->topic);
-            $response->json($res);
-        } catch (\Throwable $th) {
-            $response->code(500);
-            $res["success"] = false;
-            $res["msg"] = "Internal Server Error";
-            $res["error"] = (string)$th;
-            $response->json($res);
-        } 
-    }
-    else {
-        $response->code(400);
+    } catch (\Throwable $th) {
+        $response->code(500);
         $res["success"] = false;
-        $res["msg"] = "Invalid request";
+        $res["msg"] = "Internal Server Error";
+        $res["error"] = (string) $th;
         $response->json($res);
+        exit();
     }
 });
 
-$klein->respond('POST', '/api/register', function($request, $response, $service){
-    $validator = Server::validate($request);
-    if ($validator->oneResult() == false){
-        $response->code(400);
-        $res["success"] = false;
-        $res["msg"] = "Some data were not accepted by the server";
-        $res["validity"] = $validator->invalidList();
-        $response->json($res);
-    } else {
+$klein->respond('POST', '/api/data/[:action]', function ($request, $response, $service) {
+    if (isset($_SESSION["user"])) {
         try {
-            $server = new Server();
-            if (!$server->register($request)){
-                $response->code($server->errorCode());
-                $res["success"] = false;
-                $res["msg"] = $server->error();
-                $response->json($res);
-                die;
+            if (isset($request->action)) {
+                if ($request->action == 'prepare') {
+                    $registrants = Server::registrants($request);
+                    $registrantsArray = array();
+                    $registrantsHeaders = array("Surname", "Name", "Institution", "Occupation", "Topic", "Country", "Phone", "Email", "Approved", "Local", "Attended");
+                    array_push($registrantsArray, $registrantsHeaders);
+                    $registrantsList = array();
+                    foreach ($registrants as $registrant) {
+                        $phone = new \PhpOffice\PhpSpreadsheet\RichText\RichText();
+                        $phone->createText($registrant["phone"]);
+                        array_push($registrantsList, $registrant["surname"]);
+                        array_push($registrantsList, $registrant["name"]);
+                        array_push($registrantsList, $registrant["institution"]);
+                        array_push($registrantsList, $registrant["occupation"]);
+                        array_push($registrantsList, $registrant["topic"]);
+                        array_push($registrantsList, $registrant["country"]);
+                        array_push($registrantsList, $phone);
+                        array_push($registrantsList, $registrant["email"]);
+                        array_push($registrantsList, ($registrant["approved"] === null ? "" : ($registrant["approved"] ? 'TRUE' : 'FALSE')));
+                        array_push($registrantsList, ($registrant["local"] === null ? "" : ($registrant["local"] ? 'TRUE' : 'FALSE')));
+                        array_push($registrantsList, ($registrant["attended"] === null ? "" : ($registrant["attended"] ? 'TRUE' : 'FALSE')));
+                        array_push($registrantsArray, $registrantsList);
+                        unset($registrantsList);
+                        $registrantsList = array();
+                    }
+                    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+                    $borders = [
+                        'borders' => [
+                            'allBorders' => [
+                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                                'color' => ['argb' => 'FF000000'],
+                            ],
+                        ],
+                    ];
+                    $bold = [
+                        'font' => [
+                            'bold' => true,
+                        ],
+                    ];
+                    $spreadsheet->getActiveSheet()
+                        ->fromArray(
+                            $registrantsArray,  // The data to set
+                            NULL        // Array values with this value will not be set
+                            //    we want to set these values (default is A1)
+                        );
+                    for ($x = 'A';; $x++) {
+                        $spreadsheet->getActiveSheet()->getColumnDimension($x)->setAutoSize(true);
+                        if ($x == 'K') break;
+                    }
+                    $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(false)->setWidth(20);
+
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(1, 1, sizeof($registrantsArray[0]), sizeof($registrantsArray))
+                        ->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_TOP);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(1, 1, sizeof($registrantsArray[0]), sizeof($registrantsArray))
+                        ->applyFromArray($borders);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(1, 1, sizeof($registrantsArray[0]), 1)
+                        ->applyFromArray($bold);
+                    $spreadsheet->getActiveSheet()->setAutoFilter(
+                        $spreadsheet->getActiveSheet()
+                            ->calculateWorksheetDimension()
+                    );
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(3, 1, 3, sizeof($registrantsArray))
+                        ->getAlignment()->setWrapText(true);
+                    $spreadsheet->getActiveSheet()->getStyleByColumnAndRow(1, 1);
+                    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                    $writer->save("../data/data.xlsx");
+                    $response->status(200);
+                    $res["success"] = true;
+                    $res["msg"] = "Success";
+                    $res["link"] = '<a href="/download/data" data-auto-download id="downloadlink" download>Download Link<a>';
+                    $response->json($res);
+                    exit();
+                }
             }
-
-            $response->code(200);
-            $res["success"] = true;
-            $res["msg"] = "Success";
-            $response->json($res);
-        } catch (\Throwable $th) {
-            $response->code(500);
+            $response->status(400);
             $res["success"] = false;
-            $res["msg"] = "Internal Server Error";
-            $res["error"] = (string)$th;
+            $res["msg"] = "Bad user request";
             $response->json($res);
-        }
-    }
-});
-
-$klein->respond('POST', '/api/register/admin', function($request, $response, $service){
-    if(Server::adminPassCheck($request->adminpassword)){
-        try {
-            $dbAdmin = new db\db\Admin();
-            $dbAdmin->setUsername($request->username)->setAccessLevel($request->level)->setPassword(password_hash($request->password,PASSWORD_DEFAULT))->save();
-            return "Registration copmlete! <a href=\"/adminlogin\">Log In</a>";
+            exit();
         } catch (\Throwable $th) {
             $response->status(500);
             $res["success"] = false;
             $res["msg"] = "Internal Server Error";
-            $res["error"] = (string)$th;
-            $response->json($res);
-        }
-        
-    }
-});
-
-$klein->respond('POST', '/api/registrants', function($request, $response, $service){
-    if(isset($_SESSION["user"]))
-    try {
-        if (isset($request->action))
-        if ($request->action == 'get' && isset($request->approved)){
-            $registrants = Server::registrants($request);
-            $response->status(200);
-            $res["success"] = true;
-            $res["msg"] = "Success";
-            $res["registrants"] = $registrants;
+            $res["error"] = (string) $th;
             $response->json($res);
             exit();
         }
-        $response->status(400);
-        $res["success"] = false;
-        $res["msg"] = "Bad user request";
-        $response->json($res);
-        exit();
-    } catch (\Throwable $th) {
-        $response->status(500);
-        $res["success"] = false;
-        $res["msg"] = "Internal Server Error";
-        $res["error"] = (string)$th;
-        $response->json($res);
-        exit();
-    }
-    else {
+    } else {
         header("Location: /prohibited");
         exit();
     }
 });
 
-$klein->respond('POST', '/api/approval', function($request, $response, $service){
-    if(isset($_SESSION["user"]))
+$klein->respond('POST', '/api/[a:title]', function ($request, $response, $service) {
     try {
-        if (isset($request->action) && isset($request->id)){
-            $dbRegistantEventQ = new db\db\RegistrantEventQuery();
-            $dbRegistantEvent = $dbRegistantEventQ->findPK($request->id);
-            switch ($request->action) {
-                case 'local':
-                    $dbRegistantEvent->setLocal(true)->setApproved(true)->setApprovedTime(date('Y-m-d h:i:s', time()))->save();
-                    break;
-                case 'foreign':
-                    $dbRegistantEvent->setLocal(false)->setApproved(true)->setApprovedTime(date('Y-m-d h:i:s', time()))->save();
-                    break;
-                case 'deny':
-                    $dbTopicCountryQ = new db\db\TopicCountryQuery();
-                    $dbRegistant = $dbRegistantEvent->getRegistrant();
-                    $dbRegistantOccupation = $dbRegistant->getRegistrantOccupation();
-                    switch ($dbRegistantOccupation->getOccupation()->getOccupationName()) {
-                        case 'teacher':
-                            $dbRegistant->getRegistrantTeacher()->delete();
-                            break;
-                        case 'student':
-                            $dbRegistant->getRegistrantStudent()->delete();
-                            break;
-                        case 'schoolstudent':
-                            $dbRegistant->getRegistrantSchoolStudent()->delete();
-                            break;
-                        default:
-                            # code...
-                            break;
+        switch ($request->title) {
+            case 'topics':
+                $res["success"] = true;
+                $res["msg"] = "Operation completed successfully";
+                $res["topics"] = Server::topics();
+                $response->json($res);
+                break;
+
+            case 'countries':
+                if (!!($request->topic)) {
+                    $res["success"] = true;
+                    $res["msg"] = "Operation completed successfully";
+                    $res["countries"] = Server::countries($request->topic);
+                    $response->json($res);
+                } else {
+                    $response->code(400);
+                    $res["success"] = false;
+                    $res["msg"] = "Invalid request";
+                    $response->json($res);
+                }
+                break;
+
+            case "register":
+                $validator = Server::validate($request);
+                if ($validator->oneResult() == false) {
+                    $response->code(400);
+                    $res["success"] = false;
+                    $res["msg"] = "Some data were not accepted by the server";
+                    $res["validity"] = $validator->invalidList();
+                    $response->json($res);
+                } else {
+                    $server = new Server();
+                    if (!$server->register($request)) {
+                        $response->code($server->errorCode());
+                        $res["success"] = false;
+                        $res["msg"] = $server->error();
+                        $response->json($res);
+                    } else {
+                        $response->code(200);
+                        $res["success"] = true;
+                        $res["msg"] = "Success";
+                        $response->json($res);
                     }
-                    $dbRegistantOccupation->delete();
-                    $dbRegistantEvent->delete();
-                    $dbRegistant->delete();
-                    $dbTopicCountry = $dbTopicCountryQ->filterByTopicId($dbRegistantEvent->getTopicId())->filterByCountryId($dbRegistantEvent->getCountryId())->findOne();
-                    $dbTopicCountry->setAvailable(true)->save();
-                    break;
-                
-                default:
-                    throw new Exception("Error Processing Request", 1);                  
-                    break;
-            }
-            $response->status(200);
-            $res["success"] = true;
-            $res["msg"] = "Success";
-            $response->json($res);
-            exit();
+                }
+                break;
+
+            case 'registeradmin':
+                if (Server::adminPassCheck($request->adminpassword)) {
+                    $dbAdmin = new db\db\Admin();
+                    $dbAdmin->setUsername($request->username)->setAccessLevel($request->level)->setPassword(password_hash($request->password, PASSWORD_DEFAULT))->save();
+                    return "Registration copmlete! <a href=\"/adminlogin\">Log In</a>";
+                }
+                break;
+
+            case "registrants":
+                if (isset($_SESSION["user"])) {
+                    if (isset($request->action) && $request->action == 'get') {
+                        $registrants = Server::registrants($request);
+                        $response->status(200);
+                        $res["success"] = true;
+                        $res["msg"] = "Success";
+                        $res["registrants"] = $registrants;
+                        $response->json($res);
+                    } else {
+                        $response->status(400);
+                        $res["success"] = false;
+                        $res["msg"] = "Bad user request";
+                        $response->json($res);
+                    }
+                } else {
+                    header("Location: /prohibited");
+                }
+                break;
+
+            case "approval":
+                if (isset($_SESSION["user"])) {
+                    if (isset($request->action) && isset($request->id)) {
+                        Server::approval($request);
+                        $response->status(200);
+                        $res["success"] = true;
+                        $res["msg"] = "Success";
+                        $response->json($res);
+                    } else {
+                        $response->status(400);
+                        $res["success"] = false;
+                        $res["msg"] = "Bad user request";
+                        $response->json($res);
+                    }
+                } else {
+                    header("Location: /prohibited");
+                }
+                break;
+
+            case "checkin":
+                if (isset($_SESSION["user"])) {
+                    if (isset($request->action) && isset($request->id)) {
+                        Server::checkin($request);
+                        $response->status(200);
+                        $res["success"] = true;
+                        $res["msg"] = "Success";
+                        $res["registrants"] = date('Y-m-d h:i:s', time());
+                        $response->json($res);
+                    } else {
+                        $response->status(400);
+                        $res["success"] = false;
+                        $res["msg"] = "Bad user request";
+                        $response->json($res);
+                    }
+                } else {
+                    header("Location: /prohibited");
+                }
+                break;
+
+            case "login":
+                $dbAdminQ = new db\db\AdminQuery();
+                $user = $dbAdminQ->findOneByUsername($request->username);
+                $password_hash = $user->getPassword();
+                if (password_verify($request->password, $password_hash)) {
+                    $_SESSION["user"] = $user->getUsername();
+                    $_SESSION["user_id"] = $user->getPrimaryKey();
+                    header('Location: /adminpanel');
+                    exit();
+                } else {
+                    return 'Wrong authentication details. <a href="/adminlogin">Try Again</a>';
+                }
+                break;
+
+            case "logout":
+
+                break;
+            default:
+                # code...
+                break;
         }
-        $response->status(400);
-        $res["success"] = false;
-        $res["msg"] = "Bad user request";
-        $response->json($res);
         exit();
     } catch (\Throwable $th) {
         $response->status(500);
         $res["success"] = false;
         $res["msg"] = "Internal Server Error";
-        $res["error"] = (string)$th;
+        $res["error"] = (string) $th;
         $response->json($res);
         exit();
+    }
+});
+
+$klein->respond('/download/[:action]', function ($request, $response, $service) {
+    if (isset($_SESSION["user"])) {
+        $response->file("../data/" . $request->action . ".xlsx");
     } else {
         header("Location: /prohibited");
         exit();
     }
-});
-
-$klein->respond('POST', '/api/checkin', function($request, $response, $service){
-    if(isset($_SESSION["user"]))
-    try {
-        if (isset($request->action) && isset($request->id)){
-            $dbRegistantEventQ = new db\db\RegistrantEventQuery();
-            $dbRegistantEvent = $dbRegistantEventQ->findPK($request->id);
-            switch ($request->action) {
-                case 'absent':
-                    $dbRegistantEvent->setHasAttended(false)->save();
-                    break;
-                case 'attended':
-                    $dbRegistantEvent->setHasAttended(true)->save();
-                    break;
-                default:
-                    throw new Exception("Error Processing Request", 1);                  
-                    break;
-            }
-            $response->status(200);
-            $res["success"] = true;
-            $res["msg"] = "Success";
-            $res["registrants"] = date('Y-m-d h:i:s', time());
-            $response->json($res);
-            exit();
-        }
-        $response->status(400);
-        $res["success"] = false;
-        $res["msg"] = "Bad user request";
-        $response->json($res);
-        exit();
-    } catch (\Throwable $th) {
-        $response->status(500);
-        $res["success"] = false;
-        $res["msg"] = "Internal Server Error";
-        $res["error"] = (string)$th;
-        $response->json($res);
-        exit();
-    } else {
-        header("Location: /prohibited");
-        exit();
-    }
-});
-
-$klein->respond('POST', '/api/login', function($request, $response, $service){
-    $dbAdminQ = new db\db\AdminQuery();
-    $user = $dbAdminQ->findOneByUsername($request->username);
-    $password_hash = $user->getPassword();
-    if(password_verify($request->password, $password_hash)){
-        $_SESSION["user"]=$user->getUsername();
-        $_SESSION["user_id"]=$user->getPrimaryKey();
-        header('Location: /adminpanel');   
-        exit();
-    } else {
-        return "Your stinky brain does not work";
-    }
-});
-
-$klein->respond('GET', '/api/logout', function($request, $response, $service){
-    $_SESSION = array();
-
-    // Delete all cookies
-    if (ini_get("session.use_cookies")) {
-        $params = session_get_cookie_params();
-        setcookie(session_name(), '', time() - 42000,
-            $params["path"], $params["domain"],
-            $params["secure"], $params["httponly"]
-        );
-    }
-
-    session_destroy();
-    header("Location: /");
-    die();
 });
 
 $klein->onHttpError(function ($code, $router) {
@@ -398,11 +408,9 @@ $klein->onHttpError(function ($code, $router) {
             break;
         default:
             $router->response()->body(
-                'Oh no, a bad error happened that caused a '. $code
+                'Oh no, a bad error happened that caused a ' . $code
             );
     }
 });
-
-
 
 $klein->dispatch();

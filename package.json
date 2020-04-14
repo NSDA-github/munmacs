@@ -1,0 +1,24 @@
+{
+  "name": "munmacs",
+  "version": "1.0.0",
+  "description": "Model United Nations Management and Communication System",
+  "main": "public/index.php",
+  "typings": "public/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NSDA-github/munmacs.git"
+  },
+  "author": "Yerzhan Zhamashev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NSDA-github/munmacs/issues"
+  },
+  "homepage": "https://github.com/NSDA-github/munmacs#readme",
+  "devDependencies": {},
+  "dependencies": {
+    "@types/jquery": "^3.3.34"
+  }
+}

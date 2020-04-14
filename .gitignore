@@ -14,6 +14,7 @@
 /.vscode
 /generated-conf
 /bin
+*xlsx
 
 # misc
 .DS_Store
