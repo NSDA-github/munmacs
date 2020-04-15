@@ -112,7 +112,7 @@
                     </div>
                     <div class="form-group col-md-6">
                         <label for="country">Country</label>
-                        <select name="country" class="form-control" id="country">
+                        <select name="country" id="country">
                         </select>
                     </div>
                     <div style="width: 100%; padding: 0.5rem;">
