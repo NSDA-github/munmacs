@@ -33,10 +33,10 @@ function tooltipAlert() {
   });
 }
 
-function getCountries() {
-  data = Array(2);
-  data[0] = Object({ name: "action", value: "get" });
-  data[1] = Object({ name: "topic", value: $("#topic").val() });
+function getAvailableCountries(reserved = 0) {
+  data = Array(3);
+  data[0] = Object({ name: "topic", value: $("#topic").val() });
+  data[1] = Object({ name: "reserved", value: reserved });
   return $.ajax({
     type: "POST",
     url: "/api/countries",
@@ -44,7 +44,6 @@ function getCountries() {
     dataType: "json",
     success: function (data) {
       if (data.success) {
-        console.log(data);
         $("#country").empty();
         data.countries.map(function (country) {
           $("#country").append(
@@ -52,7 +51,6 @@ function getCountries() {
           );
         });
         $("#country").selectpicker("refresh");
-        enableForm();
       } else {
         reportError(data);
       }
@@ -141,6 +139,9 @@ $(document).ready(function () {
       phone: {
         regex: "^([\\+][0-9]{11})$",
       },
+      discord: {
+        regex: "^.*#[0-9]{4}$",
+      },
       email: {
         email: true,
       },
@@ -177,6 +178,10 @@ $(document).ready(function () {
           'Must resemble <span style="color:blue"> +xxxxxxxxxxx </span> (+ and 11 digits) format',
         required: "Required to contact you",
       },
+      discord: {
+        regex:
+          'Must resemble <span style="color:blue"> username#1234 </span> format',
+      },
       email: {
         email:
           'Must resemble <span style="color:blue">name@domain.com</span> format',
@@ -196,8 +201,9 @@ $(document).ready(function () {
   disableForm();
   $.when(getTopics())
     .done(function () {
-      $.when(getCountries()).done(function () {
+      $.when(getAvailableCountries()).done(function () {
         if ($("#country").children().length == 0) tooltipAlert();
+        else enableForm();
       });
     })
     .fail(function () {
@@ -209,8 +215,9 @@ $(document).ready(function () {
     $("#spinner-topic-change").show();
     $("#country").empty();
     disableForm();
-    $.when(getCountries()).done(function () {
+    $.when(getAvailableCountries()).done(function () {
       $("#spinner-topic-change").hide();
+      enableForm();
     });
   });
 
