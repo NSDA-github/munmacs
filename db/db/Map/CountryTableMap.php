@@ -140,13 +140,20 @@ class CountryTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('RegistrantEvent', '\\db\\db\\RegistrantEvent', RelationMap::ONE_TO_MANY, array (
+        $this->addRelation('RegistrantEventRelatedByCountryId', '\\db\\db\\RegistrantEvent', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
     0 => ':country_id',
     1 => ':country_id',
   ),
-), null, null, 'RegistrantEvents', false);
+), null, null, 'RegistrantEventsRelatedByCountryId', false);
+        $this->addRelation('RegistrantEventRelatedByCountryDesired', '\\db\\db\\RegistrantEvent', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':country_desired',
+    1 => ':country_id',
+  ),
+), null, null, 'RegistrantEventsRelatedByCountryDesired', false);
         $this->addRelation('TopicCountry', '\\db\\db\\TopicCountry', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (

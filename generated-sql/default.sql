@@ -75,6 +75,7 @@ CREATE TABLE `registrant_event`
     `registrant_id` smallint(4) unsigned NOT NULL,
     `topic_id` tinyint(3) unsigned NOT NULL,
     `country_id` tinyint(3) unsigned NOT NULL,
+    `country_desired` tinyint(3) unsigned,
     `registration_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `approved` TINYINT(1) DEFAULT 0 NOT NULL,
     `approved_time` DATETIME,
@@ -83,6 +84,7 @@ CREATE TABLE `registrant_event`
     PRIMARY KEY (`registrant_id`),
     UNIQUE INDEX `topic_id` (`topic_id`, `country_id`),
     INDEX `country_id` (`country_id`),
+    INDEX `country_desired` (`country_desired`),
     CONSTRAINT `registrant_event_ibfk_1`
         FOREIGN KEY (`country_id`)
         REFERENCES `country` (`country_id`),
@@ -91,7 +93,10 @@ CREATE TABLE `registrant_event`
         REFERENCES `registrant` (`registrant_id`),
     CONSTRAINT `registrant_event_ibfk_3`
         FOREIGN KEY (`topic_id`)
-        REFERENCES `topic` (`topic_id`)
+        REFERENCES `topic` (`topic_id`),
+    CONSTRAINT `registrant_event_ibfk_4`
+        FOREIGN KEY (`country_desired`)
+        REFERENCES `country` (`country_id`)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
@@ -189,8 +194,10 @@ CREATE TABLE `topic_country`
     `topic_id` tinyint(3) unsigned NOT NULL,
     `country_id` tinyint(3) unsigned NOT NULL,
     `available` TINYINT(1) DEFAULT 1 NOT NULL,
+    `reserved` smallint(4) unsigned DEFAULT 0 NOT NULL,
     PRIMARY KEY (`topic_id`,`country_id`),
     INDEX `country_id` (`country_id`),
+    INDEX `reserved` (`reserved`),
     CONSTRAINT `topic_country_ibfk_1`
         FOREIGN KEY (`topic_id`)
         REFERENCES `topic` (`topic_id`),

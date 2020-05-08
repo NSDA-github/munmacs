@@ -59,7 +59,7 @@ class RegistrantEventTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 8;
+    const NUM_COLUMNS = 9;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class RegistrantEventTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 8;
+    const NUM_HYDRATE_COLUMNS = 9;
 
     /**
      * the column name for the registrant_id field
@@ -85,6 +85,11 @@ class RegistrantEventTableMap extends TableMap
      * the column name for the country_id field
      */
     const COL_COUNTRY_ID = 'registrant_event.country_id';
+
+    /**
+     * the column name for the country_desired field
+     */
+    const COL_COUNTRY_DESIRED = 'registrant_event.country_desired';
 
     /**
      * the column name for the registration_time field
@@ -123,11 +128,11 @@ class RegistrantEventTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('RegistrantId', 'TopicId', 'CountryId', 'RegistrationTime', 'Approved', 'ApprovedTime', 'Local', 'HasAttended', ),
-        self::TYPE_CAMELNAME     => array('registrantId', 'topicId', 'countryId', 'registrationTime', 'approved', 'approvedTime', 'local', 'hasAttended', ),
-        self::TYPE_COLNAME       => array(RegistrantEventTableMap::COL_REGISTRANT_ID, RegistrantEventTableMap::COL_TOPIC_ID, RegistrantEventTableMap::COL_COUNTRY_ID, RegistrantEventTableMap::COL_REGISTRATION_TIME, RegistrantEventTableMap::COL_APPROVED, RegistrantEventTableMap::COL_APPROVED_TIME, RegistrantEventTableMap::COL_LOCAL, RegistrantEventTableMap::COL_HAS_ATTENDED, ),
-        self::TYPE_FIELDNAME     => array('registrant_id', 'topic_id', 'country_id', 'registration_time', 'approved', 'approved_time', 'local', 'has_attended', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
+        self::TYPE_PHPNAME       => array('RegistrantId', 'TopicId', 'CountryId', 'CountryDesired', 'RegistrationTime', 'Approved', 'ApprovedTime', 'Local', 'HasAttended', ),
+        self::TYPE_CAMELNAME     => array('registrantId', 'topicId', 'countryId', 'countryDesired', 'registrationTime', 'approved', 'approvedTime', 'local', 'hasAttended', ),
+        self::TYPE_COLNAME       => array(RegistrantEventTableMap::COL_REGISTRANT_ID, RegistrantEventTableMap::COL_TOPIC_ID, RegistrantEventTableMap::COL_COUNTRY_ID, RegistrantEventTableMap::COL_COUNTRY_DESIRED, RegistrantEventTableMap::COL_REGISTRATION_TIME, RegistrantEventTableMap::COL_APPROVED, RegistrantEventTableMap::COL_APPROVED_TIME, RegistrantEventTableMap::COL_LOCAL, RegistrantEventTableMap::COL_HAS_ATTENDED, ),
+        self::TYPE_FIELDNAME     => array('registrant_id', 'topic_id', 'country_id', 'country_desired', 'registration_time', 'approved', 'approved_time', 'local', 'has_attended', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -137,11 +142,11 @@ class RegistrantEventTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('RegistrantId' => 0, 'TopicId' => 1, 'CountryId' => 2, 'RegistrationTime' => 3, 'Approved' => 4, 'ApprovedTime' => 5, 'Local' => 6, 'HasAttended' => 7, ),
-        self::TYPE_CAMELNAME     => array('registrantId' => 0, 'topicId' => 1, 'countryId' => 2, 'registrationTime' => 3, 'approved' => 4, 'approvedTime' => 5, 'local' => 6, 'hasAttended' => 7, ),
-        self::TYPE_COLNAME       => array(RegistrantEventTableMap::COL_REGISTRANT_ID => 0, RegistrantEventTableMap::COL_TOPIC_ID => 1, RegistrantEventTableMap::COL_COUNTRY_ID => 2, RegistrantEventTableMap::COL_REGISTRATION_TIME => 3, RegistrantEventTableMap::COL_APPROVED => 4, RegistrantEventTableMap::COL_APPROVED_TIME => 5, RegistrantEventTableMap::COL_LOCAL => 6, RegistrantEventTableMap::COL_HAS_ATTENDED => 7, ),
-        self::TYPE_FIELDNAME     => array('registrant_id' => 0, 'topic_id' => 1, 'country_id' => 2, 'registration_time' => 3, 'approved' => 4, 'approved_time' => 5, 'local' => 6, 'has_attended' => 7, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
+        self::TYPE_PHPNAME       => array('RegistrantId' => 0, 'TopicId' => 1, 'CountryId' => 2, 'CountryDesired' => 3, 'RegistrationTime' => 4, 'Approved' => 5, 'ApprovedTime' => 6, 'Local' => 7, 'HasAttended' => 8, ),
+        self::TYPE_CAMELNAME     => array('registrantId' => 0, 'topicId' => 1, 'countryId' => 2, 'countryDesired' => 3, 'registrationTime' => 4, 'approved' => 5, 'approvedTime' => 6, 'local' => 7, 'hasAttended' => 8, ),
+        self::TYPE_COLNAME       => array(RegistrantEventTableMap::COL_REGISTRANT_ID => 0, RegistrantEventTableMap::COL_TOPIC_ID => 1, RegistrantEventTableMap::COL_COUNTRY_ID => 2, RegistrantEventTableMap::COL_COUNTRY_DESIRED => 3, RegistrantEventTableMap::COL_REGISTRATION_TIME => 4, RegistrantEventTableMap::COL_APPROVED => 5, RegistrantEventTableMap::COL_APPROVED_TIME => 6, RegistrantEventTableMap::COL_LOCAL => 7, RegistrantEventTableMap::COL_HAS_ATTENDED => 8, ),
+        self::TYPE_FIELDNAME     => array('registrant_id' => 0, 'topic_id' => 1, 'country_id' => 2, 'country_desired' => 3, 'registration_time' => 4, 'approved' => 5, 'approved_time' => 6, 'local' => 7, 'has_attended' => 8, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -164,6 +169,7 @@ class RegistrantEventTableMap extends TableMap
         $this->addForeignPrimaryKey('registrant_id', 'RegistrantId', 'SMALLINT' , 'registrant', 'registrant_id', true, 4, null);
         $this->addForeignKey('topic_id', 'TopicId', 'TINYINT', 'topic', 'topic_id', true, 3, null);
         $this->addForeignKey('country_id', 'CountryId', 'TINYINT', 'country', 'country_id', true, 3, null);
+        $this->addForeignKey('country_desired', 'CountryDesired', 'TINYINT', 'country', 'country_id', false, 3, null);
         $this->addColumn('registration_time', 'RegistrationTime', 'TIMESTAMP', true, null, 'CURRENT_TIMESTAMP');
         $this->addColumn('approved', 'Approved', 'BOOLEAN', true, 1, false);
         $this->addColumn('approved_time', 'ApprovedTime', 'TIMESTAMP', false, null, null);
@@ -176,7 +182,7 @@ class RegistrantEventTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Country', '\\db\\db\\Country', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('CountryRelatedByCountryId', '\\db\\db\\Country', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':country_id',
@@ -195,6 +201,13 @@ class RegistrantEventTableMap extends TableMap
   array (
     0 => ':topic_id',
     1 => ':topic_id',
+  ),
+), null, null, null, false);
+        $this->addRelation('CountryRelatedByCountryDesired', '\\db\\db\\Country', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':country_desired',
+    1 => ':country_id',
   ),
 ), null, null, null, false);
     } // buildRelations()
@@ -343,6 +356,7 @@ class RegistrantEventTableMap extends TableMap
             $criteria->addSelectColumn(RegistrantEventTableMap::COL_REGISTRANT_ID);
             $criteria->addSelectColumn(RegistrantEventTableMap::COL_TOPIC_ID);
             $criteria->addSelectColumn(RegistrantEventTableMap::COL_COUNTRY_ID);
+            $criteria->addSelectColumn(RegistrantEventTableMap::COL_COUNTRY_DESIRED);
             $criteria->addSelectColumn(RegistrantEventTableMap::COL_REGISTRATION_TIME);
             $criteria->addSelectColumn(RegistrantEventTableMap::COL_APPROVED);
             $criteria->addSelectColumn(RegistrantEventTableMap::COL_APPROVED_TIME);
@@ -352,6 +366,7 @@ class RegistrantEventTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.registrant_id');
             $criteria->addSelectColumn($alias . '.topic_id');
             $criteria->addSelectColumn($alias . '.country_id');
+            $criteria->addSelectColumn($alias . '.country_desired');
             $criteria->addSelectColumn($alias . '.registration_time');
             $criteria->addSelectColumn($alias . '.approved');
             $criteria->addSelectColumn($alias . '.approved_time');

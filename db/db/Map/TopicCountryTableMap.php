@@ -59,7 +59,7 @@ class TopicCountryTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 3;
+    const NUM_COLUMNS = 4;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class TopicCountryTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 3;
+    const NUM_HYDRATE_COLUMNS = 4;
 
     /**
      * the column name for the topic_id field
@@ -87,6 +87,11 @@ class TopicCountryTableMap extends TableMap
     const COL_AVAILABLE = 'topic_country.available';
 
     /**
+     * the column name for the reserved field
+     */
+    const COL_RESERVED = 'topic_country.reserved';
+
+    /**
      * The default string format for model objects of the related table
      */
     const DEFAULT_STRING_FORMAT = 'YAML';
@@ -98,11 +103,11 @@ class TopicCountryTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('TopicId', 'CountryId', 'Available', ),
-        self::TYPE_CAMELNAME     => array('topicId', 'countryId', 'available', ),
-        self::TYPE_COLNAME       => array(TopicCountryTableMap::COL_TOPIC_ID, TopicCountryTableMap::COL_COUNTRY_ID, TopicCountryTableMap::COL_AVAILABLE, ),
-        self::TYPE_FIELDNAME     => array('topic_id', 'country_id', 'available', ),
-        self::TYPE_NUM           => array(0, 1, 2, )
+        self::TYPE_PHPNAME       => array('TopicId', 'CountryId', 'Available', 'Reserved', ),
+        self::TYPE_CAMELNAME     => array('topicId', 'countryId', 'available', 'reserved', ),
+        self::TYPE_COLNAME       => array(TopicCountryTableMap::COL_TOPIC_ID, TopicCountryTableMap::COL_COUNTRY_ID, TopicCountryTableMap::COL_AVAILABLE, TopicCountryTableMap::COL_RESERVED, ),
+        self::TYPE_FIELDNAME     => array('topic_id', 'country_id', 'available', 'reserved', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, )
     );
 
     /**
@@ -112,11 +117,11 @@ class TopicCountryTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('TopicId' => 0, 'CountryId' => 1, 'Available' => 2, ),
-        self::TYPE_CAMELNAME     => array('topicId' => 0, 'countryId' => 1, 'available' => 2, ),
-        self::TYPE_COLNAME       => array(TopicCountryTableMap::COL_TOPIC_ID => 0, TopicCountryTableMap::COL_COUNTRY_ID => 1, TopicCountryTableMap::COL_AVAILABLE => 2, ),
-        self::TYPE_FIELDNAME     => array('topic_id' => 0, 'country_id' => 1, 'available' => 2, ),
-        self::TYPE_NUM           => array(0, 1, 2, )
+        self::TYPE_PHPNAME       => array('TopicId' => 0, 'CountryId' => 1, 'Available' => 2, 'Reserved' => 3, ),
+        self::TYPE_CAMELNAME     => array('topicId' => 0, 'countryId' => 1, 'available' => 2, 'reserved' => 3, ),
+        self::TYPE_COLNAME       => array(TopicCountryTableMap::COL_TOPIC_ID => 0, TopicCountryTableMap::COL_COUNTRY_ID => 1, TopicCountryTableMap::COL_AVAILABLE => 2, TopicCountryTableMap::COL_RESERVED => 3, ),
+        self::TYPE_FIELDNAME     => array('topic_id' => 0, 'country_id' => 1, 'available' => 2, 'reserved' => 3, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, )
     );
 
     /**
@@ -139,6 +144,7 @@ class TopicCountryTableMap extends TableMap
         $this->addForeignPrimaryKey('topic_id', 'TopicId', 'TINYINT' , 'topic', 'topic_id', true, 3, null);
         $this->addForeignPrimaryKey('country_id', 'CountryId', 'TINYINT' , 'country', 'country_id', true, 3, null);
         $this->addColumn('available', 'Available', 'BOOLEAN', true, 1, true);
+        $this->addColumn('reserved', 'Reserved', 'SMALLINT', true, 4, 0);
     } // initialize()
 
     /**
@@ -368,10 +374,12 @@ class TopicCountryTableMap extends TableMap
             $criteria->addSelectColumn(TopicCountryTableMap::COL_TOPIC_ID);
             $criteria->addSelectColumn(TopicCountryTableMap::COL_COUNTRY_ID);
             $criteria->addSelectColumn(TopicCountryTableMap::COL_AVAILABLE);
+            $criteria->addSelectColumn(TopicCountryTableMap::COL_RESERVED);
         } else {
             $criteria->addSelectColumn($alias . '.topic_id');
             $criteria->addSelectColumn($alias . '.country_id');
             $criteria->addSelectColumn($alias . '.available');
+            $criteria->addSelectColumn($alias . '.reserved');
         }
     }
 

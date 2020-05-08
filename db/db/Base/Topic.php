@@ -1502,10 +1502,10 @@ abstract class Topic implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildRegistrantEvent[] List of ChildRegistrantEvent objects
      */
-    public function getRegistrantEventsJoinCountry(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getRegistrantEventsJoinCountryRelatedByCountryId(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildRegistrantEventQuery::create(null, $criteria);
-        $query->joinWith('Country', $joinBehavior);
+        $query->joinWith('CountryRelatedByCountryId', $joinBehavior);
 
         return $this->getRegistrantEvents($query, $con);
     }
@@ -1531,6 +1531,31 @@ abstract class Topic implements ActiveRecordInterface
     {
         $query = ChildRegistrantEventQuery::create(null, $criteria);
         $query->joinWith('Registrant', $joinBehavior);
+
+        return $this->getRegistrantEvents($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Topic is new, it will return
+     * an empty collection; or if this Topic has previously
+     * been saved, it will retrieve related RegistrantEvents from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Topic.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildRegistrantEvent[] List of ChildRegistrantEvent objects
+     */
+    public function getRegistrantEventsJoinCountryRelatedByCountryDesired(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildRegistrantEventQuery::create(null, $criteria);
+        $query->joinWith('CountryRelatedByCountryDesired', $joinBehavior);
 
         return $this->getRegistrantEvents($query, $con);
     }

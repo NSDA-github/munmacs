@@ -34,15 +34,25 @@ use db\db\Map\CountryTableMap;
  * @method     ChildCountryQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
  * @method     ChildCountryQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
  *
- * @method     ChildCountryQuery leftJoinRegistrantEvent($relationAlias = null) Adds a LEFT JOIN clause to the query using the RegistrantEvent relation
- * @method     ChildCountryQuery rightJoinRegistrantEvent($relationAlias = null) Adds a RIGHT JOIN clause to the query using the RegistrantEvent relation
- * @method     ChildCountryQuery innerJoinRegistrantEvent($relationAlias = null) Adds a INNER JOIN clause to the query using the RegistrantEvent relation
+ * @method     ChildCountryQuery leftJoinRegistrantEventRelatedByCountryId($relationAlias = null) Adds a LEFT JOIN clause to the query using the RegistrantEventRelatedByCountryId relation
+ * @method     ChildCountryQuery rightJoinRegistrantEventRelatedByCountryId($relationAlias = null) Adds a RIGHT JOIN clause to the query using the RegistrantEventRelatedByCountryId relation
+ * @method     ChildCountryQuery innerJoinRegistrantEventRelatedByCountryId($relationAlias = null) Adds a INNER JOIN clause to the query using the RegistrantEventRelatedByCountryId relation
  *
- * @method     ChildCountryQuery joinWithRegistrantEvent($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the RegistrantEvent relation
+ * @method     ChildCountryQuery joinWithRegistrantEventRelatedByCountryId($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the RegistrantEventRelatedByCountryId relation
  *
- * @method     ChildCountryQuery leftJoinWithRegistrantEvent() Adds a LEFT JOIN clause and with to the query using the RegistrantEvent relation
- * @method     ChildCountryQuery rightJoinWithRegistrantEvent() Adds a RIGHT JOIN clause and with to the query using the RegistrantEvent relation
- * @method     ChildCountryQuery innerJoinWithRegistrantEvent() Adds a INNER JOIN clause and with to the query using the RegistrantEvent relation
+ * @method     ChildCountryQuery leftJoinWithRegistrantEventRelatedByCountryId() Adds a LEFT JOIN clause and with to the query using the RegistrantEventRelatedByCountryId relation
+ * @method     ChildCountryQuery rightJoinWithRegistrantEventRelatedByCountryId() Adds a RIGHT JOIN clause and with to the query using the RegistrantEventRelatedByCountryId relation
+ * @method     ChildCountryQuery innerJoinWithRegistrantEventRelatedByCountryId() Adds a INNER JOIN clause and with to the query using the RegistrantEventRelatedByCountryId relation
+ *
+ * @method     ChildCountryQuery leftJoinRegistrantEventRelatedByCountryDesired($relationAlias = null) Adds a LEFT JOIN clause to the query using the RegistrantEventRelatedByCountryDesired relation
+ * @method     ChildCountryQuery rightJoinRegistrantEventRelatedByCountryDesired($relationAlias = null) Adds a RIGHT JOIN clause to the query using the RegistrantEventRelatedByCountryDesired relation
+ * @method     ChildCountryQuery innerJoinRegistrantEventRelatedByCountryDesired($relationAlias = null) Adds a INNER JOIN clause to the query using the RegistrantEventRelatedByCountryDesired relation
+ *
+ * @method     ChildCountryQuery joinWithRegistrantEventRelatedByCountryDesired($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the RegistrantEventRelatedByCountryDesired relation
+ *
+ * @method     ChildCountryQuery leftJoinWithRegistrantEventRelatedByCountryDesired() Adds a LEFT JOIN clause and with to the query using the RegistrantEventRelatedByCountryDesired relation
+ * @method     ChildCountryQuery rightJoinWithRegistrantEventRelatedByCountryDesired() Adds a RIGHT JOIN clause and with to the query using the RegistrantEventRelatedByCountryDesired relation
+ * @method     ChildCountryQuery innerJoinWithRegistrantEventRelatedByCountryDesired() Adds a INNER JOIN clause and with to the query using the RegistrantEventRelatedByCountryDesired relation
  *
  * @method     ChildCountryQuery leftJoinTopicCountry($relationAlias = null) Adds a LEFT JOIN clause to the query using the TopicCountry relation
  * @method     ChildCountryQuery rightJoinTopicCountry($relationAlias = null) Adds a RIGHT JOIN clause to the query using the TopicCountry relation
@@ -333,33 +343,33 @@ abstract class CountryQuery extends ModelCriteria
      *
      * @return ChildCountryQuery The current query, for fluid interface
      */
-    public function filterByRegistrantEvent($registrantEvent, $comparison = null)
+    public function filterByRegistrantEventRelatedByCountryId($registrantEvent, $comparison = null)
     {
         if ($registrantEvent instanceof \db\db\RegistrantEvent) {
             return $this
                 ->addUsingAlias(CountryTableMap::COL_COUNTRY_ID, $registrantEvent->getCountryId(), $comparison);
         } elseif ($registrantEvent instanceof ObjectCollection) {
             return $this
-                ->useRegistrantEventQuery()
+                ->useRegistrantEventRelatedByCountryIdQuery()
                 ->filterByPrimaryKeys($registrantEvent->getPrimaryKeys())
                 ->endUse();
         } else {
-            throw new PropelException('filterByRegistrantEvent() only accepts arguments of type \db\db\RegistrantEvent or Collection');
+            throw new PropelException('filterByRegistrantEventRelatedByCountryId() only accepts arguments of type \db\db\RegistrantEvent or Collection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the RegistrantEvent relation
+     * Adds a JOIN clause to the query using the RegistrantEventRelatedByCountryId relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return $this|ChildCountryQuery The current query, for fluid interface
      */
-    public function joinRegistrantEvent($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function joinRegistrantEventRelatedByCountryId($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('RegistrantEvent');
+        $relationMap = $tableMap->getRelation('RegistrantEventRelatedByCountryId');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -374,14 +384,14 @@ abstract class CountryQuery extends ModelCriteria
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'RegistrantEvent');
+            $this->addJoinObject($join, 'RegistrantEventRelatedByCountryId');
         }
 
         return $this;
     }
 
     /**
-     * Use the RegistrantEvent relation RegistrantEvent object
+     * Use the RegistrantEventRelatedByCountryId relation RegistrantEvent object
      *
      * @see useQuery()
      *
@@ -391,11 +401,84 @@ abstract class CountryQuery extends ModelCriteria
      *
      * @return \db\db\RegistrantEventQuery A secondary query class using the current class as primary query
      */
-    public function useRegistrantEventQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function useRegistrantEventRelatedByCountryIdQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
-            ->joinRegistrantEvent($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'RegistrantEvent', '\db\db\RegistrantEventQuery');
+            ->joinRegistrantEventRelatedByCountryId($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'RegistrantEventRelatedByCountryId', '\db\db\RegistrantEventQuery');
+    }
+
+    /**
+     * Filter the query by a related \db\db\RegistrantEvent object
+     *
+     * @param \db\db\RegistrantEvent|ObjectCollection $registrantEvent the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildCountryQuery The current query, for fluid interface
+     */
+    public function filterByRegistrantEventRelatedByCountryDesired($registrantEvent, $comparison = null)
+    {
+        if ($registrantEvent instanceof \db\db\RegistrantEvent) {
+            return $this
+                ->addUsingAlias(CountryTableMap::COL_COUNTRY_ID, $registrantEvent->getCountryDesired(), $comparison);
+        } elseif ($registrantEvent instanceof ObjectCollection) {
+            return $this
+                ->useRegistrantEventRelatedByCountryDesiredQuery()
+                ->filterByPrimaryKeys($registrantEvent->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByRegistrantEventRelatedByCountryDesired() only accepts arguments of type \db\db\RegistrantEvent or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the RegistrantEventRelatedByCountryDesired relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildCountryQuery The current query, for fluid interface
+     */
+    public function joinRegistrantEventRelatedByCountryDesired($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('RegistrantEventRelatedByCountryDesired');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'RegistrantEventRelatedByCountryDesired');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the RegistrantEventRelatedByCountryDesired relation RegistrantEvent object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \db\db\RegistrantEventQuery A secondary query class using the current class as primary query
+     */
+    public function useRegistrantEventRelatedByCountryDesiredQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinRegistrantEventRelatedByCountryDesired($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'RegistrantEventRelatedByCountryDesired', '\db\db\RegistrantEventQuery');
     }
 
     /**

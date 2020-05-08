@@ -23,10 +23,12 @@ use db\db\Map\TopicCountryTableMap;
  * @method     ChildTopicCountryQuery orderByTopicId($order = Criteria::ASC) Order by the topic_id column
  * @method     ChildTopicCountryQuery orderByCountryId($order = Criteria::ASC) Order by the country_id column
  * @method     ChildTopicCountryQuery orderByAvailable($order = Criteria::ASC) Order by the available column
+ * @method     ChildTopicCountryQuery orderByReserved($order = Criteria::ASC) Order by the reserved column
  *
  * @method     ChildTopicCountryQuery groupByTopicId() Group by the topic_id column
  * @method     ChildTopicCountryQuery groupByCountryId() Group by the country_id column
  * @method     ChildTopicCountryQuery groupByAvailable() Group by the available column
+ * @method     ChildTopicCountryQuery groupByReserved() Group by the reserved column
  *
  * @method     ChildTopicCountryQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildTopicCountryQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -63,7 +65,8 @@ use db\db\Map\TopicCountryTableMap;
  *
  * @method     ChildTopicCountry findOneByTopicId(int $topic_id) Return the first ChildTopicCountry filtered by the topic_id column
  * @method     ChildTopicCountry findOneByCountryId(int $country_id) Return the first ChildTopicCountry filtered by the country_id column
- * @method     ChildTopicCountry findOneByAvailable(boolean $available) Return the first ChildTopicCountry filtered by the available column *
+ * @method     ChildTopicCountry findOneByAvailable(boolean $available) Return the first ChildTopicCountry filtered by the available column
+ * @method     ChildTopicCountry findOneByReserved(int $reserved) Return the first ChildTopicCountry filtered by the reserved column *
 
  * @method     ChildTopicCountry requirePk($key, ConnectionInterface $con = null) Return the ChildTopicCountry by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTopicCountry requireOne(ConnectionInterface $con = null) Return the first ChildTopicCountry matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -71,11 +74,13 @@ use db\db\Map\TopicCountryTableMap;
  * @method     ChildTopicCountry requireOneByTopicId(int $topic_id) Return the first ChildTopicCountry filtered by the topic_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTopicCountry requireOneByCountryId(int $country_id) Return the first ChildTopicCountry filtered by the country_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTopicCountry requireOneByAvailable(boolean $available) Return the first ChildTopicCountry filtered by the available column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildTopicCountry requireOneByReserved(int $reserved) Return the first ChildTopicCountry filtered by the reserved column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildTopicCountry[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildTopicCountry objects based on current ModelCriteria
  * @method     ChildTopicCountry[]|ObjectCollection findByTopicId(int $topic_id) Return ChildTopicCountry objects filtered by the topic_id column
  * @method     ChildTopicCountry[]|ObjectCollection findByCountryId(int $country_id) Return ChildTopicCountry objects filtered by the country_id column
  * @method     ChildTopicCountry[]|ObjectCollection findByAvailable(boolean $available) Return ChildTopicCountry objects filtered by the available column
+ * @method     ChildTopicCountry[]|ObjectCollection findByReserved(int $reserved) Return ChildTopicCountry objects filtered by the reserved column
  * @method     ChildTopicCountry[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -174,7 +179,7 @@ abstract class TopicCountryQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT topic_id, country_id, available FROM topic_country WHERE topic_id = :p0 AND country_id = :p1';
+        $sql = 'SELECT topic_id, country_id, available, reserved FROM topic_country WHERE topic_id = :p0 AND country_id = :p1';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
@@ -387,6 +392,47 @@ abstract class TopicCountryQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(TopicCountryTableMap::COL_AVAILABLE, $available, $comparison);
+    }
+
+    /**
+     * Filter the query on the reserved column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByReserved(1234); // WHERE reserved = 1234
+     * $query->filterByReserved(array(12, 34)); // WHERE reserved IN (12, 34)
+     * $query->filterByReserved(array('min' => 12)); // WHERE reserved > 12
+     * </code>
+     *
+     * @param     mixed $reserved The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildTopicCountryQuery The current query, for fluid interface
+     */
+    public function filterByReserved($reserved = null, $comparison = null)
+    {
+        if (is_array($reserved)) {
+            $useMinMax = false;
+            if (isset($reserved['min'])) {
+                $this->addUsingAlias(TopicCountryTableMap::COL_RESERVED, $reserved['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($reserved['max'])) {
+                $this->addUsingAlias(TopicCountryTableMap::COL_RESERVED, $reserved['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(TopicCountryTableMap::COL_RESERVED, $reserved, $comparison);
     }
 
     /**

@@ -83,12 +83,15 @@ class Server
     $dbcountries = db\db\CountryQuery::create();
     $dbtopiccountries = db\db\TopicCountryQuery::create()->find();
     $con = Propel::getWriteConnection(db\db\Map\TopicCountryTableMap::DATABASE_NAME);
-    $sql = "SELECT topic_country.country_id, (SELECT country_name FROM country WHERE country_id = topic_country.country_id) FROM topic_country WHERE topic_id = ? AND available = 1 AND reserved <= ?;";
+    if ($reserved == 0)
+      $sql = "SELECT topic_country.country_id, (SELECT country_name FROM country WHERE country_id = topic_country.country_id) FROM topic_country WHERE topic_id = ? AND available = 1 AND reserved = 0;";
+    else
+      $sql = "SELECT topic_country.country_id, (SELECT country_name FROM country WHERE country_id = topic_country.country_id) FROM topic_country WHERE topic_id = ? AND available = 1 AND reserved > 0 AND reserved < 4;";
     $stmt = $con->prepare($sql);
-    $stmt->execute(array($topic, $reserved));
+    $stmt->execute(array($topic));
     $dbtopiccountries = $stmt->fetchAll();
     foreach ($dbtopiccountries as $dbtopiccountry) {
-      array_push($countries, [$dbtopiccountry[0], $dbtopiccountry[1]]);
+      array_push($countries, [$dbtopiccountry[0], $reserved == 0 ? $dbtopiccountry[1] : $dbtopiccountry[1] . " (" . $dbtopiccountry["reserved"] . " people reserved)"]);
     }
     return $countries;
   }
@@ -107,7 +110,9 @@ class Server
     $validator->validate("major", $request->subject)->regex("/^(([,.'`\"\-\p{L}])+[ ]?)*$/")->len(0, 40);
     $validator->validate("topic", $request->topic)->regex("/^[0-9]*$/")->len(1, 3);
     $validator->validate("country", $request->country)->regex("/^[0-9]*$/")->len(1, 3);
+    $validator->validate("desiredcountry", $request->desiredcountry)->regex("/^[0-9]*$/")->len(1, 3);
     $validator->validate("phone", $request->phone)->regex("/^([\+][0-9]{11})$/");
+    $validator->validate("discord", $request->discord)->regex("/^.*#[0-9]{4}$/")->len(1, 3);
     return $validator;
   }
 
@@ -128,13 +133,24 @@ class Server
     $dbRegistrants->setPhone($request->phone);
     $dbRegistrants->setInstitution($request->institution);
 
-    $dbTopicCountry = $dbTopicCountryQ->filterByTopicId($request->topic)->filterByCountryId($request->country)->filterByAvailable(1)->findOne();
+    $dbTopicCountry = $dbTopicCountryQ->filterByTopicId($request->topic)->filterByCountryId($request->country)->filterByAvailable(1)->filterByReserved(0)->findOne();
     if (!!$dbTopicCountry) {
-      $dbTopicCountry->setAvailable(0);
+      $dbTopicCountry->setReserved(1);
     } else {
-      $this->error = "Selected country is no longer availbale";
+      $this->error = "Selected safe country is no longer availbale";
       $this->errorCode = 400;
       return false;
+    }
+    if ($request->desiredcountry != "") {
+      $dbTopicCountry = $dbTopicCountryQ->filterByTopicId($request->topic)->filterByCountryId($request->desiredcountry)->filterByAvailable(1)->findOne();
+      if (!!$dbTopicCountry) {
+        $dbTopicCountry->setReserved($dbTopicCountry->getReserved() + 1);
+      } else {
+        $this->error = "Selected desired country is no longer availbale";
+        $this->errorCode = 400;
+        return false;
+      }
+      $dbRegistrantEvent->setCountryDesired($request->desiredcountry);
     }
 
     $dbRegistrantEvent->setRegistrant($dbRegistrants)->setTopicId($request->topic)->setCountryId($request->country);

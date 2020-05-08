@@ -86,6 +86,14 @@ abstract class TopicCountry implements ActiveRecordInterface
     protected $available;
 
     /**
+     * The value for the reserved field.
+     *
+     * Note: this column has a database default value of: 0
+     * @var        int
+     */
+    protected $reserved;
+
+    /**
      * @var        ChildTopic
      */
     protected $aTopic;
@@ -112,6 +120,7 @@ abstract class TopicCountry implements ActiveRecordInterface
     public function applyDefaultValues()
     {
         $this->available = true;
+        $this->reserved = 0;
     }
 
     /**
@@ -382,6 +391,16 @@ abstract class TopicCountry implements ActiveRecordInterface
     }
 
     /**
+     * Get the [reserved] column value.
+     *
+     * @return int
+     */
+    public function getReserved()
+    {
+        return $this->reserved;
+    }
+
+    /**
      * Set the value of [topic_id] column.
      *
      * @param int $v new value
@@ -458,6 +477,26 @@ abstract class TopicCountry implements ActiveRecordInterface
     } // setAvailable()
 
     /**
+     * Set the value of [reserved] column.
+     *
+     * @param int $v new value
+     * @return $this|\db\db\TopicCountry The current object (for fluent API support)
+     */
+    public function setReserved($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->reserved !== $v) {
+            $this->reserved = $v;
+            $this->modifiedColumns[TopicCountryTableMap::COL_RESERVED] = true;
+        }
+
+        return $this;
+    } // setReserved()
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -468,6 +507,10 @@ abstract class TopicCountry implements ActiveRecordInterface
     public function hasOnlyDefaultValues()
     {
             if ($this->available !== true) {
+                return false;
+            }
+
+            if ($this->reserved !== 0) {
                 return false;
             }
 
@@ -505,6 +548,9 @@ abstract class TopicCountry implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : TopicCountryTableMap::translateFieldName('Available', TableMap::TYPE_PHPNAME, $indexType)];
             $this->available = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : TopicCountryTableMap::translateFieldName('Reserved', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->reserved = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -513,7 +559,7 @@ abstract class TopicCountry implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 3; // 3 = TopicCountryTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 4; // 4 = TopicCountryTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\db\\db\\TopicCountry'), 0, $e);
@@ -746,6 +792,9 @@ abstract class TopicCountry implements ActiveRecordInterface
         if ($this->isColumnModified(TopicCountryTableMap::COL_AVAILABLE)) {
             $modifiedColumns[':p' . $index++]  = 'available';
         }
+        if ($this->isColumnModified(TopicCountryTableMap::COL_RESERVED)) {
+            $modifiedColumns[':p' . $index++]  = 'reserved';
+        }
 
         $sql = sprintf(
             'INSERT INTO topic_country (%s) VALUES (%s)',
@@ -765,6 +814,9 @@ abstract class TopicCountry implements ActiveRecordInterface
                         break;
                     case 'available':
                         $stmt->bindValue($identifier, (int) $this->available, PDO::PARAM_INT);
+                        break;
+                    case 'reserved':
+                        $stmt->bindValue($identifier, $this->reserved, PDO::PARAM_INT);
                         break;
                 }
             }
@@ -830,6 +882,9 @@ abstract class TopicCountry implements ActiveRecordInterface
             case 2:
                 return $this->getAvailable();
                 break;
+            case 3:
+                return $this->getReserved();
+                break;
             default:
                 return null;
                 break;
@@ -863,6 +918,7 @@ abstract class TopicCountry implements ActiveRecordInterface
             $keys[0] => $this->getTopicId(),
             $keys[1] => $this->getCountryId(),
             $keys[2] => $this->getAvailable(),
+            $keys[3] => $this->getReserved(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -943,6 +999,9 @@ abstract class TopicCountry implements ActiveRecordInterface
             case 2:
                 $this->setAvailable($value);
                 break;
+            case 3:
+                $this->setReserved($value);
+                break;
         } // switch()
 
         return $this;
@@ -977,6 +1036,9 @@ abstract class TopicCountry implements ActiveRecordInterface
         }
         if (array_key_exists($keys[2], $arr)) {
             $this->setAvailable($arr[$keys[2]]);
+        }
+        if (array_key_exists($keys[3], $arr)) {
+            $this->setReserved($arr[$keys[3]]);
         }
     }
 
@@ -1027,6 +1089,9 @@ abstract class TopicCountry implements ActiveRecordInterface
         }
         if ($this->isColumnModified(TopicCountryTableMap::COL_AVAILABLE)) {
             $criteria->add(TopicCountryTableMap::COL_AVAILABLE, $this->available);
+        }
+        if ($this->isColumnModified(TopicCountryTableMap::COL_RESERVED)) {
+            $criteria->add(TopicCountryTableMap::COL_RESERVED, $this->reserved);
         }
 
         return $criteria;
@@ -1139,6 +1204,7 @@ abstract class TopicCountry implements ActiveRecordInterface
         $copyObj->setTopicId($this->getTopicId());
         $copyObj->setCountryId($this->getCountryId());
         $copyObj->setAvailable($this->getAvailable());
+        $copyObj->setReserved($this->getReserved());
         if ($makeNew) {
             $copyObj->setNew(true);
         }
@@ -1284,6 +1350,7 @@ abstract class TopicCountry implements ActiveRecordInterface
         $this->topic_id = null;
         $this->country_id = null;
         $this->available = null;
+        $this->reserved = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->applyDefaultValues();

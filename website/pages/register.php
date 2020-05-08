@@ -115,14 +115,14 @@
             <select name="topic" class="custom-select" id="topic"> </select>
           </div>
           <div class="form-group col-md-6">
-            <label for="desiredcountry">Desired Country</label>
-            <select name="desiredcountry" class="form-control" id="desiredcountry">
+            <label for="country">Country (Safe Option)</label>
+            <select name="country" class="form-control" id="country">
             </select>
           </div>
           <div class="form-group col-md-6">
-            <label for="country">Country (Safe Option)</label>
-            <p><small>If desired country will not be available, you will be assigned to this country 100%</small></p>
-            <select name="country" class="form-control" id="country">
+            <label for="desiredcountry">Desired Country</label>
+            <p><small>You will be assigned to this country if it becomes available</small></p>
+            <select name="desiredcountry" class="form-control" id="desiredcountry">
             </select>
           </div>
           <div style="width: 100%; padding: 0.5rem;">

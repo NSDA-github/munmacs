@@ -44,13 +44,23 @@ function getAvailableCountries(reserved = 0) {
     dataType: "json",
     success: function (data) {
       if (data.success) {
-        $("#country").empty();
-        data.countries.map(function (country) {
-          $("#country").append(
-            `<option value=${country[0]}>${country[1]}</option>`
-          );
-        });
-        $("#country").selectpicker("refresh");
+        if (reserved == 0) {
+          $("#country").empty();
+          data.countries.map(function (country) {
+            $("#country").append(
+              `<option value=${country[0]}>${country[1]}</option>`
+            );
+          });
+          $("#country").selectpicker("refresh");
+        } else {
+          $("#desiredcountry").empty();
+          data.countries.map(function (country) {
+            $("#desiredcountry").append(
+              `<option value=${country[0]}>${country[1]}</option>`
+            );
+          });
+          $("#desiredcountry").selectpicker("refresh");
+        }
       } else {
         reportError(data);
       }
@@ -65,6 +75,11 @@ $(document).ready(function () {
   var enteredPersonalInfo = false;
   var selectedTopic = "";
   $("#country").selectpicker({
+    liveSearch: true,
+    dropupAuto: false,
+    size: 6,
+  });
+  $("#desiredcountry").selectpicker({
     liveSearch: true,
     dropupAuto: false,
     size: 6,
@@ -201,10 +216,27 @@ $(document).ready(function () {
   disableForm();
   $.when(getTopics())
     .done(function () {
-      $.when(getAvailableCountries()).done(function () {
-        if ($("#country").children().length == 0) tooltipAlert();
-        else enableForm();
-      });
+      $.when(getAvailableCountries())
+        .done(function () {
+          if ($("#country").children().length == 0) tooltipAlert();
+          else
+            $.when(getAvailableCountries(1))
+              .done(function () {
+                if ($("#desiredcountry").children().length == 0) {
+                  $("#desiredcountry").append(
+                    `<option value="">No Reserved Countries are Available</option>`
+                  );
+                  $("#desiredcountry").selectpicker("refresh");
+                }
+                enableForm();
+              })
+              .fail(function () {
+                tooltipAlert();
+              });
+        })
+        .fail(function () {
+          tooltipAlert();
+        });
     })
     .fail(function () {
       tooltipAlert();
@@ -215,10 +247,26 @@ $(document).ready(function () {
     $("#spinner-topic-change").show();
     $("#country").empty();
     disableForm();
-    $.when(getAvailableCountries()).done(function () {
-      $("#spinner-topic-change").hide();
-      enableForm();
-    });
+    $.when(getAvailableCountries())
+      .done(function () {
+        $.when(getAvailableCountries(1))
+          .done(function () {
+            if ($("#desiredcountry").children().length == 0) {
+              $("#desiredcountry").append(
+                `<option value="">No Reserved Countries are Available</option>`
+              );
+              $("#desiredcountry").selectpicker("refresh");
+            }
+            $("#spinner-topic-change").hide();
+            enableForm();
+          })
+          .fail(function () {
+            tooltipAlert();
+          });
+      })
+      .fail(function () {
+        tooltipAlert();
+      });
   });
 
   // Extra functions and form submit

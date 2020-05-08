@@ -89,6 +89,13 @@ abstract class RegistrantEvent implements ActiveRecordInterface
     protected $country_id;
 
     /**
+     * The value for the country_desired field.
+     *
+     * @var        int
+     */
+    protected $country_desired;
+
+    /**
      * The value for the registration_time field.
      *
      * Note: this column has a database default value of: (expression) CURRENT_TIMESTAMP
@@ -128,7 +135,7 @@ abstract class RegistrantEvent implements ActiveRecordInterface
     /**
      * @var        ChildCountry
      */
-    protected $aCountry;
+    protected $aCountryRelatedByCountryId;
 
     /**
      * @var        ChildRegistrant
@@ -139,6 +146,11 @@ abstract class RegistrantEvent implements ActiveRecordInterface
      * @var        ChildTopic
      */
     protected $aTopic;
+
+    /**
+     * @var        ChildCountry
+     */
+    protected $aCountryRelatedByCountryDesired;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -417,6 +429,16 @@ abstract class RegistrantEvent implements ActiveRecordInterface
     }
 
     /**
+     * Get the [country_desired] column value.
+     *
+     * @return int
+     */
+    public function getCountryDesired()
+    {
+        return $this->country_desired;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [registration_time] column value.
      *
      *
@@ -581,12 +603,36 @@ abstract class RegistrantEvent implements ActiveRecordInterface
             $this->modifiedColumns[RegistrantEventTableMap::COL_COUNTRY_ID] = true;
         }
 
-        if ($this->aCountry !== null && $this->aCountry->getCountryId() !== $v) {
-            $this->aCountry = null;
+        if ($this->aCountryRelatedByCountryId !== null && $this->aCountryRelatedByCountryId->getCountryId() !== $v) {
+            $this->aCountryRelatedByCountryId = null;
         }
 
         return $this;
     } // setCountryId()
+
+    /**
+     * Set the value of [country_desired] column.
+     *
+     * @param int $v new value
+     * @return $this|\db\db\RegistrantEvent The current object (for fluent API support)
+     */
+    public function setCountryDesired($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->country_desired !== $v) {
+            $this->country_desired = $v;
+            $this->modifiedColumns[RegistrantEventTableMap::COL_COUNTRY_DESIRED] = true;
+        }
+
+        if ($this->aCountryRelatedByCountryDesired !== null && $this->aCountryRelatedByCountryDesired->getCountryId() !== $v) {
+            $this->aCountryRelatedByCountryDesired = null;
+        }
+
+        return $this;
+    } // setCountryDesired()
 
     /**
      * Sets the value of [registration_time] column to a normalized version of the date/time value specified.
@@ -761,25 +807,28 @@ abstract class RegistrantEvent implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : RegistrantEventTableMap::translateFieldName('CountryId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->country_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : RegistrantEventTableMap::translateFieldName('RegistrationTime', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : RegistrantEventTableMap::translateFieldName('CountryDesired', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->country_desired = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : RegistrantEventTableMap::translateFieldName('RegistrationTime', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->registration_time = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : RegistrantEventTableMap::translateFieldName('Approved', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : RegistrantEventTableMap::translateFieldName('Approved', TableMap::TYPE_PHPNAME, $indexType)];
             $this->approved = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : RegistrantEventTableMap::translateFieldName('ApprovedTime', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : RegistrantEventTableMap::translateFieldName('ApprovedTime', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->approved_time = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : RegistrantEventTableMap::translateFieldName('Local', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : RegistrantEventTableMap::translateFieldName('Local', TableMap::TYPE_PHPNAME, $indexType)];
             $this->local = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : RegistrantEventTableMap::translateFieldName('HasAttended', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : RegistrantEventTableMap::translateFieldName('HasAttended', TableMap::TYPE_PHPNAME, $indexType)];
             $this->has_attended = (null !== $col) ? (boolean) $col : null;
             $this->resetModified();
 
@@ -789,7 +838,7 @@ abstract class RegistrantEvent implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 8; // 8 = RegistrantEventTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 9; // 9 = RegistrantEventTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\db\\db\\RegistrantEvent'), 0, $e);
@@ -817,8 +866,11 @@ abstract class RegistrantEvent implements ActiveRecordInterface
         if ($this->aTopic !== null && $this->topic_id !== $this->aTopic->getTopicId()) {
             $this->aTopic = null;
         }
-        if ($this->aCountry !== null && $this->country_id !== $this->aCountry->getCountryId()) {
-            $this->aCountry = null;
+        if ($this->aCountryRelatedByCountryId !== null && $this->country_id !== $this->aCountryRelatedByCountryId->getCountryId()) {
+            $this->aCountryRelatedByCountryId = null;
+        }
+        if ($this->aCountryRelatedByCountryDesired !== null && $this->country_desired !== $this->aCountryRelatedByCountryDesired->getCountryId()) {
+            $this->aCountryRelatedByCountryDesired = null;
         }
     } // ensureConsistency
 
@@ -859,9 +911,10 @@ abstract class RegistrantEvent implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aCountry = null;
+            $this->aCountryRelatedByCountryId = null;
             $this->aRegistrant = null;
             $this->aTopic = null;
+            $this->aCountryRelatedByCountryDesired = null;
         } // if (deep)
     }
 
@@ -970,11 +1023,11 @@ abstract class RegistrantEvent implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aCountry !== null) {
-                if ($this->aCountry->isModified() || $this->aCountry->isNew()) {
-                    $affectedRows += $this->aCountry->save($con);
+            if ($this->aCountryRelatedByCountryId !== null) {
+                if ($this->aCountryRelatedByCountryId->isModified() || $this->aCountryRelatedByCountryId->isNew()) {
+                    $affectedRows += $this->aCountryRelatedByCountryId->save($con);
                 }
-                $this->setCountry($this->aCountry);
+                $this->setCountryRelatedByCountryId($this->aCountryRelatedByCountryId);
             }
 
             if ($this->aRegistrant !== null) {
@@ -989,6 +1042,13 @@ abstract class RegistrantEvent implements ActiveRecordInterface
                     $affectedRows += $this->aTopic->save($con);
                 }
                 $this->setTopic($this->aTopic);
+            }
+
+            if ($this->aCountryRelatedByCountryDesired !== null) {
+                if ($this->aCountryRelatedByCountryDesired->isModified() || $this->aCountryRelatedByCountryDesired->isNew()) {
+                    $affectedRows += $this->aCountryRelatedByCountryDesired->save($con);
+                }
+                $this->setCountryRelatedByCountryDesired($this->aCountryRelatedByCountryDesired);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -1033,6 +1093,9 @@ abstract class RegistrantEvent implements ActiveRecordInterface
         if ($this->isColumnModified(RegistrantEventTableMap::COL_COUNTRY_ID)) {
             $modifiedColumns[':p' . $index++]  = 'country_id';
         }
+        if ($this->isColumnModified(RegistrantEventTableMap::COL_COUNTRY_DESIRED)) {
+            $modifiedColumns[':p' . $index++]  = 'country_desired';
+        }
         if ($this->isColumnModified(RegistrantEventTableMap::COL_REGISTRATION_TIME)) {
             $modifiedColumns[':p' . $index++]  = 'registration_time';
         }
@@ -1067,6 +1130,9 @@ abstract class RegistrantEvent implements ActiveRecordInterface
                         break;
                     case 'country_id':
                         $stmt->bindValue($identifier, $this->country_id, PDO::PARAM_INT);
+                        break;
+                    case 'country_desired':
+                        $stmt->bindValue($identifier, $this->country_desired, PDO::PARAM_INT);
                         break;
                     case 'registration_time':
                         $stmt->bindValue($identifier, $this->registration_time ? $this->registration_time->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
@@ -1148,18 +1214,21 @@ abstract class RegistrantEvent implements ActiveRecordInterface
                 return $this->getCountryId();
                 break;
             case 3:
-                return $this->getRegistrationTime();
+                return $this->getCountryDesired();
                 break;
             case 4:
-                return $this->getApproved();
+                return $this->getRegistrationTime();
                 break;
             case 5:
-                return $this->getApprovedTime();
+                return $this->getApproved();
                 break;
             case 6:
-                return $this->getLocal();
+                return $this->getApprovedTime();
                 break;
             case 7:
+                return $this->getLocal();
+                break;
+            case 8:
                 return $this->getHasAttended();
                 break;
             default:
@@ -1195,18 +1264,19 @@ abstract class RegistrantEvent implements ActiveRecordInterface
             $keys[0] => $this->getRegistrantId(),
             $keys[1] => $this->getTopicId(),
             $keys[2] => $this->getCountryId(),
-            $keys[3] => $this->getRegistrationTime(),
-            $keys[4] => $this->getApproved(),
-            $keys[5] => $this->getApprovedTime(),
-            $keys[6] => $this->getLocal(),
-            $keys[7] => $this->getHasAttended(),
+            $keys[3] => $this->getCountryDesired(),
+            $keys[4] => $this->getRegistrationTime(),
+            $keys[5] => $this->getApproved(),
+            $keys[6] => $this->getApprovedTime(),
+            $keys[7] => $this->getLocal(),
+            $keys[8] => $this->getHasAttended(),
         );
-        if ($result[$keys[3]] instanceof \DateTimeInterface) {
-            $result[$keys[3]] = $result[$keys[3]]->format('c');
+        if ($result[$keys[4]] instanceof \DateTimeInterface) {
+            $result[$keys[4]] = $result[$keys[4]]->format('c');
         }
 
-        if ($result[$keys[5]] instanceof \DateTimeInterface) {
-            $result[$keys[5]] = $result[$keys[5]]->format('c');
+        if ($result[$keys[6]] instanceof \DateTimeInterface) {
+            $result[$keys[6]] = $result[$keys[6]]->format('c');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1215,7 +1285,7 @@ abstract class RegistrantEvent implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aCountry) {
+            if (null !== $this->aCountryRelatedByCountryId) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
@@ -1228,7 +1298,7 @@ abstract class RegistrantEvent implements ActiveRecordInterface
                         $key = 'Country';
                 }
 
-                $result[$key] = $this->aCountry->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+                $result[$key] = $this->aCountryRelatedByCountryId->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
             if (null !== $this->aRegistrant) {
 
@@ -1259,6 +1329,21 @@ abstract class RegistrantEvent implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->aTopic->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->aCountryRelatedByCountryDesired) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'country';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'country';
+                        break;
+                    default:
+                        $key = 'Country';
+                }
+
+                $result[$key] = $this->aCountryRelatedByCountryDesired->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -1304,18 +1389,21 @@ abstract class RegistrantEvent implements ActiveRecordInterface
                 $this->setCountryId($value);
                 break;
             case 3:
-                $this->setRegistrationTime($value);
+                $this->setCountryDesired($value);
                 break;
             case 4:
-                $this->setApproved($value);
+                $this->setRegistrationTime($value);
                 break;
             case 5:
-                $this->setApprovedTime($value);
+                $this->setApproved($value);
                 break;
             case 6:
-                $this->setLocal($value);
+                $this->setApprovedTime($value);
                 break;
             case 7:
+                $this->setLocal($value);
+                break;
+            case 8:
                 $this->setHasAttended($value);
                 break;
         } // switch()
@@ -1354,19 +1442,22 @@ abstract class RegistrantEvent implements ActiveRecordInterface
             $this->setCountryId($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setRegistrationTime($arr[$keys[3]]);
+            $this->setCountryDesired($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setApproved($arr[$keys[4]]);
+            $this->setRegistrationTime($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setApprovedTime($arr[$keys[5]]);
+            $this->setApproved($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setLocal($arr[$keys[6]]);
+            $this->setApprovedTime($arr[$keys[6]]);
         }
         if (array_key_exists($keys[7], $arr)) {
-            $this->setHasAttended($arr[$keys[7]]);
+            $this->setLocal($arr[$keys[7]]);
+        }
+        if (array_key_exists($keys[8], $arr)) {
+            $this->setHasAttended($arr[$keys[8]]);
         }
     }
 
@@ -1417,6 +1508,9 @@ abstract class RegistrantEvent implements ActiveRecordInterface
         }
         if ($this->isColumnModified(RegistrantEventTableMap::COL_COUNTRY_ID)) {
             $criteria->add(RegistrantEventTableMap::COL_COUNTRY_ID, $this->country_id);
+        }
+        if ($this->isColumnModified(RegistrantEventTableMap::COL_COUNTRY_DESIRED)) {
+            $criteria->add(RegistrantEventTableMap::COL_COUNTRY_DESIRED, $this->country_desired);
         }
         if ($this->isColumnModified(RegistrantEventTableMap::COL_REGISTRATION_TIME)) {
             $criteria->add(RegistrantEventTableMap::COL_REGISTRATION_TIME, $this->registration_time);
@@ -1529,6 +1623,7 @@ abstract class RegistrantEvent implements ActiveRecordInterface
         $copyObj->setRegistrantId($this->getRegistrantId());
         $copyObj->setTopicId($this->getTopicId());
         $copyObj->setCountryId($this->getCountryId());
+        $copyObj->setCountryDesired($this->getCountryDesired());
         $copyObj->setRegistrationTime($this->getRegistrationTime());
         $copyObj->setApproved($this->getApproved());
         $copyObj->setApprovedTime($this->getApprovedTime());
@@ -1568,7 +1663,7 @@ abstract class RegistrantEvent implements ActiveRecordInterface
      * @return $this|\db\db\RegistrantEvent The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setCountry(ChildCountry $v = null)
+    public function setCountryRelatedByCountryId(ChildCountry $v = null)
     {
         if ($v === null) {
             $this->setCountryId(NULL);
@@ -1576,12 +1671,12 @@ abstract class RegistrantEvent implements ActiveRecordInterface
             $this->setCountryId($v->getCountryId());
         }
 
-        $this->aCountry = $v;
+        $this->aCountryRelatedByCountryId = $v;
 
         // Add binding for other direction of this n:n relationship.
         // If this object has already been added to the ChildCountry object, it will not be re-added.
         if ($v !== null) {
-            $v->addRegistrantEvent($this);
+            $v->addRegistrantEventRelatedByCountryId($this);
         }
 
 
@@ -1596,20 +1691,20 @@ abstract class RegistrantEvent implements ActiveRecordInterface
      * @return ChildCountry The associated ChildCountry object.
      * @throws PropelException
      */
-    public function getCountry(ConnectionInterface $con = null)
+    public function getCountryRelatedByCountryId(ConnectionInterface $con = null)
     {
-        if ($this->aCountry === null && ($this->country_id != 0)) {
-            $this->aCountry = ChildCountryQuery::create()->findPk($this->country_id, $con);
+        if ($this->aCountryRelatedByCountryId === null && ($this->country_id != 0)) {
+            $this->aCountryRelatedByCountryId = ChildCountryQuery::create()->findPk($this->country_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aCountry->addRegistrantEvents($this);
+                $this->aCountryRelatedByCountryId->addRegistrantEventsRelatedByCountryId($this);
              */
         }
 
-        return $this->aCountry;
+        return $this->aCountryRelatedByCountryId;
     }
 
     /**
@@ -1709,14 +1804,65 @@ abstract class RegistrantEvent implements ActiveRecordInterface
     }
 
     /**
+     * Declares an association between this object and a ChildCountry object.
+     *
+     * @param  ChildCountry $v
+     * @return $this|\db\db\RegistrantEvent The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setCountryRelatedByCountryDesired(ChildCountry $v = null)
+    {
+        if ($v === null) {
+            $this->setCountryDesired(NULL);
+        } else {
+            $this->setCountryDesired($v->getCountryId());
+        }
+
+        $this->aCountryRelatedByCountryDesired = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildCountry object, it will not be re-added.
+        if ($v !== null) {
+            $v->addRegistrantEventRelatedByCountryDesired($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildCountry object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildCountry The associated ChildCountry object.
+     * @throws PropelException
+     */
+    public function getCountryRelatedByCountryDesired(ConnectionInterface $con = null)
+    {
+        if ($this->aCountryRelatedByCountryDesired === null && ($this->country_desired != 0)) {
+            $this->aCountryRelatedByCountryDesired = ChildCountryQuery::create()->findPk($this->country_desired, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aCountryRelatedByCountryDesired->addRegistrantEventsRelatedByCountryDesired($this);
+             */
+        }
+
+        return $this->aCountryRelatedByCountryDesired;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
      */
     public function clear()
     {
-        if (null !== $this->aCountry) {
-            $this->aCountry->removeRegistrantEvent($this);
+        if (null !== $this->aCountryRelatedByCountryId) {
+            $this->aCountryRelatedByCountryId->removeRegistrantEventRelatedByCountryId($this);
         }
         if (null !== $this->aRegistrant) {
             $this->aRegistrant->removeRegistrantEvent($this);
@@ -1724,9 +1870,13 @@ abstract class RegistrantEvent implements ActiveRecordInterface
         if (null !== $this->aTopic) {
             $this->aTopic->removeRegistrantEvent($this);
         }
+        if (null !== $this->aCountryRelatedByCountryDesired) {
+            $this->aCountryRelatedByCountryDesired->removeRegistrantEventRelatedByCountryDesired($this);
+        }
         $this->registrant_id = null;
         $this->topic_id = null;
         $this->country_id = null;
+        $this->country_desired = null;
         $this->registration_time = null;
         $this->approved = null;
         $this->approved_time = null;
@@ -1753,9 +1903,10 @@ abstract class RegistrantEvent implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
-        $this->aCountry = null;
+        $this->aCountryRelatedByCountryId = null;
         $this->aRegistrant = null;
         $this->aTopic = null;
+        $this->aCountryRelatedByCountryDesired = null;
     }
 
     /**

@@ -84,8 +84,14 @@ abstract class Country implements ActiveRecordInterface
     /**
      * @var        ObjectCollection|ChildRegistrantEvent[] Collection to store aggregation of ChildRegistrantEvent objects.
      */
-    protected $collRegistrantEvents;
-    protected $collRegistrantEventsPartial;
+    protected $collRegistrantEventsRelatedByCountryId;
+    protected $collRegistrantEventsRelatedByCountryIdPartial;
+
+    /**
+     * @var        ObjectCollection|ChildRegistrantEvent[] Collection to store aggregation of ChildRegistrantEvent objects.
+     */
+    protected $collRegistrantEventsRelatedByCountryDesired;
+    protected $collRegistrantEventsRelatedByCountryDesiredPartial;
 
     /**
      * @var        ObjectCollection|ChildTopicCountry[] Collection to store aggregation of ChildTopicCountry objects.
@@ -105,7 +111,13 @@ abstract class Country implements ActiveRecordInterface
      * An array of objects scheduled for deletion.
      * @var ObjectCollection|ChildRegistrantEvent[]
      */
-    protected $registrantEventsScheduledForDeletion = null;
+    protected $registrantEventsRelatedByCountryIdScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildRegistrantEvent[]
+     */
+    protected $registrantEventsRelatedByCountryDesiredScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -508,7 +520,9 @@ abstract class Country implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->collRegistrantEvents = null;
+            $this->collRegistrantEventsRelatedByCountryId = null;
+
+            $this->collRegistrantEventsRelatedByCountryDesired = null;
 
             $this->collTopicCountries = null;
 
@@ -626,17 +640,35 @@ abstract class Country implements ActiveRecordInterface
                 $this->resetModified();
             }
 
-            if ($this->registrantEventsScheduledForDeletion !== null) {
-                if (!$this->registrantEventsScheduledForDeletion->isEmpty()) {
+            if ($this->registrantEventsRelatedByCountryIdScheduledForDeletion !== null) {
+                if (!$this->registrantEventsRelatedByCountryIdScheduledForDeletion->isEmpty()) {
                     \db\db\RegistrantEventQuery::create()
-                        ->filterByPrimaryKeys($this->registrantEventsScheduledForDeletion->getPrimaryKeys(false))
+                        ->filterByPrimaryKeys($this->registrantEventsRelatedByCountryIdScheduledForDeletion->getPrimaryKeys(false))
                         ->delete($con);
-                    $this->registrantEventsScheduledForDeletion = null;
+                    $this->registrantEventsRelatedByCountryIdScheduledForDeletion = null;
                 }
             }
 
-            if ($this->collRegistrantEvents !== null) {
-                foreach ($this->collRegistrantEvents as $referrerFK) {
+            if ($this->collRegistrantEventsRelatedByCountryId !== null) {
+                foreach ($this->collRegistrantEventsRelatedByCountryId as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->registrantEventsRelatedByCountryDesiredScheduledForDeletion !== null) {
+                if (!$this->registrantEventsRelatedByCountryDesiredScheduledForDeletion->isEmpty()) {
+                    foreach ($this->registrantEventsRelatedByCountryDesiredScheduledForDeletion as $registrantEventRelatedByCountryDesired) {
+                        // need to save related object because we set the relation to null
+                        $registrantEventRelatedByCountryDesired->save($con);
+                    }
+                    $this->registrantEventsRelatedByCountryDesiredScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collRegistrantEventsRelatedByCountryDesired !== null) {
+                foreach ($this->collRegistrantEventsRelatedByCountryDesired as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -816,7 +848,7 @@ abstract class Country implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->collRegistrantEvents) {
+            if (null !== $this->collRegistrantEventsRelatedByCountryId) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
@@ -829,7 +861,22 @@ abstract class Country implements ActiveRecordInterface
                         $key = 'RegistrantEvents';
                 }
 
-                $result[$key] = $this->collRegistrantEvents->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+                $result[$key] = $this->collRegistrantEventsRelatedByCountryId->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collRegistrantEventsRelatedByCountryDesired) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'registrantEvents';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'registrant_events';
+                        break;
+                    default:
+                        $key = 'RegistrantEvents';
+                }
+
+                $result[$key] = $this->collRegistrantEventsRelatedByCountryDesired->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
             if (null !== $this->collTopicCountries) {
 
@@ -1058,9 +1105,15 @@ abstract class Country implements ActiveRecordInterface
             // the getter/setter methods for fkey referrer objects.
             $copyObj->setNew(false);
 
-            foreach ($this->getRegistrantEvents() as $relObj) {
+            foreach ($this->getRegistrantEventsRelatedByCountryId() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addRegistrantEvent($relObj->copy($deepCopy));
+                    $copyObj->addRegistrantEventRelatedByCountryId($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getRegistrantEventsRelatedByCountryDesired() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addRegistrantEventRelatedByCountryDesired($relObj->copy($deepCopy));
                 }
             }
 
@@ -1111,8 +1164,12 @@ abstract class Country implements ActiveRecordInterface
      */
     public function initRelation($relationName)
     {
-        if ('RegistrantEvent' == $relationName) {
-            $this->initRegistrantEvents();
+        if ('RegistrantEventRelatedByCountryId' == $relationName) {
+            $this->initRegistrantEventsRelatedByCountryId();
+            return;
+        }
+        if ('RegistrantEventRelatedByCountryDesired' == $relationName) {
+            $this->initRegistrantEventsRelatedByCountryDesired();
             return;
         }
         if ('TopicCountry' == $relationName) {
@@ -1122,31 +1179,31 @@ abstract class Country implements ActiveRecordInterface
     }
 
     /**
-     * Clears out the collRegistrantEvents collection
+     * Clears out the collRegistrantEventsRelatedByCountryId collection
      *
      * This does not modify the database; however, it will remove any associated objects, causing
      * them to be refetched by subsequent calls to accessor method.
      *
      * @return void
-     * @see        addRegistrantEvents()
+     * @see        addRegistrantEventsRelatedByCountryId()
      */
-    public function clearRegistrantEvents()
+    public function clearRegistrantEventsRelatedByCountryId()
     {
-        $this->collRegistrantEvents = null; // important to set this to NULL since that means it is uninitialized
+        $this->collRegistrantEventsRelatedByCountryId = null; // important to set this to NULL since that means it is uninitialized
     }
 
     /**
-     * Reset is the collRegistrantEvents collection loaded partially.
+     * Reset is the collRegistrantEventsRelatedByCountryId collection loaded partially.
      */
-    public function resetPartialRegistrantEvents($v = true)
+    public function resetPartialRegistrantEventsRelatedByCountryId($v = true)
     {
-        $this->collRegistrantEventsPartial = $v;
+        $this->collRegistrantEventsRelatedByCountryIdPartial = $v;
     }
 
     /**
-     * Initializes the collRegistrantEvents collection.
+     * Initializes the collRegistrantEventsRelatedByCountryId collection.
      *
-     * By default this just sets the collRegistrantEvents collection to an empty array (like clearcollRegistrantEvents());
+     * By default this just sets the collRegistrantEventsRelatedByCountryId collection to an empty array (like clearcollRegistrantEventsRelatedByCountryId());
      * however, you may wish to override this method in your stub class to provide setting appropriate
      * to your application -- for example, setting the initial array to the values stored in database.
      *
@@ -1155,16 +1212,16 @@ abstract class Country implements ActiveRecordInterface
      *
      * @return void
      */
-    public function initRegistrantEvents($overrideExisting = true)
+    public function initRegistrantEventsRelatedByCountryId($overrideExisting = true)
     {
-        if (null !== $this->collRegistrantEvents && !$overrideExisting) {
+        if (null !== $this->collRegistrantEventsRelatedByCountryId && !$overrideExisting) {
             return;
         }
 
         $collectionClassName = RegistrantEventTableMap::getTableMap()->getCollectionClassName();
 
-        $this->collRegistrantEvents = new $collectionClassName;
-        $this->collRegistrantEvents->setModel('\db\db\RegistrantEvent');
+        $this->collRegistrantEventsRelatedByCountryId = new $collectionClassName;
+        $this->collRegistrantEventsRelatedByCountryId->setModel('\db\db\RegistrantEvent');
     }
 
     /**
@@ -1181,48 +1238,48 @@ abstract class Country implements ActiveRecordInterface
      * @return ObjectCollection|ChildRegistrantEvent[] List of ChildRegistrantEvent objects
      * @throws PropelException
      */
-    public function getRegistrantEvents(Criteria $criteria = null, ConnectionInterface $con = null)
+    public function getRegistrantEventsRelatedByCountryId(Criteria $criteria = null, ConnectionInterface $con = null)
     {
-        $partial = $this->collRegistrantEventsPartial && !$this->isNew();
-        if (null === $this->collRegistrantEvents || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collRegistrantEvents) {
+        $partial = $this->collRegistrantEventsRelatedByCountryIdPartial && !$this->isNew();
+        if (null === $this->collRegistrantEventsRelatedByCountryId || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collRegistrantEventsRelatedByCountryId) {
                 // return empty collection
-                $this->initRegistrantEvents();
+                $this->initRegistrantEventsRelatedByCountryId();
             } else {
-                $collRegistrantEvents = ChildRegistrantEventQuery::create(null, $criteria)
-                    ->filterByCountry($this)
+                $collRegistrantEventsRelatedByCountryId = ChildRegistrantEventQuery::create(null, $criteria)
+                    ->filterByCountryRelatedByCountryId($this)
                     ->find($con);
 
                 if (null !== $criteria) {
-                    if (false !== $this->collRegistrantEventsPartial && count($collRegistrantEvents)) {
-                        $this->initRegistrantEvents(false);
+                    if (false !== $this->collRegistrantEventsRelatedByCountryIdPartial && count($collRegistrantEventsRelatedByCountryId)) {
+                        $this->initRegistrantEventsRelatedByCountryId(false);
 
-                        foreach ($collRegistrantEvents as $obj) {
-                            if (false == $this->collRegistrantEvents->contains($obj)) {
-                                $this->collRegistrantEvents->append($obj);
+                        foreach ($collRegistrantEventsRelatedByCountryId as $obj) {
+                            if (false == $this->collRegistrantEventsRelatedByCountryId->contains($obj)) {
+                                $this->collRegistrantEventsRelatedByCountryId->append($obj);
                             }
                         }
 
-                        $this->collRegistrantEventsPartial = true;
+                        $this->collRegistrantEventsRelatedByCountryIdPartial = true;
                     }
 
-                    return $collRegistrantEvents;
+                    return $collRegistrantEventsRelatedByCountryId;
                 }
 
-                if ($partial && $this->collRegistrantEvents) {
-                    foreach ($this->collRegistrantEvents as $obj) {
+                if ($partial && $this->collRegistrantEventsRelatedByCountryId) {
+                    foreach ($this->collRegistrantEventsRelatedByCountryId as $obj) {
                         if ($obj->isNew()) {
-                            $collRegistrantEvents[] = $obj;
+                            $collRegistrantEventsRelatedByCountryId[] = $obj;
                         }
                     }
                 }
 
-                $this->collRegistrantEvents = $collRegistrantEvents;
-                $this->collRegistrantEventsPartial = false;
+                $this->collRegistrantEventsRelatedByCountryId = $collRegistrantEventsRelatedByCountryId;
+                $this->collRegistrantEventsRelatedByCountryIdPartial = false;
             }
         }
 
-        return $this->collRegistrantEvents;
+        return $this->collRegistrantEventsRelatedByCountryId;
     }
 
     /**
@@ -1231,29 +1288,29 @@ abstract class Country implements ActiveRecordInterface
      * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
      * and new objects from the given Propel collection.
      *
-     * @param      Collection $registrantEvents A Propel collection.
+     * @param      Collection $registrantEventsRelatedByCountryId A Propel collection.
      * @param      ConnectionInterface $con Optional connection object
      * @return $this|ChildCountry The current object (for fluent API support)
      */
-    public function setRegistrantEvents(Collection $registrantEvents, ConnectionInterface $con = null)
+    public function setRegistrantEventsRelatedByCountryId(Collection $registrantEventsRelatedByCountryId, ConnectionInterface $con = null)
     {
-        /** @var ChildRegistrantEvent[] $registrantEventsToDelete */
-        $registrantEventsToDelete = $this->getRegistrantEvents(new Criteria(), $con)->diff($registrantEvents);
+        /** @var ChildRegistrantEvent[] $registrantEventsRelatedByCountryIdToDelete */
+        $registrantEventsRelatedByCountryIdToDelete = $this->getRegistrantEventsRelatedByCountryId(new Criteria(), $con)->diff($registrantEventsRelatedByCountryId);
 
 
-        $this->registrantEventsScheduledForDeletion = $registrantEventsToDelete;
+        $this->registrantEventsRelatedByCountryIdScheduledForDeletion = $registrantEventsRelatedByCountryIdToDelete;
 
-        foreach ($registrantEventsToDelete as $registrantEventRemoved) {
-            $registrantEventRemoved->setCountry(null);
+        foreach ($registrantEventsRelatedByCountryIdToDelete as $registrantEventRelatedByCountryIdRemoved) {
+            $registrantEventRelatedByCountryIdRemoved->setCountryRelatedByCountryId(null);
         }
 
-        $this->collRegistrantEvents = null;
-        foreach ($registrantEvents as $registrantEvent) {
-            $this->addRegistrantEvent($registrantEvent);
+        $this->collRegistrantEventsRelatedByCountryId = null;
+        foreach ($registrantEventsRelatedByCountryId as $registrantEventRelatedByCountryId) {
+            $this->addRegistrantEventRelatedByCountryId($registrantEventRelatedByCountryId);
         }
 
-        $this->collRegistrantEvents = $registrantEvents;
-        $this->collRegistrantEventsPartial = false;
+        $this->collRegistrantEventsRelatedByCountryId = $registrantEventsRelatedByCountryId;
+        $this->collRegistrantEventsRelatedByCountryIdPartial = false;
 
         return $this;
     }
@@ -1267,16 +1324,16 @@ abstract class Country implements ActiveRecordInterface
      * @return int             Count of related RegistrantEvent objects.
      * @throws PropelException
      */
-    public function countRegistrantEvents(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    public function countRegistrantEventsRelatedByCountryId(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
     {
-        $partial = $this->collRegistrantEventsPartial && !$this->isNew();
-        if (null === $this->collRegistrantEvents || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collRegistrantEvents) {
+        $partial = $this->collRegistrantEventsRelatedByCountryIdPartial && !$this->isNew();
+        if (null === $this->collRegistrantEventsRelatedByCountryId || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collRegistrantEventsRelatedByCountryId) {
                 return 0;
             }
 
             if ($partial && !$criteria) {
-                return count($this->getRegistrantEvents());
+                return count($this->getRegistrantEventsRelatedByCountryId());
             }
 
             $query = ChildRegistrantEventQuery::create(null, $criteria);
@@ -1285,11 +1342,11 @@ abstract class Country implements ActiveRecordInterface
             }
 
             return $query
-                ->filterByCountry($this)
+                ->filterByCountryRelatedByCountryId($this)
                 ->count($con);
         }
 
-        return count($this->collRegistrantEvents);
+        return count($this->collRegistrantEventsRelatedByCountryId);
     }
 
     /**
@@ -1299,18 +1356,18 @@ abstract class Country implements ActiveRecordInterface
      * @param  ChildRegistrantEvent $l ChildRegistrantEvent
      * @return $this|\db\db\Country The current object (for fluent API support)
      */
-    public function addRegistrantEvent(ChildRegistrantEvent $l)
+    public function addRegistrantEventRelatedByCountryId(ChildRegistrantEvent $l)
     {
-        if ($this->collRegistrantEvents === null) {
-            $this->initRegistrantEvents();
-            $this->collRegistrantEventsPartial = true;
+        if ($this->collRegistrantEventsRelatedByCountryId === null) {
+            $this->initRegistrantEventsRelatedByCountryId();
+            $this->collRegistrantEventsRelatedByCountryIdPartial = true;
         }
 
-        if (!$this->collRegistrantEvents->contains($l)) {
-            $this->doAddRegistrantEvent($l);
+        if (!$this->collRegistrantEventsRelatedByCountryId->contains($l)) {
+            $this->doAddRegistrantEventRelatedByCountryId($l);
 
-            if ($this->registrantEventsScheduledForDeletion and $this->registrantEventsScheduledForDeletion->contains($l)) {
-                $this->registrantEventsScheduledForDeletion->remove($this->registrantEventsScheduledForDeletion->search($l));
+            if ($this->registrantEventsRelatedByCountryIdScheduledForDeletion and $this->registrantEventsRelatedByCountryIdScheduledForDeletion->contains($l)) {
+                $this->registrantEventsRelatedByCountryIdScheduledForDeletion->remove($this->registrantEventsRelatedByCountryIdScheduledForDeletion->search($l));
             }
         }
 
@@ -1318,29 +1375,29 @@ abstract class Country implements ActiveRecordInterface
     }
 
     /**
-     * @param ChildRegistrantEvent $registrantEvent The ChildRegistrantEvent object to add.
+     * @param ChildRegistrantEvent $registrantEventRelatedByCountryId The ChildRegistrantEvent object to add.
      */
-    protected function doAddRegistrantEvent(ChildRegistrantEvent $registrantEvent)
+    protected function doAddRegistrantEventRelatedByCountryId(ChildRegistrantEvent $registrantEventRelatedByCountryId)
     {
-        $this->collRegistrantEvents[]= $registrantEvent;
-        $registrantEvent->setCountry($this);
+        $this->collRegistrantEventsRelatedByCountryId[]= $registrantEventRelatedByCountryId;
+        $registrantEventRelatedByCountryId->setCountryRelatedByCountryId($this);
     }
 
     /**
-     * @param  ChildRegistrantEvent $registrantEvent The ChildRegistrantEvent object to remove.
+     * @param  ChildRegistrantEvent $registrantEventRelatedByCountryId The ChildRegistrantEvent object to remove.
      * @return $this|ChildCountry The current object (for fluent API support)
      */
-    public function removeRegistrantEvent(ChildRegistrantEvent $registrantEvent)
+    public function removeRegistrantEventRelatedByCountryId(ChildRegistrantEvent $registrantEventRelatedByCountryId)
     {
-        if ($this->getRegistrantEvents()->contains($registrantEvent)) {
-            $pos = $this->collRegistrantEvents->search($registrantEvent);
-            $this->collRegistrantEvents->remove($pos);
-            if (null === $this->registrantEventsScheduledForDeletion) {
-                $this->registrantEventsScheduledForDeletion = clone $this->collRegistrantEvents;
-                $this->registrantEventsScheduledForDeletion->clear();
+        if ($this->getRegistrantEventsRelatedByCountryId()->contains($registrantEventRelatedByCountryId)) {
+            $pos = $this->collRegistrantEventsRelatedByCountryId->search($registrantEventRelatedByCountryId);
+            $this->collRegistrantEventsRelatedByCountryId->remove($pos);
+            if (null === $this->registrantEventsRelatedByCountryIdScheduledForDeletion) {
+                $this->registrantEventsRelatedByCountryIdScheduledForDeletion = clone $this->collRegistrantEventsRelatedByCountryId;
+                $this->registrantEventsRelatedByCountryIdScheduledForDeletion->clear();
             }
-            $this->registrantEventsScheduledForDeletion[]= clone $registrantEvent;
-            $registrantEvent->setCountry(null);
+            $this->registrantEventsRelatedByCountryIdScheduledForDeletion[]= clone $registrantEventRelatedByCountryId;
+            $registrantEventRelatedByCountryId->setCountryRelatedByCountryId(null);
         }
 
         return $this;
@@ -1352,7 +1409,7 @@ abstract class Country implements ActiveRecordInterface
      * an identical criteria, it returns the collection.
      * Otherwise if this Country is new, it will return
      * an empty collection; or if this Country has previously
-     * been saved, it will retrieve related RegistrantEvents from storage.
+     * been saved, it will retrieve related RegistrantEventsRelatedByCountryId from storage.
      *
      * This method is protected by default in order to keep the public
      * api reasonable.  You can provide public methods for those you
@@ -1363,12 +1420,12 @@ abstract class Country implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildRegistrantEvent[] List of ChildRegistrantEvent objects
      */
-    public function getRegistrantEventsJoinRegistrant(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getRegistrantEventsRelatedByCountryIdJoinRegistrant(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildRegistrantEventQuery::create(null, $criteria);
         $query->joinWith('Registrant', $joinBehavior);
 
-        return $this->getRegistrantEvents($query, $con);
+        return $this->getRegistrantEventsRelatedByCountryId($query, $con);
     }
 
 
@@ -1377,7 +1434,7 @@ abstract class Country implements ActiveRecordInterface
      * an identical criteria, it returns the collection.
      * Otherwise if this Country is new, it will return
      * an empty collection; or if this Country has previously
-     * been saved, it will retrieve related RegistrantEvents from storage.
+     * been saved, it will retrieve related RegistrantEventsRelatedByCountryId from storage.
      *
      * This method is protected by default in order to keep the public
      * api reasonable.  You can provide public methods for those you
@@ -1388,12 +1445,287 @@ abstract class Country implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildRegistrantEvent[] List of ChildRegistrantEvent objects
      */
-    public function getRegistrantEventsJoinTopic(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getRegistrantEventsRelatedByCountryIdJoinTopic(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildRegistrantEventQuery::create(null, $criteria);
         $query->joinWith('Topic', $joinBehavior);
 
-        return $this->getRegistrantEvents($query, $con);
+        return $this->getRegistrantEventsRelatedByCountryId($query, $con);
+    }
+
+    /**
+     * Clears out the collRegistrantEventsRelatedByCountryDesired collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addRegistrantEventsRelatedByCountryDesired()
+     */
+    public function clearRegistrantEventsRelatedByCountryDesired()
+    {
+        $this->collRegistrantEventsRelatedByCountryDesired = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collRegistrantEventsRelatedByCountryDesired collection loaded partially.
+     */
+    public function resetPartialRegistrantEventsRelatedByCountryDesired($v = true)
+    {
+        $this->collRegistrantEventsRelatedByCountryDesiredPartial = $v;
+    }
+
+    /**
+     * Initializes the collRegistrantEventsRelatedByCountryDesired collection.
+     *
+     * By default this just sets the collRegistrantEventsRelatedByCountryDesired collection to an empty array (like clearcollRegistrantEventsRelatedByCountryDesired());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initRegistrantEventsRelatedByCountryDesired($overrideExisting = true)
+    {
+        if (null !== $this->collRegistrantEventsRelatedByCountryDesired && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = RegistrantEventTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collRegistrantEventsRelatedByCountryDesired = new $collectionClassName;
+        $this->collRegistrantEventsRelatedByCountryDesired->setModel('\db\db\RegistrantEvent');
+    }
+
+    /**
+     * Gets an array of ChildRegistrantEvent objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildCountry is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildRegistrantEvent[] List of ChildRegistrantEvent objects
+     * @throws PropelException
+     */
+    public function getRegistrantEventsRelatedByCountryDesired(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collRegistrantEventsRelatedByCountryDesiredPartial && !$this->isNew();
+        if (null === $this->collRegistrantEventsRelatedByCountryDesired || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collRegistrantEventsRelatedByCountryDesired) {
+                // return empty collection
+                $this->initRegistrantEventsRelatedByCountryDesired();
+            } else {
+                $collRegistrantEventsRelatedByCountryDesired = ChildRegistrantEventQuery::create(null, $criteria)
+                    ->filterByCountryRelatedByCountryDesired($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collRegistrantEventsRelatedByCountryDesiredPartial && count($collRegistrantEventsRelatedByCountryDesired)) {
+                        $this->initRegistrantEventsRelatedByCountryDesired(false);
+
+                        foreach ($collRegistrantEventsRelatedByCountryDesired as $obj) {
+                            if (false == $this->collRegistrantEventsRelatedByCountryDesired->contains($obj)) {
+                                $this->collRegistrantEventsRelatedByCountryDesired->append($obj);
+                            }
+                        }
+
+                        $this->collRegistrantEventsRelatedByCountryDesiredPartial = true;
+                    }
+
+                    return $collRegistrantEventsRelatedByCountryDesired;
+                }
+
+                if ($partial && $this->collRegistrantEventsRelatedByCountryDesired) {
+                    foreach ($this->collRegistrantEventsRelatedByCountryDesired as $obj) {
+                        if ($obj->isNew()) {
+                            $collRegistrantEventsRelatedByCountryDesired[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collRegistrantEventsRelatedByCountryDesired = $collRegistrantEventsRelatedByCountryDesired;
+                $this->collRegistrantEventsRelatedByCountryDesiredPartial = false;
+            }
+        }
+
+        return $this->collRegistrantEventsRelatedByCountryDesired;
+    }
+
+    /**
+     * Sets a collection of ChildRegistrantEvent objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $registrantEventsRelatedByCountryDesired A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildCountry The current object (for fluent API support)
+     */
+    public function setRegistrantEventsRelatedByCountryDesired(Collection $registrantEventsRelatedByCountryDesired, ConnectionInterface $con = null)
+    {
+        /** @var ChildRegistrantEvent[] $registrantEventsRelatedByCountryDesiredToDelete */
+        $registrantEventsRelatedByCountryDesiredToDelete = $this->getRegistrantEventsRelatedByCountryDesired(new Criteria(), $con)->diff($registrantEventsRelatedByCountryDesired);
+
+
+        $this->registrantEventsRelatedByCountryDesiredScheduledForDeletion = $registrantEventsRelatedByCountryDesiredToDelete;
+
+        foreach ($registrantEventsRelatedByCountryDesiredToDelete as $registrantEventRelatedByCountryDesiredRemoved) {
+            $registrantEventRelatedByCountryDesiredRemoved->setCountryRelatedByCountryDesired(null);
+        }
+
+        $this->collRegistrantEventsRelatedByCountryDesired = null;
+        foreach ($registrantEventsRelatedByCountryDesired as $registrantEventRelatedByCountryDesired) {
+            $this->addRegistrantEventRelatedByCountryDesired($registrantEventRelatedByCountryDesired);
+        }
+
+        $this->collRegistrantEventsRelatedByCountryDesired = $registrantEventsRelatedByCountryDesired;
+        $this->collRegistrantEventsRelatedByCountryDesiredPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related RegistrantEvent objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related RegistrantEvent objects.
+     * @throws PropelException
+     */
+    public function countRegistrantEventsRelatedByCountryDesired(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collRegistrantEventsRelatedByCountryDesiredPartial && !$this->isNew();
+        if (null === $this->collRegistrantEventsRelatedByCountryDesired || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collRegistrantEventsRelatedByCountryDesired) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getRegistrantEventsRelatedByCountryDesired());
+            }
+
+            $query = ChildRegistrantEventQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByCountryRelatedByCountryDesired($this)
+                ->count($con);
+        }
+
+        return count($this->collRegistrantEventsRelatedByCountryDesired);
+    }
+
+    /**
+     * Method called to associate a ChildRegistrantEvent object to this object
+     * through the ChildRegistrantEvent foreign key attribute.
+     *
+     * @param  ChildRegistrantEvent $l ChildRegistrantEvent
+     * @return $this|\db\db\Country The current object (for fluent API support)
+     */
+    public function addRegistrantEventRelatedByCountryDesired(ChildRegistrantEvent $l)
+    {
+        if ($this->collRegistrantEventsRelatedByCountryDesired === null) {
+            $this->initRegistrantEventsRelatedByCountryDesired();
+            $this->collRegistrantEventsRelatedByCountryDesiredPartial = true;
+        }
+
+        if (!$this->collRegistrantEventsRelatedByCountryDesired->contains($l)) {
+            $this->doAddRegistrantEventRelatedByCountryDesired($l);
+
+            if ($this->registrantEventsRelatedByCountryDesiredScheduledForDeletion and $this->registrantEventsRelatedByCountryDesiredScheduledForDeletion->contains($l)) {
+                $this->registrantEventsRelatedByCountryDesiredScheduledForDeletion->remove($this->registrantEventsRelatedByCountryDesiredScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildRegistrantEvent $registrantEventRelatedByCountryDesired The ChildRegistrantEvent object to add.
+     */
+    protected function doAddRegistrantEventRelatedByCountryDesired(ChildRegistrantEvent $registrantEventRelatedByCountryDesired)
+    {
+        $this->collRegistrantEventsRelatedByCountryDesired[]= $registrantEventRelatedByCountryDesired;
+        $registrantEventRelatedByCountryDesired->setCountryRelatedByCountryDesired($this);
+    }
+
+    /**
+     * @param  ChildRegistrantEvent $registrantEventRelatedByCountryDesired The ChildRegistrantEvent object to remove.
+     * @return $this|ChildCountry The current object (for fluent API support)
+     */
+    public function removeRegistrantEventRelatedByCountryDesired(ChildRegistrantEvent $registrantEventRelatedByCountryDesired)
+    {
+        if ($this->getRegistrantEventsRelatedByCountryDesired()->contains($registrantEventRelatedByCountryDesired)) {
+            $pos = $this->collRegistrantEventsRelatedByCountryDesired->search($registrantEventRelatedByCountryDesired);
+            $this->collRegistrantEventsRelatedByCountryDesired->remove($pos);
+            if (null === $this->registrantEventsRelatedByCountryDesiredScheduledForDeletion) {
+                $this->registrantEventsRelatedByCountryDesiredScheduledForDeletion = clone $this->collRegistrantEventsRelatedByCountryDesired;
+                $this->registrantEventsRelatedByCountryDesiredScheduledForDeletion->clear();
+            }
+            $this->registrantEventsRelatedByCountryDesiredScheduledForDeletion[]= $registrantEventRelatedByCountryDesired;
+            $registrantEventRelatedByCountryDesired->setCountryRelatedByCountryDesired(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Country is new, it will return
+     * an empty collection; or if this Country has previously
+     * been saved, it will retrieve related RegistrantEventsRelatedByCountryDesired from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Country.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildRegistrantEvent[] List of ChildRegistrantEvent objects
+     */
+    public function getRegistrantEventsRelatedByCountryDesiredJoinRegistrant(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildRegistrantEventQuery::create(null, $criteria);
+        $query->joinWith('Registrant', $joinBehavior);
+
+        return $this->getRegistrantEventsRelatedByCountryDesired($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Country is new, it will return
+     * an empty collection; or if this Country has previously
+     * been saved, it will retrieve related RegistrantEventsRelatedByCountryDesired from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Country.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildRegistrantEvent[] List of ChildRegistrantEvent objects
+     */
+    public function getRegistrantEventsRelatedByCountryDesiredJoinTopic(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildRegistrantEventQuery::create(null, $criteria);
+        $query->joinWith('Topic', $joinBehavior);
+
+        return $this->getRegistrantEventsRelatedByCountryDesired($query, $con);
     }
 
     /**
@@ -1676,8 +2008,13 @@ abstract class Country implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
-            if ($this->collRegistrantEvents) {
-                foreach ($this->collRegistrantEvents as $o) {
+            if ($this->collRegistrantEventsRelatedByCountryId) {
+                foreach ($this->collRegistrantEventsRelatedByCountryId as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collRegistrantEventsRelatedByCountryDesired) {
+                foreach ($this->collRegistrantEventsRelatedByCountryDesired as $o) {
                     $o->clearAllReferences($deep);
                 }
             }
@@ -1688,7 +2025,8 @@ abstract class Country implements ActiveRecordInterface
             }
         } // if ($deep)
 
-        $this->collRegistrantEvents = null;
+        $this->collRegistrantEventsRelatedByCountryId = null;
+        $this->collRegistrantEventsRelatedByCountryDesired = null;
         $this->collTopicCountries = null;
     }
 
