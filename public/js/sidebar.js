@@ -4,6 +4,7 @@ $(document).ready(function () {
   else if (pathname === "/adminpanel/approved") dir = "approved-link";
   else if (pathname === "/adminpanel/data") dir = "data-link";
   else if (pathname === "/adminpanel/settings") dir = "settings-link";
+  else if (pathname === "/adminpanel/approval") dir = "approval-link";
   if (typeof dir != "undefined") {
     $("#" + dir).addClass("active");
     console.log(dir);

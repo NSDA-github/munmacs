@@ -1,4 +1,4 @@
-var registrantsList;
+var registrantsData;
 var selectedRegistrant;
 var selectedTopic = 0;
 
@@ -34,7 +34,7 @@ function viewButton(id) {
       `;
 }
 
-function getTopics(options = Object({ update: false })) {
+function getTopics(options = Object({ update: false, updateProgress: false })) {
   data = Array(1);
   return $.ajax({
     type: "POST",
@@ -46,7 +46,7 @@ function getTopics(options = Object({ update: false })) {
         data.topics.map(function (topic) {
           $("#topic").append(`<option value=${topic[0]}>${topic[1]}</option>`);
         });
-        if (options.update == true) updateRegistrants();
+        if (options.update == true) updateRegistrants({ updateProgress: true });
       } else {
         reportError(data);
       }
@@ -84,7 +84,8 @@ function getRegistrants(searchText = "") {
     success: function (data) {
       console.log(data);
       if (data.success) {
-        registrantsList = data.registrants;
+        registrantsData = data.registrants;
+        console.log(registrantsData);
       } else {
         reportError(data);
       }
@@ -96,11 +97,56 @@ function getRegistrants(searchText = "") {
   });
 }
 
-function updateRegistrants(searchText = "") {
-  $.when(getRegistrants(searchText)).done(function () {
+function updateRegistrants(
+  options = Object({ searchText: "", updateProgress: false })
+) {
+  $.when(getRegistrants(options.searchText)).done(function () {
     $("#registrants-table").empty();
     appendTableData();
+    if (options.updateProgress) {
+      updateProgress();
+    }
   });
+}
+
+function updateProgress() {
+  var totalProgress;
+  if (registrantsData["info"]["totalnumber"])
+    totalProgress =
+      (registrantsData["info"]["totalapproved"] /
+        registrantsData["info"]["totalnumber"]) *
+      100;
+  else totalProgress = 0;
+  $("#totalapproved").text(registrantsData["info"]["totalapproved"]);
+  $("#totalnumber").text(registrantsData["info"]["totalnumber"]);
+
+  const topic = $("#topic").val();
+  var topicProgress;
+  if (topic != "") {
+    var index = registrantsData["info"]["topicid"].indexOf(Number(topic));
+    console.log("HAHA " + index);
+    if (registrantsData["info"]["totalnumberbytopic"][index])
+      topicProgress =
+        (registrantsData["info"]["totalapprovedbytopic"][index] /
+          registrantsData["info"]["totalnumberbytopic"][index]) *
+        100;
+    else {
+      topicProgress = 0;
+    }
+    $("#totalapprovedbytopic").text(
+      registrantsData["info"]["totalapprovedbytopic"][index]
+    );
+    $("#totalnumberbytopic").text(
+      registrantsData["info"]["totalnumberbytopic"][index]
+    );
+    $("#topic-progress").width(topicProgress + "%");
+  } else {
+    $("#totalapprovedbytopic").text(registrantsData["info"]["totalapproved"]);
+    $("#totalnumberbytopic").text(registrantsData["info"]["totalnumber"]);
+    $("#topic-progress").width(totalProgress + "%");
+  }
+
+  $("#total-progress").width(totalProgress + "%");
 }
 
 function checkID(registrant) {

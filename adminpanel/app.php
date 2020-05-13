@@ -24,6 +24,9 @@ class AdminPanel
       <?php
       echo "<title> $page | Admin Panel</title>";
       switch ($page) {
+        case 'Registrants Approval':
+          echo '<script src="/js/adminpanel/approval.js"></script>';
+          break;
         case 'Registrants':
           echo '<script src="/js/adminpanel/registrants.js"></script>';
           break;
@@ -51,6 +54,9 @@ class AdminPanel
           <?php
           include_once __DIR__ . "/templates/sidebar.php";
           switch ($page) {
+            case 'Registrants Approval':
+              include_once __DIR__ . "/pages/approval.php";
+              break;
             case 'Registrants':
               include_once __DIR__ . "/pages/registrants.php";
               break;

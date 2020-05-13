@@ -1,8 +1,8 @@
 <div class="col-10 ml-auto nav-pad">
   <div class="tab-content" id="tabContent" style="padding-top: 30px; padding-left: 30px;">
     <div class="tab-pane fade" id="tab-panel" role="tabpanel">
-      <h1>Registrants</h1>
-      <div class="row mb-3">
+      <h1>Registrants Approval</h1>
+      <div class="row mb-5">
         <div class="col-8">
           <div class="table-scroll mb-3">
             <table class="table table-striped table-bordered">
@@ -11,8 +11,8 @@
                   <th style="width: 20px;" scope="col">ID</th>
                   <th scope="col">Name</th>
                   <th scope="col">Surname</th>
-                  <th scope="col">Topic</th>
                   <th scope="col">Country</th>
+                  <th scope="col">Local</th>
                   <th style="width: 95px;" scope="col">Action</th>
                 </tr>
               </thead>
@@ -31,32 +31,55 @@
               <option value="surname" selected>Surname</option>
               <option value="country">Country</option>
               <option value="time">Registration Time</option>
+              <option value="approvedtime">Approval Time</option>
             </select>
           </div>
           <div class="input-group mb-2">
             <div class="input-group-prepend">
               <label class="input-group-text" for="topic">Topic:</label>
             </div>
-            <select onchange="updateRegistrants({updateProgress: true})" class="custom-select" style="width:200px" name="topic" id="topic">
-              <option value="">All</option>
+            <select onchange="updateRegistrants()" class="custom-select" style="width:200px" name="topic" id="topic">
             </select>
           </div>
-          <label for="total-progress">Total Approval Progress</label>
-          <div class="progress">
-            <div id="total-progress" class="progress-bar bg-success" role="progressbar" style="width: 0%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="input-group mb-2">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="local">Local:</label>
+            </div>
+            <select onchange="updateRegistrants()" class="custom-select" style="width:200px" name="local" id="local">
+              <option value="">Any</option>
+              <option value="1">Local</option>
+              <option value="0">Foreign</option>
+            </select>
           </div>
-          <p><span id="totalapproved"></span> / <span id="totalnumber"></span></p>
-          <label for="topic-progress">Approval Progress By Topic</label>
-          <div class="progress">
-            <div id="topic-progress" class="progress-bar bg-success" role="progressbar" style="width: 0%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="input-group mb-5">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="has-attended">Presence:</label>
+            </div>
+            <select onchange="updateRegistrants()" class="custom-select" style="width:200px" name="has-attended" id="has-attended">
+              <option value="-1">Undefined</option>
+              <option value="1">Attended</option>
+              <option value="0">Was absent</option>
+            </select>
           </div>
-          <p><span id="totalapprovedbytopic"></span> / <span id="totalnumberbytopic"></span></p>
+          <form id="search-form">
+            <div class="input-group input-group-sm mb-3" style="width: 100%;">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-sm">Search By Surname</span>
+              </div>
+              <input type="text" class="form-control" id="search-text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" />
+              <div class="input-group-append">
+                <button class="btn btn-secondary" type="submit" id="search-btn" onclick="search()">
+                  Go
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
       <div id="registrant-info">
         <table class="table-borderless col-8 table-sm mb-4">
           <thead>
-            <th style="width: 175px;"></th>
+            <th style="width: 100px;"></th>
             <th></th>
           </thead>
           <tbody>
@@ -69,24 +92,12 @@
               <td id="surname">N/A</td>
             </tr>
             <tr>
-              <th>Registration Datetime:</th>
-              <td id="time">N/A</td>
-            </tr>
-            <tr>
               <th></th>
               <td></td>
             </tr>
             <tr>
               <th>Institution:</th>
               <td id="institution">N/A</td>
-            </tr>
-            <tr>
-              <th>Email:</th>
-              <td id="email">N/A</td>
-            </tr>
-            <tr>
-              <th>Phone:</th>
-              <td id="phone">N/A</td>
             </tr>
             <tr>
               <th></th>
@@ -98,8 +109,11 @@
             </tr>
           </tbody>
         </table>
-        <button class="btn btn-danger" value="deny" onclick="confirmApproval(value)">
-          Deny Admission
+        <button class="btn btn-danger" value="absent" onclick="confirmCheckIn(value)">
+          Absent
+        </button>
+        <button class="btn btn-success" value="attended" onclick="confirmCheckIn(value)">
+          Attended
         </button>
       </div>
     </div>
@@ -116,7 +130,7 @@
             <button type="button" class="btn btn-secondary" data-dismiss="modal" autofocus>
               Cancel
             </button>
-            <button id="confirm-btn" value="" onclick="handleApproval(value)" type="button" class="btn btn-primary">
+            <button id="confirm-btn" value="" onclick="handleCheckIn(value)" type="button" class="btn btn-primary">
               Confirm
             </button>
           </div>

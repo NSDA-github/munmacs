@@ -86,12 +86,12 @@ class Server
     if ($reserved == 0)
       $sql = "SELECT topic_country.country_id, (SELECT country_name FROM country WHERE country_id = topic_country.country_id) FROM topic_country WHERE topic_id = ? AND available = 1 AND reserved = 0;";
     else
-      $sql = "SELECT topic_country.country_id, (SELECT country_name FROM country WHERE country_id = topic_country.country_id) FROM topic_country WHERE topic_id = ? AND available = 1 AND reserved > 0 AND reserved < 4;";
+      $sql = "SELECT topic_country.country_id, (SELECT country_name FROM country WHERE country_id = topic_country.country_id), topic_country.reserved FROM topic_country WHERE topic_id = ? AND available = 1 AND reserved > 0 AND reserved < 4;";
     $stmt = $con->prepare($sql);
     $stmt->execute(array($topic));
     $dbtopiccountries = $stmt->fetchAll();
     foreach ($dbtopiccountries as $dbtopiccountry) {
-      array_push($countries, [$dbtopiccountry[0], $reserved == 0 ? $dbtopiccountry[1] : $dbtopiccountry[1] . " (" . $dbtopiccountry["reserved"] . " people reserved)"]);
+      array_push($countries, [$dbtopiccountry[0], $reserved == 0 ? $dbtopiccountry[1] : $dbtopiccountry[1] . " (" .  pow(0.4, $dbtopiccountry[2]) * 100 . "% chance)"]);
     }
     return $countries;
   }
@@ -110,9 +110,9 @@ class Server
     $validator->validate("major", $request->subject)->regex("/^(([,.'`\"\-\p{L}])+[ ]?)*$/")->len(0, 40);
     $validator->validate("topic", $request->topic)->regex("/^[0-9]*$/")->len(1, 3);
     $validator->validate("country", $request->country)->regex("/^[0-9]*$/")->len(1, 3);
-    $validator->validate("desiredcountry", $request->desiredcountry)->regex("/^[0-9]*$/")->len(1, 3);
-    $validator->validate("phone", $request->phone)->regex("/^([\+][0-9]{11})$/");
-    $validator->validate("discord", $request->discord)->regex("/^.*#[0-9]{4}$/")->len(1, 3);
+    $validator->validate("desiredcountry", $request->desiredcountry)->regex("/^[0-9]*$/")->len(0, 3);
+    $validator->validate("phone", $request->phone)->regex("/^([\+][0-9]{11})/");
+    $validator->validate("discord", $request->discord)->regex("/^[\s\S]*#[0-9]{4}$|$/");
     return $validator;
   }
 
@@ -142,9 +142,9 @@ class Server
       return false;
     }
     if ($request->desiredcountry != "") {
-      $dbTopicCountry = $dbTopicCountryQ->filterByTopicId($request->topic)->filterByCountryId($request->desiredcountry)->filterByAvailable(1)->findOne();
-      if (!!$dbTopicCountry) {
-        $dbTopicCountry->setReserved($dbTopicCountry->getReserved() + 1);
+      $dbTopicCountryDesired = $dbTopicCountryQ->create()->filterByTopicId($request->topic)->filterByCountryId($request->desiredcountry)->filterByAvailable(1)->findOne();
+      if (!!$dbTopicCountryDesired) {
+        $dbTopicCountryDesired->setReserved($dbTopicCountryDesired->getReserved() + 1);
       } else {
         $this->error = "Selected desired country is no longer availbale";
         $this->errorCode = 400;
@@ -178,6 +178,7 @@ class Server
 
     $dbRegistrants->save();
     $dbTopicCountry->save();
+    $dbTopicCountryDesired->save();
     $dbRegistrantEvent->save();
     $dbRegistrantOccupation->save();
 
@@ -193,48 +194,48 @@ class Server
 
   public static function registrants($request)
   {
-    $dbRegistantEventQ = new db\db\RegistrantEventQuery();
+    $dbRegistrantEventQ = new db\db\RegistrantEventQuery();
     if (isset($request->topic))
-      $dbRegistantEvents = $dbRegistantEventQ->filterByTopicId($request->topic)->find();
+      $dbRegistantEvents = $dbRegistrantEventQ->filterByTopicId($request->topic)->find();
     if (isset($request->local))
-      $dbRegistantEvents = $dbRegistantEventQ->filterByLocal($request->local)->find();
+      $dbRegistantEvents = $dbRegistrantEventQ->filterByLocal($request->local)->find();
     if (isset($request->attended))
       if ($request->attended != -1)
-        $dbRegistantEvents = $dbRegistantEventQ->filterByHasAttended($request->attended)->find();
+        $dbRegistantEvents = $dbRegistrantEventQ->filterByHasAttended($request->attended)->find();
       else
-        $dbRegistantEvents = $dbRegistantEventQ->filterByHasAttended(null)->find();
+        $dbRegistantEvents = $dbRegistrantEventQ->filterByHasAttended(null)->find();
     if (isset($request->approved))
-      $dbRegistantEvents = $dbRegistantEventQ->filterByApproved($request->approved)->find();
+      $dbRegistantEvents = $dbRegistrantEventQ->filterByApproved($request->approved)->find();
     if (isset($request->orderby)) {
       switch ($request->orderby) {
         case 'surname':
-          $dbRegistantEvents = $dbRegistantEventQ->useRegistrantQuery()->orderBySurname()->endUse()->find();
+          $dbRegistantEvents = $dbRegistrantEventQ->useRegistrantQuery()->orderBySurname()->endUse()->find();
           break;
         case 'name':
-          $dbRegistantEvents = $dbRegistantEventQ->useRegistrantQuery()->orderByName()->endUse()->find();
+          $dbRegistantEvents = $dbRegistrantEventQ->useRegistrantQuery()->orderByName()->endUse()->find();
           break;
         case 'country':
-          $dbRegistantEvents = $dbRegistantEventQ->useCountryQuery()->orderByCountryName()->endUse()->find();
+          $dbRegistantEvents = $dbRegistrantEventQ->useCountryQuery()->orderByCountryName()->endUse()->find();
           break;
         case 'time':
-          $dbRegistantEvents = $dbRegistantEventQ->orderByRegistrationTime()->find();
+          $dbRegistantEvents = $dbRegistrantEventQ->orderByRegistrationTime()->find();
           break;
         case 'approvedtime':
-          $dbRegistantEvents = $dbRegistantEventQ->orderByApprovedTime()->find();
+          $dbRegistantEvents = $dbRegistrantEventQ->orderByApprovedTime()->find();
           break;
         default:
           throw new Exception("Error Processing Request", 1);
           break;
       }
     } else {
-      $dbRegistantEvents = $dbRegistantEventQ->useRegistrantQuery()->orderBySurname()->endUse()->find();
+      $dbRegistantEvents = $dbRegistrantEventQ->useRegistrantQuery()->orderBySurname()->endUse()->find();
     }
     if (isset($request->search))
-      $dbRegistantEvents = $dbRegistantEventQ->useRegistrantQuery()->where('registrant.surname LIKE ?', $request->search . "%")->endUse()->find();
+      $dbRegistantEvents = $dbRegistrantEventQ->useRegistrantQuery()->where('registrant.surname LIKE ?', $request->search . "%")->endUse()->find();
     $registrants = array();
     foreach ($dbRegistantEvents as $dbRegistantEvent) {
       $registrant = array();
-      $dbCountry = $dbRegistantEvent->getCountry();
+      $dbCountry = $dbRegistantEvent->getCountryRelatedByCountryId();
       $dbRegistrant = $dbRegistantEvent->getRegistrant();
       $dbTopic = $dbRegistantEvent->getTopic();
       $registrant['registrant_id'] = $dbRegistrant->getPrimaryKey();
@@ -250,6 +251,7 @@ class Server
       $registrant['email'] = $dbRegistrant->getEmail();
       $registrant['phone'] = $dbRegistrant->getPhone();
       $registrant['occupation'] = $dbRegistrant->getRegistrantOccupation()->getOccupation()->getOccupationName();
+
       switch ($registrant['occupation']) {
         case 'schoolstudent':
           $registrant['grade'] = $dbRegistrant->getRegistrantSchoolStudent()->getGrade();
@@ -267,13 +269,30 @@ class Server
       }
       array_push($registrants, $registrant);
     }
-    return $registrants;
+    $registrantsData = array();
+    $registrantsInfo = array();
+    $dbRegistrantEventQ = new db\db\RegistrantEventQuery();
+    $dbTopicQ = new db\db\TopicQuery();
+    $topics = $dbTopicQ->create()->find();
+    $registrantsInfo['totalnumberbytopic'] = array();
+    $registrantsInfo['totalapprovedbytopic'] = array();
+    $registrantsInfo['topicid'] = array();
+    foreach ($topics as $topic) {
+      array_push($registrantsInfo['topicid'], $topic->getTopicId());
+      array_push($registrantsInfo['totalnumberbytopic'], $dbRegistrantEventQ->create()->filterByTopicId($topic->getTopicId())->find()->count());
+      array_push($registrantsInfo['totalapprovedbytopic'], $dbRegistrantEventQ->create()->filterByTopicId($topic->getTopicId())->filterByApproved(1)->find()->count());
+    }
+    $registrantsInfo['totalnumber'] = $dbRegistrantEventQ->create()->find()->count();
+    $registrantsInfo['totalapproved'] = $dbRegistrantEventQ->filterByApproved(1)->find()->count();
+    $registrantsData["info"] = $registrantsInfo;
+    $registrantsData["registrants"] = $registrants;
+    return $registrantsData;
   }
 
   public static function approval($request)
   {
-    $dbRegistantEventQ = new db\db\RegistrantEventQuery();
-    $dbRegistantEvent = $dbRegistantEventQ->findPK($request->id);
+    $dbRegistrantEventQ = new db\db\RegistrantEventQuery();
+    $dbRegistantEvent = $dbRegistrantEventQ->findPK($request->id);
     switch ($request->action) {
       case 'local':
         $dbRegistantEvent->setLocal(true)->setApproved(true)->setApprovedTime(date('Y-m-d h:i:s', time()))->save();
@@ -314,8 +333,8 @@ class Server
 
   public static function checkin($request)
   {
-    $dbRegistantEventQ = new db\db\RegistrantEventQuery();
-    $dbRegistantEvent = $dbRegistantEventQ->findPK($request->id);
+    $dbRegistrantEventQ = new db\db\RegistrantEventQuery();
+    $dbRegistantEvent = $dbRegistrantEventQ->findPK($request->id);
     switch ($request->action) {
       case 'absent':
         $dbRegistantEvent->setHasAttended(false)->save();

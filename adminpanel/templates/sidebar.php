@@ -3,6 +3,9 @@
     <a id="registrants-link" href="/adminpanel" class="nav-link" data-toggle="pills">
       Registrants
     </a>
+    <a id="approval-link" href="/adminpanel/approval" class="nav-link" data-toggle="pills">
+      Registrants Approval
+    </a>
     <a id="approved-link" href="/adminpanel/approved" class="nav-link" data-toggle="pills">
       Approved Registrants
     </a>

@@ -1,7 +1,7 @@
 var approved = 0;
 
 function appendTableData() {
-  registrantsList.map(function (registrant) {
+  registrantsData["registrants"].map(function (registrant) {
     $("#registrants-table").append(
       `<tr>
         <th scope="row">${registrant["registrant_id"]}</th>
@@ -17,15 +17,14 @@ function appendTableData() {
 
 $(document).ready(function (event) {
   $("#registrant-info").hide();
-  getTopics({ update: true });
+  getTopics({ update: true, updateProgress: true });
 });
 
 function handleView(id) {
   if (id != 0) {
-    registrant = registrantsList.find(checkID, id);
-    selectedRegistrant = registrant;
+    selectedRegistrant = registrantsData["registrants"].find(checkID, id);
     // If Server uses UTC timezone
-    datetmp = new Date(registrant["time"].date);
+    datetmp = new Date(selectedRegistrant["time"].date);
     date = new Date(
       Date.UTC(
         datetmp.getFullYear(),
@@ -39,33 +38,43 @@ function handleView(id) {
     );
 
     // If Server uses local timezone
-    // date = new Date(registrant["time"].date);
+    // date = new Date(selectedRegistrant["time"].date);
     date = date.toLocaleString("ru-RU", {
       timeZone: "Asia/Oral",
     });
-    $("#name").html(registrant["name"]);
-    $("#surname").html(registrant["surname"]);
+    $("#name").html(selectedRegistrant["name"]);
+    $("#surname").html(selectedRegistrant["surname"]);
     $("#time").html(date);
     fullinstitution =
-      registrant["institution"] +
-      ` | <a target="_blank" rel="noopener noreferrer" href="https://2gis.kz/kazakhstan/search/${registrant["institution"]}">View Map</a>` +
-      (registrant["occupation"] == "teacher"
+      selectedRegistrant["institution"] +
+      ` | <a target="_blank" rel="noopener noreferrer" href="https://2gis.kz/kazakhstan/search/${selectedRegistrant["institution"]}">View Map</a>` +
+      (selectedRegistrant["occupation"] == "teacher"
         ? "<br>Teacher" +
-          (registrant["subject"] != null ? ": " + registrant["subject"] : "")
-        : registrant["occupation"] == "student"
+          (selectedRegistrant["subject"] != null
+            ? ": " + selectedRegistrant["subject"]
+            : "")
+        : selectedRegistrant["occupation"] == "student"
         ? "<br>Student" +
-          (registrant["major"] != null ? ": " + registrant["major"] : "")
+          (selectedRegistrant["major"] != null
+            ? ": " + selectedRegistrant["major"]
+            : "")
         : "<br>School Student" +
-          (registrant["grade"] != null ? ": " + registrant["grade"] : "") +
-          (registrant["gradeletter"] != null
-            ? " " + registrant["gradeletter"]
+          (selectedRegistrant["grade"] != null
+            ? ": " + selectedRegistrant["grade"]
+            : "") +
+          (selectedRegistrant["gradeletter"] != null
+            ? " " + selectedRegistrant["gradeletter"]
             : ""));
+    phonelink = `<a href="https://web.whatsapp.com/send?phone=${selectedRegistrant[
+      "phone"
+    ].substring(1)}" 
+    target="_blank">${selectedRegistrant["phone"]}</a>`;
     $("#institution").html(fullinstitution);
     $("#email").html(
-      `<a href="mailto:${registrant["email"]}">${registrant["email"]}</a>`
+      `<a href="mailto:${selectedRegistrant["email"]}">${selectedRegistrant["email"]}</a>`
     );
-    $("#phone").html(registrant["phone"]);
-    $("#country").html(registrant["country"]);
+    $("#phone").html(phonelink);
+    $("#country").html(selectedRegistrant["country"]);
     $("#registrant-info").show();
   } else {
     $("#registrant-info").hide();

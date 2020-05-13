@@ -44,6 +44,7 @@ function getAvailableCountries(reserved = 0) {
     dataType: "json",
     success: function (data) {
       if (data.success) {
+        console.log(data.countries);
         if (reserved == 0) {
           $("#country").empty();
           data.countries.map(function (country) {

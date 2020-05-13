@@ -75,6 +75,9 @@ $klein->respond('GET', '/adminpanel/[*:action]', function ($request, $response, 
       case 'registrants':
         AdminPanel::show("Registrants");
         break;
+      case 'approval':
+        AdminPanel::show("Registrants Approval");
+        break;
       case 'settings':
         AdminPanel::show("Settings");
         break;
