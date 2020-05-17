@@ -132,6 +132,8 @@ class Server
     $dbRegistrants->setEmail($request->email);
     $dbRegistrants->setPhone($request->phone);
     $dbRegistrants->setInstitution($request->institution);
+    if ($request->discord != "")
+      $dbRegistrants->setDiscord($request->discord);
 
     $dbTopicCountry = $dbTopicCountryQ->filterByTopicId($request->topic)->filterByCountryId($request->country)->filterByAvailable(1)->filterByReserved(0)->findOne();
     if (!!$dbTopicCountry) {
@@ -195,54 +197,58 @@ class Server
   public static function registrants($request)
   {
     $dbRegistrantEventQ = new db\db\RegistrantEventQuery();
+    $dbTopicCountryQ = new db\db\TopicCountryQuery();
+
+    if (isset($request->nodesired) && $request->nodesired == 1)
+      $dbRegistrantEvents = $dbRegistrantEventQ->filterByCountryDesired();
     if (isset($request->topic))
-      $dbRegistantEvents = $dbRegistrantEventQ->filterByTopicId($request->topic)->find();
+      $dbRegistrantEvents = $dbRegistrantEventQ->filterByTopicId($request->topic)->find();
     if (isset($request->local))
-      $dbRegistantEvents = $dbRegistrantEventQ->filterByLocal($request->local)->find();
+      $dbRegistrantEvents = $dbRegistrantEventQ->filterByLocal($request->local)->find();
     if (isset($request->attended))
       if ($request->attended != -1)
-        $dbRegistantEvents = $dbRegistrantEventQ->filterByHasAttended($request->attended)->find();
+        $dbRegistrantEvents = $dbRegistrantEventQ->filterByHasAttended($request->attended)->find();
       else
-        $dbRegistantEvents = $dbRegistrantEventQ->filterByHasAttended(null)->find();
+        $dbRegistrantEvents = $dbRegistrantEventQ->filterByHasAttended(null)->find();
     if (isset($request->approved))
-      $dbRegistantEvents = $dbRegistrantEventQ->filterByApproved($request->approved)->find();
+      $dbRegistrantEvents = $dbRegistrantEventQ->filterByApproved($request->approved)->find();
     if (isset($request->orderby)) {
       switch ($request->orderby) {
         case 'surname':
-          $dbRegistantEvents = $dbRegistrantEventQ->useRegistrantQuery()->orderBySurname()->endUse()->find();
+          $dbRegistrantEvents = $dbRegistrantEventQ->useRegistrantQuery()->orderBySurname()->endUse()->find();
           break;
         case 'name':
-          $dbRegistantEvents = $dbRegistrantEventQ->useRegistrantQuery()->orderByName()->endUse()->find();
+          $dbRegistrantEvents = $dbRegistrantEventQ->useRegistrantQuery()->orderByName()->endUse()->find();
           break;
         case 'country':
-          $dbRegistantEvents = $dbRegistrantEventQ->useCountryQuery()->orderByCountryName()->endUse()->find();
+          $dbRegistrantEvents = $dbRegistrantEventQ->useCountryRelatedByCountryIdQuery()->orderByCountryName()->endUse()->find();
           break;
         case 'time':
-          $dbRegistantEvents = $dbRegistrantEventQ->orderByRegistrationTime()->find();
+          $dbRegistrantEvents = $dbRegistrantEventQ->orderByRegistrationTime()->find();
           break;
         case 'approvedtime':
-          $dbRegistantEvents = $dbRegistrantEventQ->orderByApprovedTime()->find();
+          $dbRegistrantEvents = $dbRegistrantEventQ->orderByApprovedTime()->find();
           break;
         default:
           throw new Exception("Error Processing Request", 1);
           break;
       }
     } else {
-      $dbRegistantEvents = $dbRegistrantEventQ->useRegistrantQuery()->orderBySurname()->endUse()->find();
+      $dbRegistrantEvents = $dbRegistrantEventQ->useRegistrantQuery()->orderBySurname()->endUse()->find();
     }
     if (isset($request->search))
-      $dbRegistantEvents = $dbRegistrantEventQ->useRegistrantQuery()->where('registrant.surname LIKE ?', $request->search . "%")->endUse()->find();
+      $dbRegistrantEvents = $dbRegistrantEventQ->useRegistrantQuery()->where('registrant.surname LIKE ?', $request->search . "%")->endUse()->find();
     $registrants = array();
-    foreach ($dbRegistantEvents as $dbRegistantEvent) {
+    foreach ($dbRegistrantEvents as $dbRegistrantEvent) {
       $registrant = array();
-      $dbCountry = $dbRegistantEvent->getCountryRelatedByCountryId();
-      $dbRegistrant = $dbRegistantEvent->getRegistrant();
-      $dbTopic = $dbRegistantEvent->getTopic();
+      $dbCountry = $dbRegistrantEvent->getCountryRelatedByCountryId();
+      $dbRegistrant = $dbRegistrantEvent->getRegistrant();
+      $dbTopic = $dbRegistrantEvent->getTopic();
       $registrant['registrant_id'] = $dbRegistrant->getPrimaryKey();
-      $registrant['time'] = $dbRegistantEvent->getRegistrationTime();
-      $registrant['local'] = $dbRegistantEvent->getLocal();
-      $registrant['approved'] = $dbRegistantEvent->getApproved();
-      $registrant['attended'] = $dbRegistantEvent->getHasAttended();
+      $registrant['time'] = $dbRegistrantEvent->getRegistrationTime();
+      $registrant['local'] = $dbRegistrantEvent->getLocal();
+      $registrant['approved'] = $dbRegistrantEvent->getApproved();
+      $registrant['attended'] = $dbRegistrantEvent->getHasAttended();
       $registrant['name'] = $dbRegistrant->getName();
       $registrant['surname'] = $dbRegistrant->getSurname();
       $registrant['topic'] = $dbTopic->getTopicName();
@@ -250,6 +256,8 @@ class Server
       $registrant['institution'] = $dbRegistrant->getInstitution();
       $registrant['email'] = $dbRegistrant->getEmail();
       $registrant['phone'] = $dbRegistrant->getPhone();
+      $registrant['relevancy'] = $dbTopicCountryQ->create()->filterByCountryId($dbRegistrantEvent->getCountryId())->filterByTopicId($dbRegistrantEvent->getTopicId())->findOne()->getReserved();
+      $registrant['discord'] = $dbRegistrant->getDiscord();
       $registrant['occupation'] = $dbRegistrant->getRegistrantOccupation()->getOccupation()->getOccupationName();
 
       switch ($registrant['occupation']) {
@@ -292,17 +300,17 @@ class Server
   public static function approval($request)
   {
     $dbRegistrantEventQ = new db\db\RegistrantEventQuery();
-    $dbRegistantEvent = $dbRegistrantEventQ->findPK($request->id);
+    $dbRegistrantEvent = $dbRegistrantEventQ->findPK($request->id);
     switch ($request->action) {
       case 'local':
-        $dbRegistantEvent->setLocal(true)->setApproved(true)->setApprovedTime(date('Y-m-d h:i:s', time()))->save();
+        $dbRegistrantEvent->setLocal(true)->setApproved(true)->setApprovedTime(date('Y-m-d h:i:s', time()))->save();
         break;
       case 'foreign':
-        $dbRegistantEvent->setLocal(false)->setApproved(true)->setApprovedTime(date('Y-m-d h:i:s', time()))->save();
+        $dbRegistrantEvent->setLocal(false)->setApproved(true)->setApprovedTime(date('Y-m-d h:i:s', time()))->save();
         break;
       case 'deny':
         $dbTopicCountryQ = new db\db\TopicCountryQuery();
-        $dbRegistant = $dbRegistantEvent->getRegistrant();
+        $dbRegistant = $dbRegistrantEvent->getRegistrant();
         $dbRegistantOccupation = $dbRegistant->getRegistrantOccupation();
         switch ($dbRegistantOccupation->getOccupation()->getOccupationName()) {
           case 'teacher':
@@ -319,9 +327,9 @@ class Server
             break;
         }
         $dbRegistantOccupation->delete();
-        $dbRegistantEvent->delete();
+        $dbRegistrantEvent->delete();
         $dbRegistant->delete();
-        $dbTopicCountry = $dbTopicCountryQ->filterByTopicId($dbRegistantEvent->getTopicId())->filterByCountryId($dbRegistantEvent->getCountryId())->findOne();
+        $dbTopicCountry = $dbTopicCountryQ->filterByTopicId($dbRegistrantEvent->getTopicId())->filterByCountryId($dbRegistrantEvent->getCountryId())->findOne();
         $dbTopicCountry->setAvailable(true)->save();
         break;
 
@@ -334,13 +342,13 @@ class Server
   public static function checkin($request)
   {
     $dbRegistrantEventQ = new db\db\RegistrantEventQuery();
-    $dbRegistantEvent = $dbRegistrantEventQ->findPK($request->id);
+    $dbRegistrantEvent = $dbRegistrantEventQ->findPK($request->id);
     switch ($request->action) {
       case 'absent':
-        $dbRegistantEvent->setHasAttended(false)->save();
+        $dbRegistrantEvent->setHasAttended(false)->save();
         break;
       case 'attended':
-        $dbRegistantEvent->setHasAttended(true)->save();
+        $dbRegistrantEvent->setHasAttended(true)->save();
         break;
       default:
         throw new Exception("Error Processing Request", 1);

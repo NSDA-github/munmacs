@@ -59,6 +59,7 @@ CREATE TABLE `registrant`
     `surname` VARCHAR(50) NOT NULL,
     `email` VARCHAR(80) NOT NULL,
     `phone` VARCHAR(12) NOT NULL,
+    `discord` VARCHAR(255),
     `institution` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`registrant_id`),
     INDEX `surname` (`surname`)

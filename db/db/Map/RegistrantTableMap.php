@@ -59,7 +59,7 @@ class RegistrantTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 6;
+    const NUM_COLUMNS = 7;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class RegistrantTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 6;
+    const NUM_HYDRATE_COLUMNS = 7;
 
     /**
      * the column name for the registrant_id field
@@ -97,6 +97,11 @@ class RegistrantTableMap extends TableMap
     const COL_PHONE = 'registrant.phone';
 
     /**
+     * the column name for the discord field
+     */
+    const COL_DISCORD = 'registrant.discord';
+
+    /**
      * the column name for the institution field
      */
     const COL_INSTITUTION = 'registrant.institution';
@@ -113,11 +118,11 @@ class RegistrantTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('RegistrantId', 'Name', 'Surname', 'Email', 'Phone', 'Institution', ),
-        self::TYPE_CAMELNAME     => array('registrantId', 'name', 'surname', 'email', 'phone', 'institution', ),
-        self::TYPE_COLNAME       => array(RegistrantTableMap::COL_REGISTRANT_ID, RegistrantTableMap::COL_NAME, RegistrantTableMap::COL_SURNAME, RegistrantTableMap::COL_EMAIL, RegistrantTableMap::COL_PHONE, RegistrantTableMap::COL_INSTITUTION, ),
-        self::TYPE_FIELDNAME     => array('registrant_id', 'name', 'surname', 'email', 'phone', 'institution', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('RegistrantId', 'Name', 'Surname', 'Email', 'Phone', 'Discord', 'Institution', ),
+        self::TYPE_CAMELNAME     => array('registrantId', 'name', 'surname', 'email', 'phone', 'discord', 'institution', ),
+        self::TYPE_COLNAME       => array(RegistrantTableMap::COL_REGISTRANT_ID, RegistrantTableMap::COL_NAME, RegistrantTableMap::COL_SURNAME, RegistrantTableMap::COL_EMAIL, RegistrantTableMap::COL_PHONE, RegistrantTableMap::COL_DISCORD, RegistrantTableMap::COL_INSTITUTION, ),
+        self::TYPE_FIELDNAME     => array('registrant_id', 'name', 'surname', 'email', 'phone', 'discord', 'institution', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -127,11 +132,11 @@ class RegistrantTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('RegistrantId' => 0, 'Name' => 1, 'Surname' => 2, 'Email' => 3, 'Phone' => 4, 'Institution' => 5, ),
-        self::TYPE_CAMELNAME     => array('registrantId' => 0, 'name' => 1, 'surname' => 2, 'email' => 3, 'phone' => 4, 'institution' => 5, ),
-        self::TYPE_COLNAME       => array(RegistrantTableMap::COL_REGISTRANT_ID => 0, RegistrantTableMap::COL_NAME => 1, RegistrantTableMap::COL_SURNAME => 2, RegistrantTableMap::COL_EMAIL => 3, RegistrantTableMap::COL_PHONE => 4, RegistrantTableMap::COL_INSTITUTION => 5, ),
-        self::TYPE_FIELDNAME     => array('registrant_id' => 0, 'name' => 1, 'surname' => 2, 'email' => 3, 'phone' => 4, 'institution' => 5, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('RegistrantId' => 0, 'Name' => 1, 'Surname' => 2, 'Email' => 3, 'Phone' => 4, 'Discord' => 5, 'Institution' => 6, ),
+        self::TYPE_CAMELNAME     => array('registrantId' => 0, 'name' => 1, 'surname' => 2, 'email' => 3, 'phone' => 4, 'discord' => 5, 'institution' => 6, ),
+        self::TYPE_COLNAME       => array(RegistrantTableMap::COL_REGISTRANT_ID => 0, RegistrantTableMap::COL_NAME => 1, RegistrantTableMap::COL_SURNAME => 2, RegistrantTableMap::COL_EMAIL => 3, RegistrantTableMap::COL_PHONE => 4, RegistrantTableMap::COL_DISCORD => 5, RegistrantTableMap::COL_INSTITUTION => 6, ),
+        self::TYPE_FIELDNAME     => array('registrant_id' => 0, 'name' => 1, 'surname' => 2, 'email' => 3, 'phone' => 4, 'discord' => 5, 'institution' => 6, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -156,6 +161,7 @@ class RegistrantTableMap extends TableMap
         $this->addColumn('surname', 'Surname', 'VARCHAR', true, 50, null);
         $this->addColumn('email', 'Email', 'VARCHAR', true, 80, null);
         $this->addColumn('phone', 'Phone', 'VARCHAR', true, 12, null);
+        $this->addColumn('discord', 'Discord', 'VARCHAR', false, 255, null);
         $this->addColumn('institution', 'Institution', 'VARCHAR', true, 255, null);
     } // initialize()
 
@@ -347,6 +353,7 @@ class RegistrantTableMap extends TableMap
             $criteria->addSelectColumn(RegistrantTableMap::COL_SURNAME);
             $criteria->addSelectColumn(RegistrantTableMap::COL_EMAIL);
             $criteria->addSelectColumn(RegistrantTableMap::COL_PHONE);
+            $criteria->addSelectColumn(RegistrantTableMap::COL_DISCORD);
             $criteria->addSelectColumn(RegistrantTableMap::COL_INSTITUTION);
         } else {
             $criteria->addSelectColumn($alias . '.registrant_id');
@@ -354,6 +361,7 @@ class RegistrantTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.surname');
             $criteria->addSelectColumn($alias . '.email');
             $criteria->addSelectColumn($alias . '.phone');
+            $criteria->addSelectColumn($alias . '.discord');
             $criteria->addSelectColumn($alias . '.institution');
         }
     }

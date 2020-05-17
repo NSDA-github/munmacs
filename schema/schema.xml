@@ -35,6 +35,7 @@
     <column name="surname" phpName="Surname" type="VARCHAR" size="50" required="true"/>
     <column name="email" phpName="Email" type="VARCHAR" size="80" required="true"/>
     <column name="phone" phpName="Phone" type="VARCHAR" size="12" required="true"/>
+    <column name="discord" phpName="Discord" type="VARCHAR" size="255"/>
     <column name="institution" phpName="Institution" type="VARCHAR" size="255" required="true"/>
     <index name="surname">
       <index-column name="surname"/>

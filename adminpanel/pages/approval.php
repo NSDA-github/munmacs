@@ -2,7 +2,7 @@
   <div class="tab-content" id="tabContent" style="padding-top: 30px; padding-left: 30px;">
     <div class="tab-pane fade" id="tab-panel" role="tabpanel">
       <h1>Registrants Approval</h1>
-      <div class="row mb-5">
+      <div class="row mb-3">
         <div class="col-8">
           <div class="table-scroll mb-3">
             <table class="table table-striped table-bordered">
@@ -12,7 +12,8 @@
                   <th scope="col">Name</th>
                   <th scope="col">Surname</th>
                   <th scope="col">Country</th>
-                  <th scope="col">Local</th>
+                  <th scope="col">Relevancy</th>
+                  <th scope="col">Discord</th>
                   <th style="width: 95px;" scope="col">Action</th>
                 </tr>
               </thead>
@@ -24,43 +25,12 @@
           <strong><label style="font-size: 1.5rem;">Data Filter Options:</label></strong>
           <div class="input-group mb-2">
             <div class="input-group-prepend">
-              <label class="input-group-text" for="orderby">Order By:</label>
-            </div>
-            <select onchange="updateRegistrants()" class="custom-select" style="width:200px" name="orderby" id="orderby">
-              <option value="name">Name</option>
-              <option value="surname" selected>Surname</option>
-              <option value="country">Country</option>
-              <option value="time">Registration Time</option>
-              <option value="approvedtime">Approval Time</option>
-            </select>
-          </div>
-          <div class="input-group mb-2">
-            <div class="input-group-prepend">
               <label class="input-group-text" for="topic">Topic:</label>
             </div>
             <select onchange="updateRegistrants()" class="custom-select" style="width:200px" name="topic" id="topic">
             </select>
           </div>
-          <div class="input-group mb-2">
-            <div class="input-group-prepend">
-              <label class="input-group-text" for="local">Local:</label>
-            </div>
-            <select onchange="updateRegistrants()" class="custom-select" style="width:200px" name="local" id="local">
-              <option value="">Any</option>
-              <option value="1">Local</option>
-              <option value="0">Foreign</option>
-            </select>
-          </div>
-          <div class="input-group mb-5">
-            <div class="input-group-prepend">
-              <label class="input-group-text" for="has-attended">Presence:</label>
-            </div>
-            <select onchange="updateRegistrants()" class="custom-select" style="width:200px" name="has-attended" id="has-attended">
-              <option value="-1">Undefined</option>
-              <option value="1">Attended</option>
-              <option value="0">Was absent</option>
-            </select>
-          </div>
+          <div class="mb-4"></div>
           <form id="search-form">
             <div class="input-group input-group-sm mb-3" style="width: 100%;">
               <div class="input-group-prepend">
@@ -74,38 +44,39 @@
               </div>
             </div>
           </form>
+          <form id="search-form">
+            <div class="input-group input-group-sm mb-3" style="width: 100%;">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-sm">Search By Discord</span>
+              </div>
+              <input type="text" class="form-control" id="search-text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" />
+              <div class="input-group-append">
+                <button class="btn btn-secondary" type="submit" id="search-btn" onclick="search()">
+                  Go
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
       <div id="registrant-info">
+        <strong><label style="font-size: 1.5rem;" id="name"></label></strong>
+        <strong><label style="font-size: 1.5rem;" id="surname"></label></strong>
         <table class="table-borderless col-8 table-sm mb-4">
           <thead>
-            <th style="width: 100px;"></th>
-            <th></th>
+            <th>Event Info:</th>
+            <th>Contacts:</th>
+            <th>Institution:</th>
           </thead>
           <tbody>
             <tr>
-              <th>Name:</th>
-              <td id="name">N/A</td>
+              <td id="topicname">N/A</td>
+              <td id="email">N/A</td>
+              <td id="institution" rowspan="2">N/A</td>
             </tr>
             <tr>
-              <th>Surname:</th>
-              <td id="surname">N/A</td>
-            </tr>
-            <tr>
-              <th></th>
-              <td></td>
-            </tr>
-            <tr>
-              <th>Institution:</th>
-              <td id="institution">N/A</td>
-            </tr>
-            <tr>
-              <th></th>
-              <td id="name"></td>
-            </tr>
-            <tr>
-              <th>Country:</th>
-              <td id="country">N/A</td>
+              <td id="countryname">N/A</td>
+              <td id="phone">N/A</td>
             </tr>
           </tbody>
         </table>

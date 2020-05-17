@@ -105,6 +105,13 @@ abstract class Registrant implements ActiveRecordInterface
     protected $phone;
 
     /**
+     * The value for the discord field.
+     *
+     * @var        string
+     */
+    protected $discord;
+
+    /**
      * The value for the institution field.
      *
      * @var        string
@@ -420,6 +427,16 @@ abstract class Registrant implements ActiveRecordInterface
     }
 
     /**
+     * Get the [discord] column value.
+     *
+     * @return string
+     */
+    public function getDiscord()
+    {
+        return $this->discord;
+    }
+
+    /**
      * Get the [institution] column value.
      *
      * @return string
@@ -530,6 +547,26 @@ abstract class Registrant implements ActiveRecordInterface
     } // setPhone()
 
     /**
+     * Set the value of [discord] column.
+     *
+     * @param string $v new value
+     * @return $this|\db\db\Registrant The current object (for fluent API support)
+     */
+    public function setDiscord($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->discord !== $v) {
+            $this->discord = $v;
+            $this->modifiedColumns[RegistrantTableMap::COL_DISCORD] = true;
+        }
+
+        return $this;
+    } // setDiscord()
+
+    /**
      * Set the value of [institution] column.
      *
      * @param string $v new value
@@ -600,7 +637,10 @@ abstract class Registrant implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : RegistrantTableMap::translateFieldName('Phone', TableMap::TYPE_PHPNAME, $indexType)];
             $this->phone = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : RegistrantTableMap::translateFieldName('Institution', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : RegistrantTableMap::translateFieldName('Discord', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->discord = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : RegistrantTableMap::translateFieldName('Institution', TableMap::TYPE_PHPNAME, $indexType)];
             $this->institution = (null !== $col) ? (string) $col : null;
             $this->resetModified();
 
@@ -610,7 +650,7 @@ abstract class Registrant implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 6; // 6 = RegistrantTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 7; // 7 = RegistrantTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\db\\db\\Registrant'), 0, $e);
@@ -866,6 +906,9 @@ abstract class Registrant implements ActiveRecordInterface
         if ($this->isColumnModified(RegistrantTableMap::COL_PHONE)) {
             $modifiedColumns[':p' . $index++]  = 'phone';
         }
+        if ($this->isColumnModified(RegistrantTableMap::COL_DISCORD)) {
+            $modifiedColumns[':p' . $index++]  = 'discord';
+        }
         if ($this->isColumnModified(RegistrantTableMap::COL_INSTITUTION)) {
             $modifiedColumns[':p' . $index++]  = 'institution';
         }
@@ -894,6 +937,9 @@ abstract class Registrant implements ActiveRecordInterface
                         break;
                     case 'phone':
                         $stmt->bindValue($identifier, $this->phone, PDO::PARAM_STR);
+                        break;
+                    case 'discord':
+                        $stmt->bindValue($identifier, $this->discord, PDO::PARAM_STR);
                         break;
                     case 'institution':
                         $stmt->bindValue($identifier, $this->institution, PDO::PARAM_STR);
@@ -976,6 +1022,9 @@ abstract class Registrant implements ActiveRecordInterface
                 return $this->getPhone();
                 break;
             case 5:
+                return $this->getDiscord();
+                break;
+            case 6:
                 return $this->getInstitution();
                 break;
             default:
@@ -1013,7 +1062,8 @@ abstract class Registrant implements ActiveRecordInterface
             $keys[2] => $this->getSurname(),
             $keys[3] => $this->getEmail(),
             $keys[4] => $this->getPhone(),
-            $keys[5] => $this->getInstitution(),
+            $keys[5] => $this->getDiscord(),
+            $keys[6] => $this->getInstitution(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1146,6 +1196,9 @@ abstract class Registrant implements ActiveRecordInterface
                 $this->setPhone($value);
                 break;
             case 5:
+                $this->setDiscord($value);
+                break;
+            case 6:
                 $this->setInstitution($value);
                 break;
         } // switch()
@@ -1190,7 +1243,10 @@ abstract class Registrant implements ActiveRecordInterface
             $this->setPhone($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setInstitution($arr[$keys[5]]);
+            $this->setDiscord($arr[$keys[5]]);
+        }
+        if (array_key_exists($keys[6], $arr)) {
+            $this->setInstitution($arr[$keys[6]]);
         }
     }
 
@@ -1247,6 +1303,9 @@ abstract class Registrant implements ActiveRecordInterface
         }
         if ($this->isColumnModified(RegistrantTableMap::COL_PHONE)) {
             $criteria->add(RegistrantTableMap::COL_PHONE, $this->phone);
+        }
+        if ($this->isColumnModified(RegistrantTableMap::COL_DISCORD)) {
+            $criteria->add(RegistrantTableMap::COL_DISCORD, $this->discord);
         }
         if ($this->isColumnModified(RegistrantTableMap::COL_INSTITUTION)) {
             $criteria->add(RegistrantTableMap::COL_INSTITUTION, $this->institution);
@@ -1341,6 +1400,7 @@ abstract class Registrant implements ActiveRecordInterface
         $copyObj->setSurname($this->getSurname());
         $copyObj->setEmail($this->getEmail());
         $copyObj->setPhone($this->getPhone());
+        $copyObj->setDiscord($this->getDiscord());
         $copyObj->setInstitution($this->getInstitution());
 
         if ($deepCopy) {
@@ -1608,6 +1668,7 @@ abstract class Registrant implements ActiveRecordInterface
         $this->surname = null;
         $this->email = null;
         $this->phone = null;
+        $this->discord = null;
         $this->institution = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();

@@ -20,7 +20,7 @@ body {
 }
 
 .table-scroll {
-  height: 40vh;
+  height: 25rem;
   overflow-y: auto;
   /* background-color: #f0f0f0; */
   /* border: 1px solid var(--un-light-grey); */

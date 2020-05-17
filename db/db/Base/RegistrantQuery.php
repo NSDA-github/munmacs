@@ -25,6 +25,7 @@ use db\db\Map\RegistrantTableMap;
  * @method     ChildRegistrantQuery orderBySurname($order = Criteria::ASC) Order by the surname column
  * @method     ChildRegistrantQuery orderByEmail($order = Criteria::ASC) Order by the email column
  * @method     ChildRegistrantQuery orderByPhone($order = Criteria::ASC) Order by the phone column
+ * @method     ChildRegistrantQuery orderByDiscord($order = Criteria::ASC) Order by the discord column
  * @method     ChildRegistrantQuery orderByInstitution($order = Criteria::ASC) Order by the institution column
  *
  * @method     ChildRegistrantQuery groupByRegistrantId() Group by the registrant_id column
@@ -32,6 +33,7 @@ use db\db\Map\RegistrantTableMap;
  * @method     ChildRegistrantQuery groupBySurname() Group by the surname column
  * @method     ChildRegistrantQuery groupByEmail() Group by the email column
  * @method     ChildRegistrantQuery groupByPhone() Group by the phone column
+ * @method     ChildRegistrantQuery groupByDiscord() Group by the discord column
  * @method     ChildRegistrantQuery groupByInstitution() Group by the institution column
  *
  * @method     ChildRegistrantQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
@@ -102,6 +104,7 @@ use db\db\Map\RegistrantTableMap;
  * @method     ChildRegistrant findOneBySurname(string $surname) Return the first ChildRegistrant filtered by the surname column
  * @method     ChildRegistrant findOneByEmail(string $email) Return the first ChildRegistrant filtered by the email column
  * @method     ChildRegistrant findOneByPhone(string $phone) Return the first ChildRegistrant filtered by the phone column
+ * @method     ChildRegistrant findOneByDiscord(string $discord) Return the first ChildRegistrant filtered by the discord column
  * @method     ChildRegistrant findOneByInstitution(string $institution) Return the first ChildRegistrant filtered by the institution column *
 
  * @method     ChildRegistrant requirePk($key, ConnectionInterface $con = null) Return the ChildRegistrant by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -112,6 +115,7 @@ use db\db\Map\RegistrantTableMap;
  * @method     ChildRegistrant requireOneBySurname(string $surname) Return the first ChildRegistrant filtered by the surname column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildRegistrant requireOneByEmail(string $email) Return the first ChildRegistrant filtered by the email column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildRegistrant requireOneByPhone(string $phone) Return the first ChildRegistrant filtered by the phone column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildRegistrant requireOneByDiscord(string $discord) Return the first ChildRegistrant filtered by the discord column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildRegistrant requireOneByInstitution(string $institution) Return the first ChildRegistrant filtered by the institution column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildRegistrant[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildRegistrant objects based on current ModelCriteria
@@ -120,6 +124,7 @@ use db\db\Map\RegistrantTableMap;
  * @method     ChildRegistrant[]|ObjectCollection findBySurname(string $surname) Return ChildRegistrant objects filtered by the surname column
  * @method     ChildRegistrant[]|ObjectCollection findByEmail(string $email) Return ChildRegistrant objects filtered by the email column
  * @method     ChildRegistrant[]|ObjectCollection findByPhone(string $phone) Return ChildRegistrant objects filtered by the phone column
+ * @method     ChildRegistrant[]|ObjectCollection findByDiscord(string $discord) Return ChildRegistrant objects filtered by the discord column
  * @method     ChildRegistrant[]|ObjectCollection findByInstitution(string $institution) Return ChildRegistrant objects filtered by the institution column
  * @method     ChildRegistrant[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
@@ -219,7 +224,7 @@ abstract class RegistrantQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT registrant_id, name, surname, email, phone, institution FROM registrant WHERE registrant_id = :p0';
+        $sql = 'SELECT registrant_id, name, surname, email, phone, discord, institution FROM registrant WHERE registrant_id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -448,6 +453,31 @@ abstract class RegistrantQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(RegistrantTableMap::COL_PHONE, $phone, $comparison);
+    }
+
+    /**
+     * Filter the query on the discord column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByDiscord('fooValue');   // WHERE discord = 'fooValue'
+     * $query->filterByDiscord('%fooValue%', Criteria::LIKE); // WHERE discord LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $discord The value to use as filter.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildRegistrantQuery The current query, for fluid interface
+     */
+    public function filterByDiscord($discord = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($discord)) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(RegistrantTableMap::COL_DISCORD, $discord, $comparison);
     }
 
     /**

@@ -1,6 +1,7 @@
 var registrantsData;
 var selectedRegistrant;
 var selectedTopic = 0;
+var nodesired = 0;
 
 function reportError(data) {
   try {
@@ -72,6 +73,7 @@ function getRegistrants(searchText = "") {
     data.push(Object({ name: "local", value: $("#local").val() }));
   if ($("#has-attended").val() != null && $("#has-attended").val() != "")
     data.push(Object({ name: "attended", value: $("#has-attended").val() }));
+  if (nodesired) data.push(Object({ name: "nodesired", value: 1 }));
 
   if (searchText != "")
     data.push(Object({ name: "search", value: searchText }));
