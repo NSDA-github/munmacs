@@ -55,6 +55,7 @@ function getAvailableCountries(reserved = 0) {
           $("#country").selectpicker("refresh");
         } else {
           $("#desiredcountry").empty();
+          $("#desiredcountry").append(`<option value="">None</option>`);
           data.countries.map(function (country) {
             $("#desiredcountry").append(
               `<option value=${country[0]}>${country[1]}</option>`

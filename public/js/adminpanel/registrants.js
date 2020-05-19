@@ -17,7 +17,7 @@ function appendTableData() {
 
 $(document).ready(function (event) {
   $("#registrant-info").hide();
-  getTopics({ update: true, updateProgress: true });
+  $.when(getTopics()).done(updateRegistrants({ updateProgress: true }));
 });
 
 function handleView(id) {

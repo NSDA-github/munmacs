@@ -31,27 +31,27 @@
             </select>
           </div>
           <div class="mb-4"></div>
-          <form id="search-form">
+          <form id="surname-search-form">
             <div class="input-group input-group-sm mb-3" style="width: 100%;">
               <div class="input-group-prepend">
                 <span class="input-group-text" id="inputGroup-sizing-sm">Search By Surname</span>
               </div>
-              <input type="text" class="form-control" id="search-text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" />
+              <input type="text" class="form-control" name="surname-search" id="surname-search" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" />
               <div class="input-group-append">
-                <button class="btn btn-secondary" type="submit" id="search-btn" onclick="search()">
+                <button class="btn btn-secondary" type="submit" name="surname" id="surname-search-btn" onclick="search(name)">
                   Go
                 </button>
               </div>
             </div>
           </form>
-          <form id="search-form">
+          <form id="discord-search-form">
             <div class="input-group input-group-sm mb-3" style="width: 100%;">
               <div class="input-group-prepend">
                 <span class="input-group-text" id="inputGroup-sizing-sm">Search By Discord</span>
               </div>
-              <input type="text" class="form-control" id="search-text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" />
+              <input type="text" class="form-control" name="discord-search" id="discord-search" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" />
               <div class="input-group-append">
-                <button class="btn btn-secondary" type="submit" id="search-btn" onclick="search()">
+                <button class="btn btn-secondary" type="submit" name="discord" id="discord-search-btn" onclick="search(name)">
                   Go
                 </button>
               </div>
@@ -72,14 +72,33 @@
             <tr>
               <td id="topicname">N/A</td>
               <td id="email">N/A</td>
-              <td id="institution" rowspan="2">N/A</td>
+              <td id="institution">N/A</td>
             </tr>
             <tr>
               <td id="countryname">N/A</td>
               <td id="phone">N/A</td>
+              <td id="institution-details">N/A</td>
             </tr>
           </tbody>
         </table>
+        <form id="discord-edit-form">
+          <div class="form-row mb-3">
+            <div class="col-4">
+              <div class="input-group" style="width: 100%;">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="inputGroup-sizing">Discord ID:</span>
+                </div>
+                <input type="text" class="form-control" name="discordEdit" id="discordEdit" aria-label="Sizing example input" aria-describedby="inputGroup-sizing" pattern=".*#([0-9]){4}" />
+                <div class="input-group-append">
+                  <button class="btn btn-primary" type="submit" name="discord-edit-btn" value="discordEdit" id="discord-edit-btn" onclick="confirmDiscordEdit(event, value)">
+                    Edit Username
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+
         <button class="btn btn-danger" value="absent" onclick="confirmCheckIn(value)">
           Absent
         </button>
@@ -101,7 +120,7 @@
             <button type="button" class="btn btn-secondary" data-dismiss="modal" autofocus>
               Cancel
             </button>
-            <button id="confirm-btn" value="" onclick="handleCheckIn(value)" type="button" class="btn btn-primary">
+            <button id="confirm-btn" value="" onclick="handleAction(value)" type="button" class="btn btn-primary">
               Confirm
             </button>
           </div>

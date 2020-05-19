@@ -317,6 +317,25 @@ $klein->respond('POST', '/api/[a:title]', function ($request, $response, $servic
         }
         break;
 
+      case "editdiscord":
+        if (isset($_SESSION["user"])) {
+          if (isset($request->discord) && isset($request->id)) {
+            Server::editDiscord($request);
+            $response->status(200);
+            $res["success"] = true;
+            $res["msg"] = "Success";
+            $response->json($res);
+          } else {
+            $response->status(400);
+            $res["success"] = false;
+            $res["msg"] = "Bad user request";
+            $response->json($res);
+          }
+        } else {
+          header("Location: /prohibited");
+        }
+        break;
+
       case "approval":
         if (isset($_SESSION["user"])) {
           if (isset($request->action) && isset($request->id)) {

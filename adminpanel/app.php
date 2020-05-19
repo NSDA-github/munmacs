@@ -25,6 +25,8 @@ class AdminPanel
       echo "<title> $page | Admin Panel</title>";
       switch ($page) {
         case 'Registrants Approval':
+          echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>';
+          echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/additional-methods.min.js"></script>';
           echo '<script src="/js/adminpanel/approval.js"></script>';
           break;
         case 'Registrants':

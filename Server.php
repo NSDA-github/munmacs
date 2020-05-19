@@ -180,7 +180,8 @@ class Server
 
     $dbRegistrants->save();
     $dbTopicCountry->save();
-    $dbTopicCountryDesired->save();
+    if ($dbTopicCountryDesired)
+      $dbTopicCountryDesired->save();
     $dbRegistrantEvent->save();
     $dbRegistrantOccupation->save();
 
@@ -237,7 +238,17 @@ class Server
       $dbRegistrantEvents = $dbRegistrantEventQ->useRegistrantQuery()->orderBySurname()->endUse()->find();
     }
     if (isset($request->search))
-      $dbRegistrantEvents = $dbRegistrantEventQ->useRegistrantQuery()->where('registrant.surname LIKE ?', $request->search . "%")->endUse()->find();
+      switch ($request->searchmode) {
+        case 'surname':
+          $dbRegistrantEvents = $dbRegistrantEventQ->useRegistrantQuery()->where('registrant.surname LIKE ?', $request->search . "%")->endUse()->find();
+          break;
+        case 'discord':
+          $dbRegistrantEvents = $dbRegistrantEventQ->useRegistrantQuery()->where('registrant.discord LIKE ?', $request->search . "%")->endUse()->find();
+          break;
+        default:
+          throw new Exception("Error Processing Request: Search by " . $request->searchmode, 1);
+          break;
+      }
     $registrants = array();
     foreach ($dbRegistrantEvents as $dbRegistrantEvent) {
       $registrant = array();
@@ -337,6 +348,13 @@ class Server
         throw new Exception("Error Processing Request", 1);
         break;
     }
+  }
+
+  public static function editDiscord($request)
+  {
+    $dbRegistrantQ = new db\db\RegistrantQuery();
+    $dbRegistrant = $dbRegistrantQ->filterByRegistrantId($request->id)->findOne();
+    $dbRegistrant->setDiscord($request->discord)->save();
   }
 
   public static function checkin($request)

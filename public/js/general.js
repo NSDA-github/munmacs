@@ -2,6 +2,7 @@ var registrantsData;
 var selectedRegistrant;
 var selectedTopic = 0;
 var nodesired = 0;
+var orderby = "time";
 
 function reportError(data) {
   try {
@@ -35,7 +36,7 @@ function viewButton(id) {
       `;
 }
 
-function getTopics(options = Object({ update: false, updateProgress: false })) {
+function getTopics(options = Object({})) {
   data = Array(1);
   return $.ajax({
     type: "POST",
@@ -47,7 +48,6 @@ function getTopics(options = Object({ update: false, updateProgress: false })) {
         data.topics.map(function (topic) {
           $("#topic").append(`<option value=${topic[0]}>${topic[1]}</option>`);
         });
-        if (options.update == true) updateRegistrants({ updateProgress: true });
       } else {
         reportError(data);
       }
@@ -58,7 +58,7 @@ function getTopics(options = Object({ update: false, updateProgress: false })) {
   });
 }
 
-function getRegistrants(searchText = "") {
+function getRegistrants(searchText = "", searchMode = "surname") {
   var data = [];
   data.push(Object({ name: "action", value: "get" }));
   if ($("#approved-select").val() != null && $("#approved-select").val() != "")
@@ -67,6 +67,7 @@ function getRegistrants(searchText = "") {
     data.push(Object({ name: "approved", value: approved }));
   if ($("#orderby").val() != null && $("#orderby").val() != "")
     data.push(Object({ name: "orderby", value: $("#orderby").val() }));
+  else if (orderby) data.push(Object({ name: "orderby", value: orderby }));
   if ($("#topic").val() != null && $("#topic").val() != "")
     data.push(Object({ name: "topic", value: $("#topic").val() }));
   if ($("#local").val() != null && $("#local").val() != "")
@@ -75,8 +76,10 @@ function getRegistrants(searchText = "") {
     data.push(Object({ name: "attended", value: $("#has-attended").val() }));
   if (nodesired) data.push(Object({ name: "nodesired", value: 1 }));
 
+  data.push(Object({ name: "searchmode", value: searchMode }));
   if (searchText != "")
     data.push(Object({ name: "search", value: searchText }));
+
   console.log(data);
   return $.ajax({
     type: "POST",
@@ -99,16 +102,31 @@ function getRegistrants(searchText = "") {
   });
 }
 
-function updateRegistrants(
-  options = Object({ searchText: "", updateProgress: false })
-) {
-  $.when(getRegistrants(options.searchText)).done(function () {
-    $("#registrants-table").empty();
-    appendTableData();
-    if (options.updateProgress) {
-      updateProgress();
-    }
+function search(searchMode = "surname") {
+  event.preventDefault();
+  console.log(searchMode);
+  updateRegistrants({
+    searchText: $(`#${searchMode}-search`).val(),
+    searchMode,
   });
+}
+
+function updateRegistrants(
+  options = Object({
+    searchText: "",
+    updateProgress: false,
+    searchMode: "surname",
+  })
+) {
+  $.when(getRegistrants(options.searchText, options.searchMode)).done(
+    function () {
+      $("#registrants-table").empty();
+      appendTableData();
+      if (options.updateProgress) {
+        updateProgress();
+      }
+    }
+  );
 }
 
 function updateProgress() {
@@ -149,6 +167,44 @@ function updateProgress() {
   }
 
   $("#total-progress").width(totalProgress + "%");
+}
+
+function handleAction(action) {
+  switch (action) {
+    case "discordEdit":
+      data = Array(2);
+      data[0] = Object({ name: "discord", value: $("#discordEdit").val() });
+      data[1] = Object({
+        name: "id",
+        value: selectedRegistrant["registrant_id"],
+      });
+      console.log(data);
+      $.ajax({
+        type: "POST",
+        url: "/api/editdiscord",
+        data: data,
+        dataType: "json",
+        success: function (data) {
+          if (data.success) {
+            console.log(data);
+            updateRegistrants();
+            handleView(0);
+          } else {
+            reportError(data);
+          }
+          $("#confirm").modal("hide");
+        },
+
+        error: function (data) {
+          $("#confirm").modal("hide");
+          reportError(data);
+        },
+      });
+      break;
+
+    default:
+      break;
+  }
 }
 
 function checkID(registrant) {

@@ -19,11 +19,6 @@ function appendTableData() {
   });
 }
 
-function search() {
-  console.log($("#search-text").val());
-  updateRegistrants($("#search-text").val());
-}
-
 $(document).ready(function (event) {
   $("#registrant-info").hide();
   getTopics({ update: true });
