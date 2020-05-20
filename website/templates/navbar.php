@@ -14,13 +14,13 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li id="home" class="nav-item nav-first">
-            <a class="nav-link" href="http://munmacs.com/">Home</a>
+            <a class="nav-link" href="/">Home</a>
           </li>
           <li id="about" class="nav-item">
-            <a class="nav-link" href="http://munmacs.com/about">About</a>
+            <a class="nav-link" href="/about">About</a>
           </li>
           <li id="register" class="nav-item">
-            <a class="nav-link" href="http://munmacs.com/register">Register</a>
+            <a class="nav-link" href="/register">Register</a>
           </li>
         </ul>
       </div>
