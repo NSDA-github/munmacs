@@ -1,6 +1,6 @@
 <nav>
   <div class="container">
-    <a style="width: 100%;" class="navbar-brand" href="#"><img style="padding: 7px;" height="70px" src="http://munmacs.com/logo.svg" alt="Model UN Uralsk" /></a>
+    <a style="width: 100%;" class="navbar-brand" href="#"><img style="padding: 7px;" height="70px" src="/logo.svg" alt="Model UN Uralsk" /></a>
   </div>
 </nav>
 <div class="sticky-top">
