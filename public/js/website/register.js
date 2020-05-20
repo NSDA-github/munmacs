@@ -86,6 +86,13 @@ $(document).ready(function () {
     dropupAuto: false,
     size: 6,
   });
+  $("#residence").val("88");
+  $("#residence").selectpicker({
+    liveSearch: true,
+    dropupAuto: false,
+    size: 6,
+    width: false,
+  });
   $(".button-wrapper").tooltip({
     trigger: "hover",
     title: loadingTooltipMsg,
@@ -94,11 +101,11 @@ $(document).ready(function () {
   $(".countryselect").hide();
   // Switch between roles fields
   {
-    if ($("#role").val() === "student") {
+    if ($("#occupation").val() === "student") {
       $("#teacherfield").hide();
       $("#studentfield").show();
       $("#schoolstudentfield").hide();
-    } else if ($("#role").val() === "schoolstudent") {
+    } else if ($("#occupation").val() === "schoolstudent") {
       $("#teacherfield").hide();
       $("#studentfield").hide();
       $("#schoolstudentfield").show();
@@ -107,12 +114,12 @@ $(document).ready(function () {
       $("#studentfield").hide();
       $("#schoolstudentfield").hide();
     }
-    $("#role").on("change", function () {
-      if ($("#role").val() === "student") {
+    $("#occupation").on("change", function () {
+      if ($("#occupation").val() === "student") {
         $("#teacherfield").hide();
         $("#studentfield").show();
         $("#schoolstudentfield").hide();
-      } else if ($("#role").val() === "schoolstudent") {
+      } else if ($("#occupation").val() === "schoolstudent") {
         $("#teacherfield").hide();
         $("#studentfield").hide();
         $("#schoolstudentfield").show();
@@ -173,6 +180,9 @@ $(document).ready(function () {
         maxlength: 40,
         regex: "^(([,.'`\"\\-\\p{L}])+[ ]?)*$",
       },
+      interesttext: {
+        maxlength: 400,
+      },
     },
     messages: {
       name: {
@@ -212,6 +222,21 @@ $(document).ready(function () {
       },
     },
     errorClass: "is-invalid",
+  });
+
+  $("#interesttext").keyup(function () {
+    console.log("text changed");
+    $("#char-count").html($("#interesttext").val().length);
+    if ($("#interesttext").val().length > 400) {
+      $("#char-count").attr("style", "color:red");
+    } else {
+      $("#char-count").attr("style", "color:black");
+    }
+    if (!$("#interesttext").valid()) {
+      $("#interesttext").addClass("is-invalid");
+    } else {
+      $("#interesttext").removeClass("is-invalid");
+    }
   });
 
   // Topic Access
@@ -324,17 +349,15 @@ $(document).ready(function () {
   });
 
   $("#back").click(function () {
-    if (enteredPersonalInfo == true) {
-      enteredPersonalInfo = false;
-      $(".countryselect.dissolve").removeClass("active");
-      $(".countryselect.dissolve").addClass("disabled");
-      setTimeout(function () {
-        $(".countryselect").hide();
-        $(".personalinfo").show();
-        $(".personalinfo.dissolve").removeClass("disabled");
-        $(".personalinfo.dissolve").addClass("active");
-      }, 600);
-    }
+    enteredPersonalInfo = false;
+    $(".countryselect.dissolve").removeClass("active");
+    $(".countryselect.dissolve").addClass("disabled");
+    setTimeout(function () {
+      $(".countryselect").hide();
+      $(".personalinfo").show();
+      $(".personalinfo.dissolve").removeClass("disabled");
+      $(".personalinfo.dissolve").addClass("active");
+    }, 600);
   });
 
   $("#complete").click(function () {

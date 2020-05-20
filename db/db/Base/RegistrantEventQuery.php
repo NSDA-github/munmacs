@@ -24,9 +24,13 @@ use db\db\Map\RegistrantEventTableMap;
  * @method     ChildRegistrantEventQuery orderByTopicId($order = Criteria::ASC) Order by the topic_id column
  * @method     ChildRegistrantEventQuery orderByCountryId($order = Criteria::ASC) Order by the country_id column
  * @method     ChildRegistrantEventQuery orderByCountryDesired($order = Criteria::ASC) Order by the country_desired column
+ * @method     ChildRegistrantEventQuery orderByInterestText($order = Criteria::ASC) Order by the interest_text column
  * @method     ChildRegistrantEventQuery orderByRegistrationTime($order = Criteria::ASC) Order by the registration_time column
  * @method     ChildRegistrantEventQuery orderByApproved($order = Criteria::ASC) Order by the approved column
  * @method     ChildRegistrantEventQuery orderByApprovedTime($order = Criteria::ASC) Order by the approved_time column
+ * @method     ChildRegistrantEventQuery orderByInterestVerified($order = Criteria::ASC) Order by the interest_verified column
+ * @method     ChildRegistrantEventQuery orderByDiscordVerified($order = Criteria::ASC) Order by the discord_verified column
+ * @method     ChildRegistrantEventQuery orderByMicVerified($order = Criteria::ASC) Order by the mic_verified column
  * @method     ChildRegistrantEventQuery orderByLocal($order = Criteria::ASC) Order by the local column
  * @method     ChildRegistrantEventQuery orderByHasAttended($order = Criteria::ASC) Order by the has_attended column
  *
@@ -34,9 +38,13 @@ use db\db\Map\RegistrantEventTableMap;
  * @method     ChildRegistrantEventQuery groupByTopicId() Group by the topic_id column
  * @method     ChildRegistrantEventQuery groupByCountryId() Group by the country_id column
  * @method     ChildRegistrantEventQuery groupByCountryDesired() Group by the country_desired column
+ * @method     ChildRegistrantEventQuery groupByInterestText() Group by the interest_text column
  * @method     ChildRegistrantEventQuery groupByRegistrationTime() Group by the registration_time column
  * @method     ChildRegistrantEventQuery groupByApproved() Group by the approved column
  * @method     ChildRegistrantEventQuery groupByApprovedTime() Group by the approved_time column
+ * @method     ChildRegistrantEventQuery groupByInterestVerified() Group by the interest_verified column
+ * @method     ChildRegistrantEventQuery groupByDiscordVerified() Group by the discord_verified column
+ * @method     ChildRegistrantEventQuery groupByMicVerified() Group by the mic_verified column
  * @method     ChildRegistrantEventQuery groupByLocal() Group by the local column
  * @method     ChildRegistrantEventQuery groupByHasAttended() Group by the has_attended column
  *
@@ -97,9 +105,13 @@ use db\db\Map\RegistrantEventTableMap;
  * @method     ChildRegistrantEvent findOneByTopicId(int $topic_id) Return the first ChildRegistrantEvent filtered by the topic_id column
  * @method     ChildRegistrantEvent findOneByCountryId(int $country_id) Return the first ChildRegistrantEvent filtered by the country_id column
  * @method     ChildRegistrantEvent findOneByCountryDesired(int $country_desired) Return the first ChildRegistrantEvent filtered by the country_desired column
+ * @method     ChildRegistrantEvent findOneByInterestText(string $interest_text) Return the first ChildRegistrantEvent filtered by the interest_text column
  * @method     ChildRegistrantEvent findOneByRegistrationTime(string $registration_time) Return the first ChildRegistrantEvent filtered by the registration_time column
  * @method     ChildRegistrantEvent findOneByApproved(boolean $approved) Return the first ChildRegistrantEvent filtered by the approved column
  * @method     ChildRegistrantEvent findOneByApprovedTime(string $approved_time) Return the first ChildRegistrantEvent filtered by the approved_time column
+ * @method     ChildRegistrantEvent findOneByInterestVerified(boolean $interest_verified) Return the first ChildRegistrantEvent filtered by the interest_verified column
+ * @method     ChildRegistrantEvent findOneByDiscordVerified(boolean $discord_verified) Return the first ChildRegistrantEvent filtered by the discord_verified column
+ * @method     ChildRegistrantEvent findOneByMicVerified(boolean $mic_verified) Return the first ChildRegistrantEvent filtered by the mic_verified column
  * @method     ChildRegistrantEvent findOneByLocal(boolean $local) Return the first ChildRegistrantEvent filtered by the local column
  * @method     ChildRegistrantEvent findOneByHasAttended(boolean $has_attended) Return the first ChildRegistrantEvent filtered by the has_attended column *
 
@@ -110,9 +122,13 @@ use db\db\Map\RegistrantEventTableMap;
  * @method     ChildRegistrantEvent requireOneByTopicId(int $topic_id) Return the first ChildRegistrantEvent filtered by the topic_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildRegistrantEvent requireOneByCountryId(int $country_id) Return the first ChildRegistrantEvent filtered by the country_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildRegistrantEvent requireOneByCountryDesired(int $country_desired) Return the first ChildRegistrantEvent filtered by the country_desired column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildRegistrantEvent requireOneByInterestText(string $interest_text) Return the first ChildRegistrantEvent filtered by the interest_text column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildRegistrantEvent requireOneByRegistrationTime(string $registration_time) Return the first ChildRegistrantEvent filtered by the registration_time column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildRegistrantEvent requireOneByApproved(boolean $approved) Return the first ChildRegistrantEvent filtered by the approved column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildRegistrantEvent requireOneByApprovedTime(string $approved_time) Return the first ChildRegistrantEvent filtered by the approved_time column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildRegistrantEvent requireOneByInterestVerified(boolean $interest_verified) Return the first ChildRegistrantEvent filtered by the interest_verified column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildRegistrantEvent requireOneByDiscordVerified(boolean $discord_verified) Return the first ChildRegistrantEvent filtered by the discord_verified column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildRegistrantEvent requireOneByMicVerified(boolean $mic_verified) Return the first ChildRegistrantEvent filtered by the mic_verified column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildRegistrantEvent requireOneByLocal(boolean $local) Return the first ChildRegistrantEvent filtered by the local column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildRegistrantEvent requireOneByHasAttended(boolean $has_attended) Return the first ChildRegistrantEvent filtered by the has_attended column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
@@ -121,9 +137,13 @@ use db\db\Map\RegistrantEventTableMap;
  * @method     ChildRegistrantEvent[]|ObjectCollection findByTopicId(int $topic_id) Return ChildRegistrantEvent objects filtered by the topic_id column
  * @method     ChildRegistrantEvent[]|ObjectCollection findByCountryId(int $country_id) Return ChildRegistrantEvent objects filtered by the country_id column
  * @method     ChildRegistrantEvent[]|ObjectCollection findByCountryDesired(int $country_desired) Return ChildRegistrantEvent objects filtered by the country_desired column
+ * @method     ChildRegistrantEvent[]|ObjectCollection findByInterestText(string $interest_text) Return ChildRegistrantEvent objects filtered by the interest_text column
  * @method     ChildRegistrantEvent[]|ObjectCollection findByRegistrationTime(string $registration_time) Return ChildRegistrantEvent objects filtered by the registration_time column
  * @method     ChildRegistrantEvent[]|ObjectCollection findByApproved(boolean $approved) Return ChildRegistrantEvent objects filtered by the approved column
  * @method     ChildRegistrantEvent[]|ObjectCollection findByApprovedTime(string $approved_time) Return ChildRegistrantEvent objects filtered by the approved_time column
+ * @method     ChildRegistrantEvent[]|ObjectCollection findByInterestVerified(boolean $interest_verified) Return ChildRegistrantEvent objects filtered by the interest_verified column
+ * @method     ChildRegistrantEvent[]|ObjectCollection findByDiscordVerified(boolean $discord_verified) Return ChildRegistrantEvent objects filtered by the discord_verified column
+ * @method     ChildRegistrantEvent[]|ObjectCollection findByMicVerified(boolean $mic_verified) Return ChildRegistrantEvent objects filtered by the mic_verified column
  * @method     ChildRegistrantEvent[]|ObjectCollection findByLocal(boolean $local) Return ChildRegistrantEvent objects filtered by the local column
  * @method     ChildRegistrantEvent[]|ObjectCollection findByHasAttended(boolean $has_attended) Return ChildRegistrantEvent objects filtered by the has_attended column
  * @method     ChildRegistrantEvent[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
@@ -224,7 +244,7 @@ abstract class RegistrantEventQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT registrant_id, topic_id, country_id, country_desired, registration_time, approved, approved_time, local, has_attended FROM registrant_event WHERE registrant_id = :p0';
+        $sql = 'SELECT registrant_id, topic_id, country_id, country_desired, interest_text, registration_time, approved, approved_time, interest_verified, discord_verified, mic_verified, local, has_attended FROM registrant_event WHERE registrant_id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -487,6 +507,31 @@ abstract class RegistrantEventQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the interest_text column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByInterestText('fooValue');   // WHERE interest_text = 'fooValue'
+     * $query->filterByInterestText('%fooValue%', Criteria::LIKE); // WHERE interest_text LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $interestText The value to use as filter.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildRegistrantEventQuery The current query, for fluid interface
+     */
+    public function filterByInterestText($interestText = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($interestText)) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(RegistrantEventTableMap::COL_INTEREST_TEXT, $interestText, $comparison);
+    }
+
+    /**
      * Filter the query on the registration_time column
      *
      * Example usage:
@@ -597,6 +642,87 @@ abstract class RegistrantEventQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(RegistrantEventTableMap::COL_APPROVED_TIME, $approvedTime, $comparison);
+    }
+
+    /**
+     * Filter the query on the interest_verified column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByInterestVerified(true); // WHERE interest_verified = true
+     * $query->filterByInterestVerified('yes'); // WHERE interest_verified = true
+     * </code>
+     *
+     * @param     boolean|string $interestVerified The value to use as filter.
+     *              Non-boolean arguments are converted using the following rules:
+     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildRegistrantEventQuery The current query, for fluid interface
+     */
+    public function filterByInterestVerified($interestVerified = null, $comparison = null)
+    {
+        if (is_string($interestVerified)) {
+            $interestVerified = in_array(strtolower($interestVerified), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+        }
+
+        return $this->addUsingAlias(RegistrantEventTableMap::COL_INTEREST_VERIFIED, $interestVerified, $comparison);
+    }
+
+    /**
+     * Filter the query on the discord_verified column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByDiscordVerified(true); // WHERE discord_verified = true
+     * $query->filterByDiscordVerified('yes'); // WHERE discord_verified = true
+     * </code>
+     *
+     * @param     boolean|string $discordVerified The value to use as filter.
+     *              Non-boolean arguments are converted using the following rules:
+     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildRegistrantEventQuery The current query, for fluid interface
+     */
+    public function filterByDiscordVerified($discordVerified = null, $comparison = null)
+    {
+        if (is_string($discordVerified)) {
+            $discordVerified = in_array(strtolower($discordVerified), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+        }
+
+        return $this->addUsingAlias(RegistrantEventTableMap::COL_DISCORD_VERIFIED, $discordVerified, $comparison);
+    }
+
+    /**
+     * Filter the query on the mic_verified column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByMicVerified(true); // WHERE mic_verified = true
+     * $query->filterByMicVerified('yes'); // WHERE mic_verified = true
+     * </code>
+     *
+     * @param     boolean|string $micVerified The value to use as filter.
+     *              Non-boolean arguments are converted using the following rules:
+     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildRegistrantEventQuery The current query, for fluid interface
+     */
+    public function filterByMicVerified($micVerified = null, $comparison = null)
+    {
+        if (is_string($micVerified)) {
+            $micVerified = in_array(strtolower($micVerified), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+        }
+
+        return $this->addUsingAlias(RegistrantEventTableMap::COL_MIC_VERIFIED, $micVerified, $comparison);
     }
 
     /**

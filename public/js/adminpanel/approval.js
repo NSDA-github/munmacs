@@ -26,6 +26,11 @@ $(document).ready(function (event) {
   });
 });
 
+function showInterestText() {
+  $("#interesttext").text(selectedRegistrant["interesttext"]);
+  $("#interesttext-modal").modal("show");
+}
+
 function confirmDiscordEdit(event, action) {
   event.preventDefault();
   var validator = $("#discord-edit-form").validate({
@@ -98,18 +103,21 @@ function handleView(id) {
           (selectedRegistrant["gradeletter"] != null
             ? " " + selectedRegistrant["gradeletter"]
             : "");
-    phonelink = `<a href="https://web.whatsapp.com/send?phone=${selectedRegistrant[
-      "phone"
-    ].substring(1)}" 
+    if (selectedRegistrant["phone"] != null)
+      phonelink = `<a href="https://web.whatsapp.com/send?phone=${selectedRegistrant[
+        "phone"
+      ].substring(1)}" 
     target="_blank">${selectedRegistrant["phone"]}</a>`;
+    else phonelink = "N/A";
     $("#institution").html(institution);
     $("#institution-details").html(institutionDetails);
     $("#email").html(
       `<a href="mailto:${selectedRegistrant["email"]}">${selectedRegistrant["email"]}</a>`
     );
     $("#phone").html(phonelink);
-    $("#discord-edit").val(selectedRegistrant["discord"]);
+    $("#discordEdit").val(selectedRegistrant["discord"]);
     $("#country").html(selectedRegistrant["country"]);
+    $("#topicname").html(selectedRegistrant["topic"]);
     $("#registrant-info").show();
   } else {
     $("#registrant-info").hide();

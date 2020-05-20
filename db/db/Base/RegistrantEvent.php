@@ -96,6 +96,13 @@ abstract class RegistrantEvent implements ActiveRecordInterface
     protected $country_desired;
 
     /**
+     * The value for the interest_text field.
+     *
+     * @var        string
+     */
+    protected $interest_text;
+
+    /**
      * The value for the registration_time field.
      *
      * Note: this column has a database default value of: (expression) CURRENT_TIMESTAMP
@@ -117,6 +124,30 @@ abstract class RegistrantEvent implements ActiveRecordInterface
      * @var        DateTime
      */
     protected $approved_time;
+
+    /**
+     * The value for the interest_verified field.
+     *
+     * Note: this column has a database default value of: false
+     * @var        boolean
+     */
+    protected $interest_verified;
+
+    /**
+     * The value for the discord_verified field.
+     *
+     * Note: this column has a database default value of: false
+     * @var        boolean
+     */
+    protected $discord_verified;
+
+    /**
+     * The value for the mic_verified field.
+     *
+     * Note: this column has a database default value of: false
+     * @var        boolean
+     */
+    protected $mic_verified;
 
     /**
      * The value for the local field.
@@ -169,6 +200,9 @@ abstract class RegistrantEvent implements ActiveRecordInterface
     public function applyDefaultValues()
     {
         $this->approved = false;
+        $this->interest_verified = false;
+        $this->discord_verified = false;
+        $this->mic_verified = false;
     }
 
     /**
@@ -439,6 +473,16 @@ abstract class RegistrantEvent implements ActiveRecordInterface
     }
 
     /**
+     * Get the [interest_text] column value.
+     *
+     * @return string
+     */
+    public function getInterestText()
+    {
+        return $this->interest_text;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [registration_time] column value.
      *
      *
@@ -496,6 +540,66 @@ abstract class RegistrantEvent implements ActiveRecordInterface
         } else {
             return $this->approved_time instanceof \DateTimeInterface ? $this->approved_time->format($format) : null;
         }
+    }
+
+    /**
+     * Get the [interest_verified] column value.
+     *
+     * @return boolean
+     */
+    public function getInterestVerified()
+    {
+        return $this->interest_verified;
+    }
+
+    /**
+     * Get the [interest_verified] column value.
+     *
+     * @return boolean
+     */
+    public function isInterestVerified()
+    {
+        return $this->getInterestVerified();
+    }
+
+    /**
+     * Get the [discord_verified] column value.
+     *
+     * @return boolean
+     */
+    public function getDiscordVerified()
+    {
+        return $this->discord_verified;
+    }
+
+    /**
+     * Get the [discord_verified] column value.
+     *
+     * @return boolean
+     */
+    public function isDiscordVerified()
+    {
+        return $this->getDiscordVerified();
+    }
+
+    /**
+     * Get the [mic_verified] column value.
+     *
+     * @return boolean
+     */
+    public function getMicVerified()
+    {
+        return $this->mic_verified;
+    }
+
+    /**
+     * Get the [mic_verified] column value.
+     *
+     * @return boolean
+     */
+    public function isMicVerified()
+    {
+        return $this->getMicVerified();
     }
 
     /**
@@ -635,6 +739,26 @@ abstract class RegistrantEvent implements ActiveRecordInterface
     } // setCountryDesired()
 
     /**
+     * Set the value of [interest_text] column.
+     *
+     * @param string $v new value
+     * @return $this|\db\db\RegistrantEvent The current object (for fluent API support)
+     */
+    public function setInterestText($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->interest_text !== $v) {
+            $this->interest_text = $v;
+            $this->modifiedColumns[RegistrantEventTableMap::COL_INTEREST_TEXT] = true;
+        }
+
+        return $this;
+    } // setInterestText()
+
+    /**
      * Sets the value of [registration_time] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
@@ -701,6 +825,90 @@ abstract class RegistrantEvent implements ActiveRecordInterface
 
         return $this;
     } // setApprovedTime()
+
+    /**
+     * Sets the value of the [interest_verified] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\db\db\RegistrantEvent The current object (for fluent API support)
+     */
+    public function setInterestVerified($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->interest_verified !== $v) {
+            $this->interest_verified = $v;
+            $this->modifiedColumns[RegistrantEventTableMap::COL_INTEREST_VERIFIED] = true;
+        }
+
+        return $this;
+    } // setInterestVerified()
+
+    /**
+     * Sets the value of the [discord_verified] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\db\db\RegistrantEvent The current object (for fluent API support)
+     */
+    public function setDiscordVerified($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->discord_verified !== $v) {
+            $this->discord_verified = $v;
+            $this->modifiedColumns[RegistrantEventTableMap::COL_DISCORD_VERIFIED] = true;
+        }
+
+        return $this;
+    } // setDiscordVerified()
+
+    /**
+     * Sets the value of the [mic_verified] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\db\db\RegistrantEvent The current object (for fluent API support)
+     */
+    public function setMicVerified($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->mic_verified !== $v) {
+            $this->mic_verified = $v;
+            $this->modifiedColumns[RegistrantEventTableMap::COL_MIC_VERIFIED] = true;
+        }
+
+        return $this;
+    } // setMicVerified()
 
     /**
      * Sets the value of the [local] column.
@@ -772,6 +980,18 @@ abstract class RegistrantEvent implements ActiveRecordInterface
                 return false;
             }
 
+            if ($this->interest_verified !== false) {
+                return false;
+            }
+
+            if ($this->discord_verified !== false) {
+                return false;
+            }
+
+            if ($this->mic_verified !== false) {
+                return false;
+            }
+
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -810,25 +1030,37 @@ abstract class RegistrantEvent implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : RegistrantEventTableMap::translateFieldName('CountryDesired', TableMap::TYPE_PHPNAME, $indexType)];
             $this->country_desired = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : RegistrantEventTableMap::translateFieldName('RegistrationTime', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : RegistrantEventTableMap::translateFieldName('InterestText', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->interest_text = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : RegistrantEventTableMap::translateFieldName('RegistrationTime', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->registration_time = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : RegistrantEventTableMap::translateFieldName('Approved', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : RegistrantEventTableMap::translateFieldName('Approved', TableMap::TYPE_PHPNAME, $indexType)];
             $this->approved = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : RegistrantEventTableMap::translateFieldName('ApprovedTime', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : RegistrantEventTableMap::translateFieldName('ApprovedTime', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->approved_time = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : RegistrantEventTableMap::translateFieldName('Local', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : RegistrantEventTableMap::translateFieldName('InterestVerified', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->interest_verified = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : RegistrantEventTableMap::translateFieldName('DiscordVerified', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->discord_verified = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : RegistrantEventTableMap::translateFieldName('MicVerified', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->mic_verified = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : RegistrantEventTableMap::translateFieldName('Local', TableMap::TYPE_PHPNAME, $indexType)];
             $this->local = (null !== $col) ? (boolean) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : RegistrantEventTableMap::translateFieldName('HasAttended', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : RegistrantEventTableMap::translateFieldName('HasAttended', TableMap::TYPE_PHPNAME, $indexType)];
             $this->has_attended = (null !== $col) ? (boolean) $col : null;
             $this->resetModified();
 
@@ -838,7 +1070,7 @@ abstract class RegistrantEvent implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 9; // 9 = RegistrantEventTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 13; // 13 = RegistrantEventTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\db\\db\\RegistrantEvent'), 0, $e);
@@ -1096,6 +1328,9 @@ abstract class RegistrantEvent implements ActiveRecordInterface
         if ($this->isColumnModified(RegistrantEventTableMap::COL_COUNTRY_DESIRED)) {
             $modifiedColumns[':p' . $index++]  = 'country_desired';
         }
+        if ($this->isColumnModified(RegistrantEventTableMap::COL_INTEREST_TEXT)) {
+            $modifiedColumns[':p' . $index++]  = 'interest_text';
+        }
         if ($this->isColumnModified(RegistrantEventTableMap::COL_REGISTRATION_TIME)) {
             $modifiedColumns[':p' . $index++]  = 'registration_time';
         }
@@ -1104,6 +1339,15 @@ abstract class RegistrantEvent implements ActiveRecordInterface
         }
         if ($this->isColumnModified(RegistrantEventTableMap::COL_APPROVED_TIME)) {
             $modifiedColumns[':p' . $index++]  = 'approved_time';
+        }
+        if ($this->isColumnModified(RegistrantEventTableMap::COL_INTEREST_VERIFIED)) {
+            $modifiedColumns[':p' . $index++]  = 'interest_verified';
+        }
+        if ($this->isColumnModified(RegistrantEventTableMap::COL_DISCORD_VERIFIED)) {
+            $modifiedColumns[':p' . $index++]  = 'discord_verified';
+        }
+        if ($this->isColumnModified(RegistrantEventTableMap::COL_MIC_VERIFIED)) {
+            $modifiedColumns[':p' . $index++]  = 'mic_verified';
         }
         if ($this->isColumnModified(RegistrantEventTableMap::COL_LOCAL)) {
             $modifiedColumns[':p' . $index++]  = 'local';
@@ -1134,6 +1378,9 @@ abstract class RegistrantEvent implements ActiveRecordInterface
                     case 'country_desired':
                         $stmt->bindValue($identifier, $this->country_desired, PDO::PARAM_INT);
                         break;
+                    case 'interest_text':
+                        $stmt->bindValue($identifier, $this->interest_text, PDO::PARAM_STR);
+                        break;
                     case 'registration_time':
                         $stmt->bindValue($identifier, $this->registration_time ? $this->registration_time->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
                         break;
@@ -1142,6 +1389,15 @@ abstract class RegistrantEvent implements ActiveRecordInterface
                         break;
                     case 'approved_time':
                         $stmt->bindValue($identifier, $this->approved_time ? $this->approved_time->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
+                        break;
+                    case 'interest_verified':
+                        $stmt->bindValue($identifier, (int) $this->interest_verified, PDO::PARAM_INT);
+                        break;
+                    case 'discord_verified':
+                        $stmt->bindValue($identifier, (int) $this->discord_verified, PDO::PARAM_INT);
+                        break;
+                    case 'mic_verified':
+                        $stmt->bindValue($identifier, (int) $this->mic_verified, PDO::PARAM_INT);
                         break;
                     case 'local':
                         $stmt->bindValue($identifier, (int) $this->local, PDO::PARAM_INT);
@@ -1217,18 +1473,30 @@ abstract class RegistrantEvent implements ActiveRecordInterface
                 return $this->getCountryDesired();
                 break;
             case 4:
-                return $this->getRegistrationTime();
+                return $this->getInterestText();
                 break;
             case 5:
-                return $this->getApproved();
+                return $this->getRegistrationTime();
                 break;
             case 6:
-                return $this->getApprovedTime();
+                return $this->getApproved();
                 break;
             case 7:
-                return $this->getLocal();
+                return $this->getApprovedTime();
                 break;
             case 8:
+                return $this->getInterestVerified();
+                break;
+            case 9:
+                return $this->getDiscordVerified();
+                break;
+            case 10:
+                return $this->getMicVerified();
+                break;
+            case 11:
+                return $this->getLocal();
+                break;
+            case 12:
                 return $this->getHasAttended();
                 break;
             default:
@@ -1265,18 +1533,22 @@ abstract class RegistrantEvent implements ActiveRecordInterface
             $keys[1] => $this->getTopicId(),
             $keys[2] => $this->getCountryId(),
             $keys[3] => $this->getCountryDesired(),
-            $keys[4] => $this->getRegistrationTime(),
-            $keys[5] => $this->getApproved(),
-            $keys[6] => $this->getApprovedTime(),
-            $keys[7] => $this->getLocal(),
-            $keys[8] => $this->getHasAttended(),
+            $keys[4] => $this->getInterestText(),
+            $keys[5] => $this->getRegistrationTime(),
+            $keys[6] => $this->getApproved(),
+            $keys[7] => $this->getApprovedTime(),
+            $keys[8] => $this->getInterestVerified(),
+            $keys[9] => $this->getDiscordVerified(),
+            $keys[10] => $this->getMicVerified(),
+            $keys[11] => $this->getLocal(),
+            $keys[12] => $this->getHasAttended(),
         );
-        if ($result[$keys[4]] instanceof \DateTimeInterface) {
-            $result[$keys[4]] = $result[$keys[4]]->format('c');
+        if ($result[$keys[5]] instanceof \DateTimeInterface) {
+            $result[$keys[5]] = $result[$keys[5]]->format('c');
         }
 
-        if ($result[$keys[6]] instanceof \DateTimeInterface) {
-            $result[$keys[6]] = $result[$keys[6]]->format('c');
+        if ($result[$keys[7]] instanceof \DateTimeInterface) {
+            $result[$keys[7]] = $result[$keys[7]]->format('c');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1392,18 +1664,30 @@ abstract class RegistrantEvent implements ActiveRecordInterface
                 $this->setCountryDesired($value);
                 break;
             case 4:
-                $this->setRegistrationTime($value);
+                $this->setInterestText($value);
                 break;
             case 5:
-                $this->setApproved($value);
+                $this->setRegistrationTime($value);
                 break;
             case 6:
-                $this->setApprovedTime($value);
+                $this->setApproved($value);
                 break;
             case 7:
-                $this->setLocal($value);
+                $this->setApprovedTime($value);
                 break;
             case 8:
+                $this->setInterestVerified($value);
+                break;
+            case 9:
+                $this->setDiscordVerified($value);
+                break;
+            case 10:
+                $this->setMicVerified($value);
+                break;
+            case 11:
+                $this->setLocal($value);
+                break;
+            case 12:
                 $this->setHasAttended($value);
                 break;
         } // switch()
@@ -1445,19 +1729,31 @@ abstract class RegistrantEvent implements ActiveRecordInterface
             $this->setCountryDesired($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setRegistrationTime($arr[$keys[4]]);
+            $this->setInterestText($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setApproved($arr[$keys[5]]);
+            $this->setRegistrationTime($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setApprovedTime($arr[$keys[6]]);
+            $this->setApproved($arr[$keys[6]]);
         }
         if (array_key_exists($keys[7], $arr)) {
-            $this->setLocal($arr[$keys[7]]);
+            $this->setApprovedTime($arr[$keys[7]]);
         }
         if (array_key_exists($keys[8], $arr)) {
-            $this->setHasAttended($arr[$keys[8]]);
+            $this->setInterestVerified($arr[$keys[8]]);
+        }
+        if (array_key_exists($keys[9], $arr)) {
+            $this->setDiscordVerified($arr[$keys[9]]);
+        }
+        if (array_key_exists($keys[10], $arr)) {
+            $this->setMicVerified($arr[$keys[10]]);
+        }
+        if (array_key_exists($keys[11], $arr)) {
+            $this->setLocal($arr[$keys[11]]);
+        }
+        if (array_key_exists($keys[12], $arr)) {
+            $this->setHasAttended($arr[$keys[12]]);
         }
     }
 
@@ -1512,6 +1808,9 @@ abstract class RegistrantEvent implements ActiveRecordInterface
         if ($this->isColumnModified(RegistrantEventTableMap::COL_COUNTRY_DESIRED)) {
             $criteria->add(RegistrantEventTableMap::COL_COUNTRY_DESIRED, $this->country_desired);
         }
+        if ($this->isColumnModified(RegistrantEventTableMap::COL_INTEREST_TEXT)) {
+            $criteria->add(RegistrantEventTableMap::COL_INTEREST_TEXT, $this->interest_text);
+        }
         if ($this->isColumnModified(RegistrantEventTableMap::COL_REGISTRATION_TIME)) {
             $criteria->add(RegistrantEventTableMap::COL_REGISTRATION_TIME, $this->registration_time);
         }
@@ -1520,6 +1819,15 @@ abstract class RegistrantEvent implements ActiveRecordInterface
         }
         if ($this->isColumnModified(RegistrantEventTableMap::COL_APPROVED_TIME)) {
             $criteria->add(RegistrantEventTableMap::COL_APPROVED_TIME, $this->approved_time);
+        }
+        if ($this->isColumnModified(RegistrantEventTableMap::COL_INTEREST_VERIFIED)) {
+            $criteria->add(RegistrantEventTableMap::COL_INTEREST_VERIFIED, $this->interest_verified);
+        }
+        if ($this->isColumnModified(RegistrantEventTableMap::COL_DISCORD_VERIFIED)) {
+            $criteria->add(RegistrantEventTableMap::COL_DISCORD_VERIFIED, $this->discord_verified);
+        }
+        if ($this->isColumnModified(RegistrantEventTableMap::COL_MIC_VERIFIED)) {
+            $criteria->add(RegistrantEventTableMap::COL_MIC_VERIFIED, $this->mic_verified);
         }
         if ($this->isColumnModified(RegistrantEventTableMap::COL_LOCAL)) {
             $criteria->add(RegistrantEventTableMap::COL_LOCAL, $this->local);
@@ -1624,9 +1932,13 @@ abstract class RegistrantEvent implements ActiveRecordInterface
         $copyObj->setTopicId($this->getTopicId());
         $copyObj->setCountryId($this->getCountryId());
         $copyObj->setCountryDesired($this->getCountryDesired());
+        $copyObj->setInterestText($this->getInterestText());
         $copyObj->setRegistrationTime($this->getRegistrationTime());
         $copyObj->setApproved($this->getApproved());
         $copyObj->setApprovedTime($this->getApprovedTime());
+        $copyObj->setInterestVerified($this->getInterestVerified());
+        $copyObj->setDiscordVerified($this->getDiscordVerified());
+        $copyObj->setMicVerified($this->getMicVerified());
         $copyObj->setLocal($this->getLocal());
         $copyObj->setHasAttended($this->getHasAttended());
         if ($makeNew) {
@@ -1877,9 +2189,13 @@ abstract class RegistrantEvent implements ActiveRecordInterface
         $this->topic_id = null;
         $this->country_id = null;
         $this->country_desired = null;
+        $this->interest_text = null;
         $this->registration_time = null;
         $this->approved = null;
         $this->approved_time = null;
+        $this->interest_verified = null;
+        $this->discord_verified = null;
+        $this->mic_verified = null;
         $this->local = null;
         $this->has_attended = null;
         $this->alreadyInSave = false;

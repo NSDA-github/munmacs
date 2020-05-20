@@ -27,6 +27,7 @@ use db\db\Map\RegistrantTableMap;
  * @method     ChildRegistrantQuery orderByPhone($order = Criteria::ASC) Order by the phone column
  * @method     ChildRegistrantQuery orderByDiscord($order = Criteria::ASC) Order by the discord column
  * @method     ChildRegistrantQuery orderByInstitution($order = Criteria::ASC) Order by the institution column
+ * @method     ChildRegistrantQuery orderByResidence($order = Criteria::ASC) Order by the residence column
  *
  * @method     ChildRegistrantQuery groupByRegistrantId() Group by the registrant_id column
  * @method     ChildRegistrantQuery groupByName() Group by the name column
@@ -35,6 +36,7 @@ use db\db\Map\RegistrantTableMap;
  * @method     ChildRegistrantQuery groupByPhone() Group by the phone column
  * @method     ChildRegistrantQuery groupByDiscord() Group by the discord column
  * @method     ChildRegistrantQuery groupByInstitution() Group by the institution column
+ * @method     ChildRegistrantQuery groupByResidence() Group by the residence column
  *
  * @method     ChildRegistrantQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildRegistrantQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -43,6 +45,16 @@ use db\db\Map\RegistrantTableMap;
  * @method     ChildRegistrantQuery leftJoinWith($relation) Adds a LEFT JOIN clause and with to the query
  * @method     ChildRegistrantQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
  * @method     ChildRegistrantQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
+ *
+ * @method     ChildRegistrantQuery leftJoinCountry($relationAlias = null) Adds a LEFT JOIN clause to the query using the Country relation
+ * @method     ChildRegistrantQuery rightJoinCountry($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Country relation
+ * @method     ChildRegistrantQuery innerJoinCountry($relationAlias = null) Adds a INNER JOIN clause to the query using the Country relation
+ *
+ * @method     ChildRegistrantQuery joinWithCountry($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Country relation
+ *
+ * @method     ChildRegistrantQuery leftJoinWithCountry() Adds a LEFT JOIN clause and with to the query using the Country relation
+ * @method     ChildRegistrantQuery rightJoinWithCountry() Adds a RIGHT JOIN clause and with to the query using the Country relation
+ * @method     ChildRegistrantQuery innerJoinWithCountry() Adds a INNER JOIN clause and with to the query using the Country relation
  *
  * @method     ChildRegistrantQuery leftJoinRegistrantEvent($relationAlias = null) Adds a LEFT JOIN clause to the query using the RegistrantEvent relation
  * @method     ChildRegistrantQuery rightJoinRegistrantEvent($relationAlias = null) Adds a RIGHT JOIN clause to the query using the RegistrantEvent relation
@@ -94,7 +106,7 @@ use db\db\Map\RegistrantTableMap;
  * @method     ChildRegistrantQuery rightJoinWithRegistrantTeacher() Adds a RIGHT JOIN clause and with to the query using the RegistrantTeacher relation
  * @method     ChildRegistrantQuery innerJoinWithRegistrantTeacher() Adds a INNER JOIN clause and with to the query using the RegistrantTeacher relation
  *
- * @method     \db\db\RegistrantEventQuery|\db\db\RegistrantOccupationQuery|\db\db\RegistrantSchoolStudentQuery|\db\db\RegistrantStudentQuery|\db\db\RegistrantTeacherQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \db\db\CountryQuery|\db\db\RegistrantEventQuery|\db\db\RegistrantOccupationQuery|\db\db\RegistrantSchoolStudentQuery|\db\db\RegistrantStudentQuery|\db\db\RegistrantTeacherQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildRegistrant findOne(ConnectionInterface $con = null) Return the first ChildRegistrant matching the query
  * @method     ChildRegistrant findOneOrCreate(ConnectionInterface $con = null) Return the first ChildRegistrant matching the query, or a new ChildRegistrant object populated from the query conditions when no match is found
@@ -105,7 +117,8 @@ use db\db\Map\RegistrantTableMap;
  * @method     ChildRegistrant findOneByEmail(string $email) Return the first ChildRegistrant filtered by the email column
  * @method     ChildRegistrant findOneByPhone(string $phone) Return the first ChildRegistrant filtered by the phone column
  * @method     ChildRegistrant findOneByDiscord(string $discord) Return the first ChildRegistrant filtered by the discord column
- * @method     ChildRegistrant findOneByInstitution(string $institution) Return the first ChildRegistrant filtered by the institution column *
+ * @method     ChildRegistrant findOneByInstitution(string $institution) Return the first ChildRegistrant filtered by the institution column
+ * @method     ChildRegistrant findOneByResidence(int $residence) Return the first ChildRegistrant filtered by the residence column *
 
  * @method     ChildRegistrant requirePk($key, ConnectionInterface $con = null) Return the ChildRegistrant by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildRegistrant requireOne(ConnectionInterface $con = null) Return the first ChildRegistrant matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -117,6 +130,7 @@ use db\db\Map\RegistrantTableMap;
  * @method     ChildRegistrant requireOneByPhone(string $phone) Return the first ChildRegistrant filtered by the phone column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildRegistrant requireOneByDiscord(string $discord) Return the first ChildRegistrant filtered by the discord column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildRegistrant requireOneByInstitution(string $institution) Return the first ChildRegistrant filtered by the institution column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildRegistrant requireOneByResidence(int $residence) Return the first ChildRegistrant filtered by the residence column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildRegistrant[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildRegistrant objects based on current ModelCriteria
  * @method     ChildRegistrant[]|ObjectCollection findByRegistrantId(int $registrant_id) Return ChildRegistrant objects filtered by the registrant_id column
@@ -126,6 +140,7 @@ use db\db\Map\RegistrantTableMap;
  * @method     ChildRegistrant[]|ObjectCollection findByPhone(string $phone) Return ChildRegistrant objects filtered by the phone column
  * @method     ChildRegistrant[]|ObjectCollection findByDiscord(string $discord) Return ChildRegistrant objects filtered by the discord column
  * @method     ChildRegistrant[]|ObjectCollection findByInstitution(string $institution) Return ChildRegistrant objects filtered by the institution column
+ * @method     ChildRegistrant[]|ObjectCollection findByResidence(int $residence) Return ChildRegistrant objects filtered by the residence column
  * @method     ChildRegistrant[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -224,7 +239,7 @@ abstract class RegistrantQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT registrant_id, name, surname, email, phone, discord, institution FROM registrant WHERE registrant_id = :p0';
+        $sql = 'SELECT registrant_id, name, surname, email, phone, discord, institution, residence FROM registrant WHERE registrant_id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -503,6 +518,126 @@ abstract class RegistrantQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(RegistrantTableMap::COL_INSTITUTION, $institution, $comparison);
+    }
+
+    /**
+     * Filter the query on the residence column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByResidence(1234); // WHERE residence = 1234
+     * $query->filterByResidence(array(12, 34)); // WHERE residence IN (12, 34)
+     * $query->filterByResidence(array('min' => 12)); // WHERE residence > 12
+     * </code>
+     *
+     * @see       filterByCountry()
+     *
+     * @param     mixed $residence The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildRegistrantQuery The current query, for fluid interface
+     */
+    public function filterByResidence($residence = null, $comparison = null)
+    {
+        if (is_array($residence)) {
+            $useMinMax = false;
+            if (isset($residence['min'])) {
+                $this->addUsingAlias(RegistrantTableMap::COL_RESIDENCE, $residence['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($residence['max'])) {
+                $this->addUsingAlias(RegistrantTableMap::COL_RESIDENCE, $residence['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(RegistrantTableMap::COL_RESIDENCE, $residence, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \db\db\Country object
+     *
+     * @param \db\db\Country|ObjectCollection $country The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildRegistrantQuery The current query, for fluid interface
+     */
+    public function filterByCountry($country, $comparison = null)
+    {
+        if ($country instanceof \db\db\Country) {
+            return $this
+                ->addUsingAlias(RegistrantTableMap::COL_RESIDENCE, $country->getCountryId(), $comparison);
+        } elseif ($country instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(RegistrantTableMap::COL_RESIDENCE, $country->toKeyValue('PrimaryKey', 'CountryId'), $comparison);
+        } else {
+            throw new PropelException('filterByCountry() only accepts arguments of type \db\db\Country or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Country relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildRegistrantQuery The current query, for fluid interface
+     */
+    public function joinCountry($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Country');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Country');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Country relation Country object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \db\db\CountryQuery A secondary query class using the current class as primary query
+     */
+    public function useCountryQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinCountry($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Country', '\db\db\CountryQuery');
     }
 
     /**

@@ -19,6 +19,47 @@
       <parameter name="Engine" value="InnoDB"/>
     </vendor>
   </table>
+  <table name="edit_history_discord" idMethod="native" phpName="EditHistoryDiscord" namespace="db">
+    <column name="edit_id" phpName="EditId" type="INTEGER" sqlType="int(11) unsigned" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="who_edited" phpName="WhoEdited" type="TINYINT" size="3" sqlType="tinyint(3) unsigned" required="true"/>
+    <column name="whom_edited" phpName="WhomEdited" type="SMALLINT" size="4" sqlType="smallint(4) unsigned" required="true"/>
+    <column name="edit_datetime" phpName="EditDatetime" type="TIMESTAMP" required="true" defaultExpr="CURRENT_TIMESTAMP"/>
+    <column name="edited_from" phpName="EditedFrom" type="VARCHAR" size="255" required="true"/>
+    <column name="edited_to" phpName="EditedTo" type="VARCHAR" size="255" required="true"/>
+    <index name="who_edited">
+      <index-column name="who_edited"/>
+    </index>
+    <index name="whom_edited">
+      <index-column name="whom_edited"/>
+    </index>
+    <index name="edit_datetime">
+      <index-column name="edit_datetime"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="edit_history_verification" idMethod="native" phpName="EditHistoryVerification" namespace="db">
+    <column name="edit_id" phpName="EditId" type="INTEGER" sqlType="int(11) unsigned" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="edit_subject" phpName="EditSubject" type="VARCHAR" size="20" required="true"/>
+    <column name="who_edited" phpName="WhoEdited" type="TINYINT" size="3" sqlType="tinyint(3) unsigned" required="true"/>
+    <column name="whom_edited" phpName="WhomEdited" type="SMALLINT" size="4" sqlType="smallint(4) unsigned" required="true"/>
+    <column name="edit_datetime" phpName="EditDatetime" type="TIMESTAMP" required="true" defaultExpr="CURRENT_TIMESTAMP"/>
+    <column name="edited_from" phpName="EditedFrom" type="BOOLEAN" size="1" required="true"/>
+    <column name="edited_to" phpName="EditedTo" type="BOOLEAN" size="1" required="true"/>
+    <index name="who_edited">
+      <index-column name="who_edited"/>
+    </index>
+    <index name="whom_edited">
+      <index-column name="whom_edited"/>
+    </index>
+    <index name="edit_datetime">
+      <index-column name="edit_datetime"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
   <table name="occupation" idMethod="native" phpName="Occupation" namespace="db">
     <column name="occupation_id" phpName="OccupationId" type="TINYINT" size="3" sqlType="tinyint(3) unsigned" primaryKey="true" autoIncrement="true" required="true"/>
     <column name="occupation_name" phpName="OccupationName" type="VARCHAR" size="15" required="true"/>
@@ -37,8 +78,15 @@
     <column name="phone" phpName="Phone" type="VARCHAR" size="12" required="true"/>
     <column name="discord" phpName="Discord" type="VARCHAR" size="255"/>
     <column name="institution" phpName="Institution" type="VARCHAR" size="255" required="true"/>
+    <column name="residence" phpName="Residence" type="TINYINT" size="3" sqlType="tinyint(3) unsigned" required="true"/>
+    <foreign-key foreignTable="country" name="registrant_ibfk_1">
+      <reference local="residence" foreign="country_id"/>
+    </foreign-key>
     <index name="surname">
       <index-column name="surname"/>
+    </index>
+    <index name="residence">
+      <index-column name="residence"/>
     </index>
     <vendor type="mysql">
       <parameter name="Engine" value="InnoDB"/>
@@ -49,9 +97,13 @@
     <column name="topic_id" phpName="TopicId" type="TINYINT" size="3" sqlType="tinyint(3) unsigned" required="true"/>
     <column name="country_id" phpName="CountryId" type="TINYINT" size="3" sqlType="tinyint(3) unsigned" required="true"/>
     <column name="country_desired" phpName="CountryDesired" type="TINYINT" size="3" sqlType="tinyint(3) unsigned"/>
+    <column name="interest_text" phpName="InterestText" type="LONGVARCHAR" required="true"/>
     <column name="registration_time" phpName="RegistrationTime" type="TIMESTAMP" required="true" defaultExpr="CURRENT_TIMESTAMP"/>
     <column name="approved" phpName="Approved" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
     <column name="approved_time" phpName="ApprovedTime" type="TIMESTAMP"/>
+    <column name="interest_verified" phpName="InterestVerified" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="discord_verified" phpName="DiscordVerified" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="mic_verified" phpName="MicVerified" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
     <column name="local" phpName="Local" type="BOOLEAN" size="1"/>
     <column name="has_attended" phpName="HasAttended" type="BOOLEAN" size="1"/>
     <foreign-key foreignTable="country" name="registrant_event_ibfk_1">

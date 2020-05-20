@@ -33,6 +33,47 @@ CREATE TABLE `country`
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
+-- edit_history_discord
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `edit_history_discord`;
+
+CREATE TABLE `edit_history_discord`
+(
+    `edit_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+    `who_edited` tinyint(3) unsigned NOT NULL,
+    `whom_edited` smallint(4) unsigned NOT NULL,
+    `edit_datetime` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `edited_from` VARCHAR(255) NOT NULL,
+    `edited_to` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`edit_id`),
+    INDEX `who_edited` (`who_edited`),
+    INDEX `whom_edited` (`whom_edited`),
+    INDEX `edit_datetime` (`edit_datetime`)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- edit_history_verification
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `edit_history_verification`;
+
+CREATE TABLE `edit_history_verification`
+(
+    `edit_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+    `edit_subject` VARCHAR(20) NOT NULL,
+    `who_edited` tinyint(3) unsigned NOT NULL,
+    `whom_edited` smallint(4) unsigned NOT NULL,
+    `edit_datetime` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `edited_from` TINYINT(1) NOT NULL,
+    `edited_to` TINYINT(1) NOT NULL,
+    PRIMARY KEY (`edit_id`),
+    INDEX `who_edited` (`who_edited`),
+    INDEX `whom_edited` (`whom_edited`),
+    INDEX `edit_datetime` (`edit_datetime`)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
 -- occupation
 -- ---------------------------------------------------------------------
 
@@ -61,8 +102,13 @@ CREATE TABLE `registrant`
     `phone` VARCHAR(12) NOT NULL,
     `discord` VARCHAR(255),
     `institution` VARCHAR(255) NOT NULL,
+    `residence` tinyint(3) unsigned NOT NULL,
     PRIMARY KEY (`registrant_id`),
-    INDEX `surname` (`surname`)
+    INDEX `surname` (`surname`),
+    INDEX `residence` (`residence`),
+    CONSTRAINT `registrant_ibfk_1`
+        FOREIGN KEY (`residence`)
+        REFERENCES `country` (`country_id`)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
@@ -77,9 +123,13 @@ CREATE TABLE `registrant_event`
     `topic_id` tinyint(3) unsigned NOT NULL,
     `country_id` tinyint(3) unsigned NOT NULL,
     `country_desired` tinyint(3) unsigned,
+    `interest_text` TEXT NOT NULL,
     `registration_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `approved` TINYINT(1) DEFAULT 0 NOT NULL,
     `approved_time` DATETIME,
+    `interest_verified` TINYINT(1) DEFAULT 0 NOT NULL,
+    `discord_verified` TINYINT(1) DEFAULT 0 NOT NULL,
+    `mic_verified` TINYINT(1) DEFAULT 0 NOT NULL,
     `local` TINYINT(1),
     `has_attended` TINYINT(1),
     PRIMARY KEY (`registrant_id`),

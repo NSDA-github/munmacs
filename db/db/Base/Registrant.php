@@ -15,6 +15,8 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use db\db\Country as ChildCountry;
+use db\db\CountryQuery as ChildCountryQuery;
 use db\db\RegistrantEvent as ChildRegistrantEvent;
 use db\db\RegistrantEventQuery as ChildRegistrantEventQuery;
 use db\db\RegistrantOccupation as ChildRegistrantOccupation;
@@ -117,6 +119,18 @@ abstract class Registrant implements ActiveRecordInterface
      * @var        string
      */
     protected $institution;
+
+    /**
+     * The value for the residence field.
+     *
+     * @var        int
+     */
+    protected $residence;
+
+    /**
+     * @var        ChildCountry
+     */
+    protected $aCountry;
 
     /**
      * @var        ChildRegistrantEvent one-to-one related ChildRegistrantEvent object
@@ -447,6 +461,16 @@ abstract class Registrant implements ActiveRecordInterface
     }
 
     /**
+     * Get the [residence] column value.
+     *
+     * @return int
+     */
+    public function getResidence()
+    {
+        return $this->residence;
+    }
+
+    /**
      * Set the value of [registrant_id] column.
      *
      * @param int $v new value
@@ -587,6 +611,30 @@ abstract class Registrant implements ActiveRecordInterface
     } // setInstitution()
 
     /**
+     * Set the value of [residence] column.
+     *
+     * @param int $v new value
+     * @return $this|\db\db\Registrant The current object (for fluent API support)
+     */
+    public function setResidence($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->residence !== $v) {
+            $this->residence = $v;
+            $this->modifiedColumns[RegistrantTableMap::COL_RESIDENCE] = true;
+        }
+
+        if ($this->aCountry !== null && $this->aCountry->getCountryId() !== $v) {
+            $this->aCountry = null;
+        }
+
+        return $this;
+    } // setResidence()
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -642,6 +690,9 @@ abstract class Registrant implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : RegistrantTableMap::translateFieldName('Institution', TableMap::TYPE_PHPNAME, $indexType)];
             $this->institution = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : RegistrantTableMap::translateFieldName('Residence', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->residence = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -650,7 +701,7 @@ abstract class Registrant implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 7; // 7 = RegistrantTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 8; // 8 = RegistrantTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\db\\db\\Registrant'), 0, $e);
@@ -672,6 +723,9 @@ abstract class Registrant implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
+        if ($this->aCountry !== null && $this->residence !== $this->aCountry->getCountryId()) {
+            $this->aCountry = null;
+        }
     } // ensureConsistency
 
     /**
@@ -711,6 +765,7 @@ abstract class Registrant implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aCountry = null;
             $this->singleRegistrantEvent = null;
 
             $this->singleRegistrantOccupation = null;
@@ -824,6 +879,18 @@ abstract class Registrant implements ActiveRecordInterface
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
 
+            // We call the save method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aCountry !== null) {
+                if ($this->aCountry->isModified() || $this->aCountry->isNew()) {
+                    $affectedRows += $this->aCountry->save($con);
+                }
+                $this->setCountry($this->aCountry);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -912,6 +979,9 @@ abstract class Registrant implements ActiveRecordInterface
         if ($this->isColumnModified(RegistrantTableMap::COL_INSTITUTION)) {
             $modifiedColumns[':p' . $index++]  = 'institution';
         }
+        if ($this->isColumnModified(RegistrantTableMap::COL_RESIDENCE)) {
+            $modifiedColumns[':p' . $index++]  = 'residence';
+        }
 
         $sql = sprintf(
             'INSERT INTO registrant (%s) VALUES (%s)',
@@ -943,6 +1013,9 @@ abstract class Registrant implements ActiveRecordInterface
                         break;
                     case 'institution':
                         $stmt->bindValue($identifier, $this->institution, PDO::PARAM_STR);
+                        break;
+                    case 'residence':
+                        $stmt->bindValue($identifier, $this->residence, PDO::PARAM_INT);
                         break;
                 }
             }
@@ -1027,6 +1100,9 @@ abstract class Registrant implements ActiveRecordInterface
             case 6:
                 return $this->getInstitution();
                 break;
+            case 7:
+                return $this->getResidence();
+                break;
             default:
                 return null;
                 break;
@@ -1064,6 +1140,7 @@ abstract class Registrant implements ActiveRecordInterface
             $keys[4] => $this->getPhone(),
             $keys[5] => $this->getDiscord(),
             $keys[6] => $this->getInstitution(),
+            $keys[7] => $this->getResidence(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1071,6 +1148,21 @@ abstract class Registrant implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
+            if (null !== $this->aCountry) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'country';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'country';
+                        break;
+                    default:
+                        $key = 'Country';
+                }
+
+                $result[$key] = $this->aCountry->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
             if (null !== $this->singleRegistrantEvent) {
 
                 switch ($keyType) {
@@ -1201,6 +1293,9 @@ abstract class Registrant implements ActiveRecordInterface
             case 6:
                 $this->setInstitution($value);
                 break;
+            case 7:
+                $this->setResidence($value);
+                break;
         } // switch()
 
         return $this;
@@ -1247,6 +1342,9 @@ abstract class Registrant implements ActiveRecordInterface
         }
         if (array_key_exists($keys[6], $arr)) {
             $this->setInstitution($arr[$keys[6]]);
+        }
+        if (array_key_exists($keys[7], $arr)) {
+            $this->setResidence($arr[$keys[7]]);
         }
     }
 
@@ -1309,6 +1407,9 @@ abstract class Registrant implements ActiveRecordInterface
         }
         if ($this->isColumnModified(RegistrantTableMap::COL_INSTITUTION)) {
             $criteria->add(RegistrantTableMap::COL_INSTITUTION, $this->institution);
+        }
+        if ($this->isColumnModified(RegistrantTableMap::COL_RESIDENCE)) {
+            $criteria->add(RegistrantTableMap::COL_RESIDENCE, $this->residence);
         }
 
         return $criteria;
@@ -1402,6 +1503,7 @@ abstract class Registrant implements ActiveRecordInterface
         $copyObj->setPhone($this->getPhone());
         $copyObj->setDiscord($this->getDiscord());
         $copyObj->setInstitution($this->getInstitution());
+        $copyObj->setResidence($this->getResidence());
 
         if ($deepCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -1461,6 +1563,57 @@ abstract class Registrant implements ActiveRecordInterface
         $this->copyInto($copyObj, $deepCopy);
 
         return $copyObj;
+    }
+
+    /**
+     * Declares an association between this object and a ChildCountry object.
+     *
+     * @param  ChildCountry $v
+     * @return $this|\db\db\Registrant The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setCountry(ChildCountry $v = null)
+    {
+        if ($v === null) {
+            $this->setResidence(NULL);
+        } else {
+            $this->setResidence($v->getCountryId());
+        }
+
+        $this->aCountry = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildCountry object, it will not be re-added.
+        if ($v !== null) {
+            $v->addRegistrant($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildCountry object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildCountry The associated ChildCountry object.
+     * @throws PropelException
+     */
+    public function getCountry(ConnectionInterface $con = null)
+    {
+        if ($this->aCountry === null && ($this->residence != 0)) {
+            $this->aCountry = ChildCountryQuery::create()->findPk($this->residence, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aCountry->addRegistrants($this);
+             */
+        }
+
+        return $this->aCountry;
     }
 
 
@@ -1663,6 +1816,9 @@ abstract class Registrant implements ActiveRecordInterface
      */
     public function clear()
     {
+        if (null !== $this->aCountry) {
+            $this->aCountry->removeRegistrant($this);
+        }
         $this->registrant_id = null;
         $this->name = null;
         $this->surname = null;
@@ -1670,6 +1826,7 @@ abstract class Registrant implements ActiveRecordInterface
         $this->phone = null;
         $this->discord = null;
         $this->institution = null;
+        $this->residence = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();
@@ -1710,6 +1867,7 @@ abstract class Registrant implements ActiveRecordInterface
         $this->singleRegistrantSchoolStudent = null;
         $this->singleRegistrantStudent = null;
         $this->singleRegistrantTeacher = null;
+        $this->aCountry = null;
     }
 
     /**

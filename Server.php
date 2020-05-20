@@ -103,7 +103,7 @@ class Server
     $validator->validate("surname", $request->surname)->regex("/^((['`\-\p{L}])+[ ]?)*$/")->len(2, 50);
     $validator->validate("email", $request->email)->email()->len(5, 255);
     $validator->validate("institution", $request->institution)->regex("/^((['`.,№#\"\-\p{L}0-9])+[ ]?)*$/")->len(2, 255);
-    $validator->validate("role", $request->role)->regex("/^[a-z]*$/")->len(1, 15);
+    $validator->validate("occupation", $request->occupation)->regex("/^[a-z]*$/")->len(1, 15);
     $validator->validate("grade", $request->grade)->regex("/^[0-9]*$/")->len(0, 2);
     $validator->validate("gradeletter", $request->gradeletter)->regex("/^[\p{Lu}]*$/")->len(0, 1);
     $validator->validate("subject", $request->subject)->regex("/^(([,.'`\"\-\p{L}])+[ ]?)*$/")->len(0, 40);
@@ -111,7 +111,9 @@ class Server
     $validator->validate("topic", $request->topic)->regex("/^[0-9]*$/")->len(1, 3);
     $validator->validate("country", $request->country)->regex("/^[0-9]*$/")->len(1, 3);
     $validator->validate("desiredcountry", $request->desiredcountry)->regex("/^[0-9]*$/")->len(0, 3);
-    $validator->validate("phone", $request->phone)->regex("/^([\+][0-9]{11})/");
+    $validator->validate("residence", $request->residence)->regex("/^[0-9]*$/")->len(0, 3);
+    $validator->validate("interesttext", $request->interesttext)->len(0, 401);
+    $validator->validate("phone", $request->phone)->regex("/^[\+][0-9]{11}$|$/");
     $validator->validate("discord", $request->discord)->regex("/^[\s\S]*#[0-9]{4}$|$/");
     return $validator;
   }
@@ -130,10 +132,12 @@ class Server
     $dbRegistrants->setName($request->name);
     $dbRegistrants->setSurname($request->surname);
     $dbRegistrants->setEmail($request->email);
-    $dbRegistrants->setPhone($request->phone);
+    if ($request->phone != "")
+      $dbRegistrants->setPhone($request->phone);
     $dbRegistrants->setInstitution($request->institution);
     if ($request->discord != "")
       $dbRegistrants->setDiscord($request->discord);
+    $dbRegistrants->setResidence($request->residence);
 
     $dbTopicCountry = $dbTopicCountryQ->filterByTopicId($request->topic)->filterByCountryId($request->country)->filterByAvailable(1)->filterByReserved(0)->findOne();
     if (!!$dbTopicCountry) {
@@ -155,22 +159,22 @@ class Server
       $dbRegistrantEvent->setCountryDesired($request->desiredcountry);
     }
 
-    $dbRegistrantEvent->setRegistrant($dbRegistrants)->setTopicId($request->topic)->setCountryId($request->country);
+    $dbRegistrantEvent->setRegistrant($dbRegistrants)->setTopicId($request->topic)->setCountryId($request->country)->setInterestText($request->interesttext);
 
-    $dbOccupation = $dbOccupationQ->filterByOccupationName($request->role)->findOne();
-    if ($dbOccupationQ->filterByOccupationName($request->role)->count() == 0) {
+    $dbOccupation = $dbOccupationQ->filterByOccupationName($request->occupation)->findOne();
+    if ($dbOccupationQ->filterByOccupationName($request->occupation)->count() == 0) {
       throw new Exception("Error Processing Request", 1);
     } else {
       $dbRegistrantOccupation->setRegistrant($dbRegistrants)->setOccupation($dbOccupation);
     }
 
-    if ($request->role == "teacher") {
+    if ($request->occupation == "teacher") {
       $dbRegistrantTeacher->setRegistrant($dbRegistrants);
       if ($request->subject)  $dbRegistrantTeacher->setSubject($request->subject);
-    } else if ($request->role == "student") {
+    } else if ($request->occupation == "student") {
       $dbRegistrantStudent->setRegistrant($dbRegistrants);
       if ($request->major)  $dbRegistrantStudent->setMajorName($request->major);
-    } else if ($request->role == "schoolstudent") {
+    } else if ($request->occupation == "schoolstudent") {
       $dbRegistrantSchoolStudent->setRegistrant($dbRegistrants);
       if ($request->gradeletter)  $dbRegistrantSchoolStudent->setGradeLetter($request->gradeletter);
       if ($request->grade)  $dbRegistrantSchoolStudent->setGrade($request->grade);
@@ -185,11 +189,11 @@ class Server
     $dbRegistrantEvent->save();
     $dbRegistrantOccupation->save();
 
-    if ($request->role == "teacher") {
+    if ($request->occupation == "teacher") {
       $dbRegistrantTeacher->save();
-    } else if ($request->role == "student") {
+    } else if ($request->occupation == "student") {
       $dbRegistrantStudent->save();
-    } else if ($request->role == "schoolstudent") {
+    } else if ($request->occupation == "schoolstudent") {
       $dbRegistrantSchoolStudent->save();
     }
     return true;
@@ -264,6 +268,7 @@ class Server
       $registrant['surname'] = $dbRegistrant->getSurname();
       $registrant['topic'] = $dbTopic->getTopicName();
       $registrant['country'] = $dbCountry->getCountryName();
+      $registrant['interesttext'] = $dbRegistrantEvent->getInterestText();
       $registrant['institution'] = $dbRegistrant->getInstitution();
       $registrant['email'] = $dbRegistrant->getEmail();
       $registrant['phone'] = $dbRegistrant->getPhone();

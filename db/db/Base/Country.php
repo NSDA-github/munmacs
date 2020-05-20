@@ -18,12 +18,15 @@ use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
 use db\db\Country as ChildCountry;
 use db\db\CountryQuery as ChildCountryQuery;
+use db\db\Registrant as ChildRegistrant;
 use db\db\RegistrantEvent as ChildRegistrantEvent;
 use db\db\RegistrantEventQuery as ChildRegistrantEventQuery;
+use db\db\RegistrantQuery as ChildRegistrantQuery;
 use db\db\TopicCountry as ChildTopicCountry;
 use db\db\TopicCountryQuery as ChildTopicCountryQuery;
 use db\db\Map\CountryTableMap;
 use db\db\Map\RegistrantEventTableMap;
+use db\db\Map\RegistrantTableMap;
 use db\db\Map\TopicCountryTableMap;
 
 /**
@@ -82,6 +85,12 @@ abstract class Country implements ActiveRecordInterface
     protected $country_name;
 
     /**
+     * @var        ObjectCollection|ChildRegistrant[] Collection to store aggregation of ChildRegistrant objects.
+     */
+    protected $collRegistrants;
+    protected $collRegistrantsPartial;
+
+    /**
      * @var        ObjectCollection|ChildRegistrantEvent[] Collection to store aggregation of ChildRegistrantEvent objects.
      */
     protected $collRegistrantEventsRelatedByCountryId;
@@ -106,6 +115,12 @@ abstract class Country implements ActiveRecordInterface
      * @var boolean
      */
     protected $alreadyInSave = false;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildRegistrant[]
+     */
+    protected $registrantsScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -520,6 +535,8 @@ abstract class Country implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->collRegistrants = null;
+
             $this->collRegistrantEventsRelatedByCountryId = null;
 
             $this->collRegistrantEventsRelatedByCountryDesired = null;
@@ -638,6 +655,23 @@ abstract class Country implements ActiveRecordInterface
                     $affectedRows += $this->doUpdate($con);
                 }
                 $this->resetModified();
+            }
+
+            if ($this->registrantsScheduledForDeletion !== null) {
+                if (!$this->registrantsScheduledForDeletion->isEmpty()) {
+                    \db\db\RegistrantQuery::create()
+                        ->filterByPrimaryKeys($this->registrantsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->registrantsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collRegistrants !== null) {
+                foreach ($this->collRegistrants as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
             }
 
             if ($this->registrantEventsRelatedByCountryIdScheduledForDeletion !== null) {
@@ -848,6 +882,21 @@ abstract class Country implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
+            if (null !== $this->collRegistrants) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'registrants';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'registrants';
+                        break;
+                    default:
+                        $key = 'Registrants';
+                }
+
+                $result[$key] = $this->collRegistrants->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
             if (null !== $this->collRegistrantEventsRelatedByCountryId) {
 
                 switch ($keyType) {
@@ -1105,6 +1154,12 @@ abstract class Country implements ActiveRecordInterface
             // the getter/setter methods for fkey referrer objects.
             $copyObj->setNew(false);
 
+            foreach ($this->getRegistrants() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addRegistrant($relObj->copy($deepCopy));
+                }
+            }
+
             foreach ($this->getRegistrantEventsRelatedByCountryId() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addRegistrantEventRelatedByCountryId($relObj->copy($deepCopy));
@@ -1164,6 +1219,10 @@ abstract class Country implements ActiveRecordInterface
      */
     public function initRelation($relationName)
     {
+        if ('Registrant' == $relationName) {
+            $this->initRegistrants();
+            return;
+        }
         if ('RegistrantEventRelatedByCountryId' == $relationName) {
             $this->initRegistrantEventsRelatedByCountryId();
             return;
@@ -1176,6 +1235,231 @@ abstract class Country implements ActiveRecordInterface
             $this->initTopicCountries();
             return;
         }
+    }
+
+    /**
+     * Clears out the collRegistrants collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addRegistrants()
+     */
+    public function clearRegistrants()
+    {
+        $this->collRegistrants = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collRegistrants collection loaded partially.
+     */
+    public function resetPartialRegistrants($v = true)
+    {
+        $this->collRegistrantsPartial = $v;
+    }
+
+    /**
+     * Initializes the collRegistrants collection.
+     *
+     * By default this just sets the collRegistrants collection to an empty array (like clearcollRegistrants());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initRegistrants($overrideExisting = true)
+    {
+        if (null !== $this->collRegistrants && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = RegistrantTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collRegistrants = new $collectionClassName;
+        $this->collRegistrants->setModel('\db\db\Registrant');
+    }
+
+    /**
+     * Gets an array of ChildRegistrant objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildCountry is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildRegistrant[] List of ChildRegistrant objects
+     * @throws PropelException
+     */
+    public function getRegistrants(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collRegistrantsPartial && !$this->isNew();
+        if (null === $this->collRegistrants || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collRegistrants) {
+                // return empty collection
+                $this->initRegistrants();
+            } else {
+                $collRegistrants = ChildRegistrantQuery::create(null, $criteria)
+                    ->filterByCountry($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collRegistrantsPartial && count($collRegistrants)) {
+                        $this->initRegistrants(false);
+
+                        foreach ($collRegistrants as $obj) {
+                            if (false == $this->collRegistrants->contains($obj)) {
+                                $this->collRegistrants->append($obj);
+                            }
+                        }
+
+                        $this->collRegistrantsPartial = true;
+                    }
+
+                    return $collRegistrants;
+                }
+
+                if ($partial && $this->collRegistrants) {
+                    foreach ($this->collRegistrants as $obj) {
+                        if ($obj->isNew()) {
+                            $collRegistrants[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collRegistrants = $collRegistrants;
+                $this->collRegistrantsPartial = false;
+            }
+        }
+
+        return $this->collRegistrants;
+    }
+
+    /**
+     * Sets a collection of ChildRegistrant objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $registrants A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildCountry The current object (for fluent API support)
+     */
+    public function setRegistrants(Collection $registrants, ConnectionInterface $con = null)
+    {
+        /** @var ChildRegistrant[] $registrantsToDelete */
+        $registrantsToDelete = $this->getRegistrants(new Criteria(), $con)->diff($registrants);
+
+
+        $this->registrantsScheduledForDeletion = $registrantsToDelete;
+
+        foreach ($registrantsToDelete as $registrantRemoved) {
+            $registrantRemoved->setCountry(null);
+        }
+
+        $this->collRegistrants = null;
+        foreach ($registrants as $registrant) {
+            $this->addRegistrant($registrant);
+        }
+
+        $this->collRegistrants = $registrants;
+        $this->collRegistrantsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Registrant objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Registrant objects.
+     * @throws PropelException
+     */
+    public function countRegistrants(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collRegistrantsPartial && !$this->isNew();
+        if (null === $this->collRegistrants || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collRegistrants) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getRegistrants());
+            }
+
+            $query = ChildRegistrantQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByCountry($this)
+                ->count($con);
+        }
+
+        return count($this->collRegistrants);
+    }
+
+    /**
+     * Method called to associate a ChildRegistrant object to this object
+     * through the ChildRegistrant foreign key attribute.
+     *
+     * @param  ChildRegistrant $l ChildRegistrant
+     * @return $this|\db\db\Country The current object (for fluent API support)
+     */
+    public function addRegistrant(ChildRegistrant $l)
+    {
+        if ($this->collRegistrants === null) {
+            $this->initRegistrants();
+            $this->collRegistrantsPartial = true;
+        }
+
+        if (!$this->collRegistrants->contains($l)) {
+            $this->doAddRegistrant($l);
+
+            if ($this->registrantsScheduledForDeletion and $this->registrantsScheduledForDeletion->contains($l)) {
+                $this->registrantsScheduledForDeletion->remove($this->registrantsScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildRegistrant $registrant The ChildRegistrant object to add.
+     */
+    protected function doAddRegistrant(ChildRegistrant $registrant)
+    {
+        $this->collRegistrants[]= $registrant;
+        $registrant->setCountry($this);
+    }
+
+    /**
+     * @param  ChildRegistrant $registrant The ChildRegistrant object to remove.
+     * @return $this|ChildCountry The current object (for fluent API support)
+     */
+    public function removeRegistrant(ChildRegistrant $registrant)
+    {
+        if ($this->getRegistrants()->contains($registrant)) {
+            $pos = $this->collRegistrants->search($registrant);
+            $this->collRegistrants->remove($pos);
+            if (null === $this->registrantsScheduledForDeletion) {
+                $this->registrantsScheduledForDeletion = clone $this->collRegistrants;
+                $this->registrantsScheduledForDeletion->clear();
+            }
+            $this->registrantsScheduledForDeletion[]= clone $registrant;
+            $registrant->setCountry(null);
+        }
+
+        return $this;
     }
 
     /**
@@ -2008,6 +2292,11 @@ abstract class Country implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collRegistrants) {
+                foreach ($this->collRegistrants as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->collRegistrantEventsRelatedByCountryId) {
                 foreach ($this->collRegistrantEventsRelatedByCountryId as $o) {
                     $o->clearAllReferences($deep);
@@ -2025,6 +2314,7 @@ abstract class Country implements ActiveRecordInterface
             }
         } // if ($deep)
 
+        $this->collRegistrants = null;
         $this->collRegistrantEventsRelatedByCountryId = null;
         $this->collRegistrantEventsRelatedByCountryDesired = null;
         $this->collTopicCountries = null;

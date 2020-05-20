@@ -11,12 +11,12 @@ use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\RelationMap;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Map\TableMapTrait;
-use db\db\Country;
-use db\db\CountryQuery;
+use db\db\EditHistoryVerification;
+use db\db\EditHistoryVerificationQuery;
 
 
 /**
- * This class defines the structure of the 'country' table.
+ * This class defines the structure of the 'edit_history_verification' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use db\db\CountryQuery;
  * (i.e. if it's a text column type).
  *
  */
-class CountryTableMap extends TableMap
+class EditHistoryVerificationTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class CountryTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'db.db.Map.CountryTableMap';
+    const CLASS_NAME = 'db.db.Map.EditHistoryVerificationTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class CountryTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'country';
+    const TABLE_NAME = 'edit_history_verification';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\db\\db\\Country';
+    const OM_CLASS = '\\db\\db\\EditHistoryVerification';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'db.db.Country';
+    const CLASS_DEFAULT = 'db.db.EditHistoryVerification';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 2;
+    const NUM_COLUMNS = 7;
 
     /**
      * The number of lazy-loaded columns
@@ -69,17 +69,42 @@ class CountryTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 2;
+    const NUM_HYDRATE_COLUMNS = 7;
 
     /**
-     * the column name for the country_id field
+     * the column name for the edit_id field
      */
-    const COL_COUNTRY_ID = 'country.country_id';
+    const COL_EDIT_ID = 'edit_history_verification.edit_id';
 
     /**
-     * the column name for the country_name field
+     * the column name for the edit_subject field
      */
-    const COL_COUNTRY_NAME = 'country.country_name';
+    const COL_EDIT_SUBJECT = 'edit_history_verification.edit_subject';
+
+    /**
+     * the column name for the who_edited field
+     */
+    const COL_WHO_EDITED = 'edit_history_verification.who_edited';
+
+    /**
+     * the column name for the whom_edited field
+     */
+    const COL_WHOM_EDITED = 'edit_history_verification.whom_edited';
+
+    /**
+     * the column name for the edit_datetime field
+     */
+    const COL_EDIT_DATETIME = 'edit_history_verification.edit_datetime';
+
+    /**
+     * the column name for the edited_from field
+     */
+    const COL_EDITED_FROM = 'edit_history_verification.edited_from';
+
+    /**
+     * the column name for the edited_to field
+     */
+    const COL_EDITED_TO = 'edit_history_verification.edited_to';
 
     /**
      * The default string format for model objects of the related table
@@ -93,11 +118,11 @@ class CountryTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('CountryId', 'CountryName', ),
-        self::TYPE_CAMELNAME     => array('countryId', 'countryName', ),
-        self::TYPE_COLNAME       => array(CountryTableMap::COL_COUNTRY_ID, CountryTableMap::COL_COUNTRY_NAME, ),
-        self::TYPE_FIELDNAME     => array('country_id', 'country_name', ),
-        self::TYPE_NUM           => array(0, 1, )
+        self::TYPE_PHPNAME       => array('EditId', 'EditSubject', 'WhoEdited', 'WhomEdited', 'EditDatetime', 'EditedFrom', 'EditedTo', ),
+        self::TYPE_CAMELNAME     => array('editId', 'editSubject', 'whoEdited', 'whomEdited', 'editDatetime', 'editedFrom', 'editedTo', ),
+        self::TYPE_COLNAME       => array(EditHistoryVerificationTableMap::COL_EDIT_ID, EditHistoryVerificationTableMap::COL_EDIT_SUBJECT, EditHistoryVerificationTableMap::COL_WHO_EDITED, EditHistoryVerificationTableMap::COL_WHOM_EDITED, EditHistoryVerificationTableMap::COL_EDIT_DATETIME, EditHistoryVerificationTableMap::COL_EDITED_FROM, EditHistoryVerificationTableMap::COL_EDITED_TO, ),
+        self::TYPE_FIELDNAME     => array('edit_id', 'edit_subject', 'who_edited', 'whom_edited', 'edit_datetime', 'edited_from', 'edited_to', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -107,11 +132,11 @@ class CountryTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('CountryId' => 0, 'CountryName' => 1, ),
-        self::TYPE_CAMELNAME     => array('countryId' => 0, 'countryName' => 1, ),
-        self::TYPE_COLNAME       => array(CountryTableMap::COL_COUNTRY_ID => 0, CountryTableMap::COL_COUNTRY_NAME => 1, ),
-        self::TYPE_FIELDNAME     => array('country_id' => 0, 'country_name' => 1, ),
-        self::TYPE_NUM           => array(0, 1, )
+        self::TYPE_PHPNAME       => array('EditId' => 0, 'EditSubject' => 1, 'WhoEdited' => 2, 'WhomEdited' => 3, 'EditDatetime' => 4, 'EditedFrom' => 5, 'EditedTo' => 6, ),
+        self::TYPE_CAMELNAME     => array('editId' => 0, 'editSubject' => 1, 'whoEdited' => 2, 'whomEdited' => 3, 'editDatetime' => 4, 'editedFrom' => 5, 'editedTo' => 6, ),
+        self::TYPE_COLNAME       => array(EditHistoryVerificationTableMap::COL_EDIT_ID => 0, EditHistoryVerificationTableMap::COL_EDIT_SUBJECT => 1, EditHistoryVerificationTableMap::COL_WHO_EDITED => 2, EditHistoryVerificationTableMap::COL_WHOM_EDITED => 3, EditHistoryVerificationTableMap::COL_EDIT_DATETIME => 4, EditHistoryVerificationTableMap::COL_EDITED_FROM => 5, EditHistoryVerificationTableMap::COL_EDITED_TO => 6, ),
+        self::TYPE_FIELDNAME     => array('edit_id' => 0, 'edit_subject' => 1, 'who_edited' => 2, 'whom_edited' => 3, 'edit_datetime' => 4, 'edited_from' => 5, 'edited_to' => 6, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -124,15 +149,20 @@ class CountryTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('country');
-        $this->setPhpName('Country');
+        $this->setName('edit_history_verification');
+        $this->setPhpName('EditHistoryVerification');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\db\\db\\Country');
+        $this->setClassName('\\db\\db\\EditHistoryVerification');
         $this->setPackage('db.db');
         $this->setUseIdGenerator(true);
         // columns
-        $this->addPrimaryKey('country_id', 'CountryId', 'TINYINT', true, 3, null);
-        $this->addColumn('country_name', 'CountryName', 'VARCHAR', true, 90, null);
+        $this->addPrimaryKey('edit_id', 'EditId', 'INTEGER', true, null, null);
+        $this->addColumn('edit_subject', 'EditSubject', 'VARCHAR', true, 20, null);
+        $this->addColumn('who_edited', 'WhoEdited', 'TINYINT', true, 3, null);
+        $this->addColumn('whom_edited', 'WhomEdited', 'SMALLINT', true, 4, null);
+        $this->addColumn('edit_datetime', 'EditDatetime', 'TIMESTAMP', true, null, 'CURRENT_TIMESTAMP');
+        $this->addColumn('edited_from', 'EditedFrom', 'BOOLEAN', true, 1, null);
+        $this->addColumn('edited_to', 'EditedTo', 'BOOLEAN', true, 1, null);
     } // initialize()
 
     /**
@@ -140,34 +170,6 @@ class CountryTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Registrant', '\\db\\db\\Registrant', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':residence',
-    1 => ':country_id',
-  ),
-), null, null, 'Registrants', false);
-        $this->addRelation('RegistrantEventRelatedByCountryId', '\\db\\db\\RegistrantEvent', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':country_id',
-    1 => ':country_id',
-  ),
-), null, null, 'RegistrantEventsRelatedByCountryId', false);
-        $this->addRelation('RegistrantEventRelatedByCountryDesired', '\\db\\db\\RegistrantEvent', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':country_desired',
-    1 => ':country_id',
-  ),
-), null, null, 'RegistrantEventsRelatedByCountryDesired', false);
-        $this->addRelation('TopicCountry', '\\db\\db\\TopicCountry', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':country_id',
-    1 => ':country_id',
-  ),
-), null, null, 'TopicCountries', false);
     } // buildRelations()
 
     /**
@@ -186,11 +188,11 @@ class CountryTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('CountryId', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('EditId', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return null === $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('CountryId', TableMap::TYPE_PHPNAME, $indexType)] || is_scalar($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('CountryId', TableMap::TYPE_PHPNAME, $indexType)]) || is_callable([$row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('CountryId', TableMap::TYPE_PHPNAME, $indexType)], '__toString']) ? (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('CountryId', TableMap::TYPE_PHPNAME, $indexType)] : $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('CountryId', TableMap::TYPE_PHPNAME, $indexType)];
+        return null === $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('EditId', TableMap::TYPE_PHPNAME, $indexType)] || is_scalar($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('EditId', TableMap::TYPE_PHPNAME, $indexType)]) || is_callable([$row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('EditId', TableMap::TYPE_PHPNAME, $indexType)], '__toString']) ? (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('EditId', TableMap::TYPE_PHPNAME, $indexType)] : $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('EditId', TableMap::TYPE_PHPNAME, $indexType)];
     }
 
     /**
@@ -210,7 +212,7 @@ class CountryTableMap extends TableMap
         return (int) $row[
             $indexType == TableMap::TYPE_NUM
                 ? 0 + $offset
-                : self::translateFieldName('CountryId', TableMap::TYPE_PHPNAME, $indexType)
+                : self::translateFieldName('EditId', TableMap::TYPE_PHPNAME, $indexType)
         ];
     }
 
@@ -227,7 +229,7 @@ class CountryTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? CountryTableMap::CLASS_DEFAULT : CountryTableMap::OM_CLASS;
+        return $withPrefix ? EditHistoryVerificationTableMap::CLASS_DEFAULT : EditHistoryVerificationTableMap::OM_CLASS;
     }
 
     /**
@@ -241,22 +243,22 @@ class CountryTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (Country object, last column rank)
+     * @return array           (EditHistoryVerification object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = CountryTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = CountryTableMap::getInstanceFromPool($key))) {
+        $key = EditHistoryVerificationTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = EditHistoryVerificationTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + CountryTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + EditHistoryVerificationTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = CountryTableMap::OM_CLASS;
-            /** @var Country $obj */
+            $cls = EditHistoryVerificationTableMap::OM_CLASS;
+            /** @var EditHistoryVerification $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            CountryTableMap::addInstanceToPool($obj, $key);
+            EditHistoryVerificationTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -279,18 +281,18 @@ class CountryTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = CountryTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = CountryTableMap::getInstanceFromPool($key))) {
+            $key = EditHistoryVerificationTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = EditHistoryVerificationTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var Country $obj */
+                /** @var EditHistoryVerification $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                CountryTableMap::addInstanceToPool($obj, $key);
+                EditHistoryVerificationTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -311,11 +313,21 @@ class CountryTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(CountryTableMap::COL_COUNTRY_ID);
-            $criteria->addSelectColumn(CountryTableMap::COL_COUNTRY_NAME);
+            $criteria->addSelectColumn(EditHistoryVerificationTableMap::COL_EDIT_ID);
+            $criteria->addSelectColumn(EditHistoryVerificationTableMap::COL_EDIT_SUBJECT);
+            $criteria->addSelectColumn(EditHistoryVerificationTableMap::COL_WHO_EDITED);
+            $criteria->addSelectColumn(EditHistoryVerificationTableMap::COL_WHOM_EDITED);
+            $criteria->addSelectColumn(EditHistoryVerificationTableMap::COL_EDIT_DATETIME);
+            $criteria->addSelectColumn(EditHistoryVerificationTableMap::COL_EDITED_FROM);
+            $criteria->addSelectColumn(EditHistoryVerificationTableMap::COL_EDITED_TO);
         } else {
-            $criteria->addSelectColumn($alias . '.country_id');
-            $criteria->addSelectColumn($alias . '.country_name');
+            $criteria->addSelectColumn($alias . '.edit_id');
+            $criteria->addSelectColumn($alias . '.edit_subject');
+            $criteria->addSelectColumn($alias . '.who_edited');
+            $criteria->addSelectColumn($alias . '.whom_edited');
+            $criteria->addSelectColumn($alias . '.edit_datetime');
+            $criteria->addSelectColumn($alias . '.edited_from');
+            $criteria->addSelectColumn($alias . '.edited_to');
         }
     }
 
@@ -328,7 +340,7 @@ class CountryTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(CountryTableMap::DATABASE_NAME)->getTable(CountryTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(EditHistoryVerificationTableMap::DATABASE_NAME)->getTable(EditHistoryVerificationTableMap::TABLE_NAME);
     }
 
     /**
@@ -336,16 +348,16 @@ class CountryTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(CountryTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(CountryTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new CountryTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(EditHistoryVerificationTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(EditHistoryVerificationTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new EditHistoryVerificationTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a Country or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a EditHistoryVerification or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or Country object or primary key or array of primary keys
+     * @param mixed               $values Criteria or EditHistoryVerification object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -356,27 +368,27 @@ class CountryTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CountryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(EditHistoryVerificationTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \db\db\Country) { // it's a model object
+        } elseif ($values instanceof \db\db\EditHistoryVerification) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(CountryTableMap::DATABASE_NAME);
-            $criteria->add(CountryTableMap::COL_COUNTRY_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(EditHistoryVerificationTableMap::DATABASE_NAME);
+            $criteria->add(EditHistoryVerificationTableMap::COL_EDIT_ID, (array) $values, Criteria::IN);
         }
 
-        $query = CountryQuery::create()->mergeWith($criteria);
+        $query = EditHistoryVerificationQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            CountryTableMap::clearInstancePool();
+            EditHistoryVerificationTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                CountryTableMap::removeInstanceFromPool($singleval);
+                EditHistoryVerificationTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -384,20 +396,20 @@ class CountryTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the country table.
+     * Deletes all rows from the edit_history_verification table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return CountryQuery::create()->doDeleteAll($con);
+        return EditHistoryVerificationQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a Country or Criteria object.
+     * Performs an INSERT on the database, given a EditHistoryVerification or Criteria object.
      *
-     * @param mixed               $criteria Criteria or Country object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or EditHistoryVerification object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -406,22 +418,22 @@ class CountryTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CountryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(EditHistoryVerificationTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from Country object
+            $criteria = $criteria->buildCriteria(); // build Criteria from EditHistoryVerification object
         }
 
-        if ($criteria->containsKey(CountryTableMap::COL_COUNTRY_ID) && $criteria->keyContainsValue(CountryTableMap::COL_COUNTRY_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.CountryTableMap::COL_COUNTRY_ID.')');
+        if ($criteria->containsKey(EditHistoryVerificationTableMap::COL_EDIT_ID) && $criteria->keyContainsValue(EditHistoryVerificationTableMap::COL_EDIT_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.EditHistoryVerificationTableMap::COL_EDIT_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = CountryQuery::create()->mergeWith($criteria);
+        $query = EditHistoryVerificationQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -430,7 +442,7 @@ class CountryTableMap extends TableMap
         });
     }
 
-} // CountryTableMap
+} // EditHistoryVerificationTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-CountryTableMap::buildTableMap();
+EditHistoryVerificationTableMap::buildTableMap();

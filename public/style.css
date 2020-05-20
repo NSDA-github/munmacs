@@ -162,6 +162,10 @@ label.is-invalid {
   border: 1px solid #ced4da;
 }
 
+.dropdown-menu.inner.show {
+  width: 1px;
+}
+
 .show > .btn-light.dropdown-toggle {
   background-color: white !important;
   border: 1px solid #ced4da;
