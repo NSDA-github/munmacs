@@ -15,7 +15,7 @@
     <li>Event topic, country preferences, and motivation letter, to approve your application and to permit you to participate in the event.</li>
   </ul>
   <p>
-    We only retain collected information for at most one year, after which we remove information about name and surname, email address, phone
+    We only retain collected information for at most one year, after which we remove information about your name and surname, email address, phone
     number, and discord username. What data we store, we’ll protect within commercially acceptable means to prevent loss and theft, as well as
     unauthorized access, disclosure, copying, use or modification. <br> <br>
 
@@ -25,9 +25,10 @@
     of these sites, and cannot accept responsibility or liability for their respective privacy policies. <br> <br>
 
     You are free to refuse our request for your personal information, with the understanding that we may be unable to provide you with some of
-    your desired services. To request all data that we store about you or its deletion, email us at <a href="mailto:modelun.uralsk@gmail.com">modelun.uralsk@gmail.com</a>. Include your
-    National ID card and your full face next to it with our website in the background. Your name and surname on the ID card, and our logo must be
-    visible in the photo. Keep your face open, and do not cover it. <br> <br>
+    your desired services. To access your full stored personal data or its deletion, email us at <a href="mailto:modelun.uralsk@gmail.com">modelun.uralsk@gmail.com</a>
+    using the email address used during the registration. If the used email is unavailable, include a photo of yourself with your National ID card, Passport or other
+    document verifying your personality with our website in the background. Your name and surname on the ID card, and our logo must be
+    visible in the photo. Keep your face fully visible, and do not cover it. <br> <br>
 
     Your continued use of our website will be regarded as an acceptance of our practices around privacy and personal information. If you have
     any questions about how we handle user data and personal information, feel free to contact us. <br> <br>
