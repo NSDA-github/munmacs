@@ -269,26 +269,33 @@ $klein->respond('POST', '/api/[a:title]', function ($request, $response, $servic
         break;
 
       case "register":
-        $validator = Server::validate($request);
-        if ($validator->oneResult() == false) {
-          $response->code(400);
-          $res["success"] = false;
-          $res["msg"] = "Some data were not accepted by the server";
-          $res["validity"] = $validator->invalidList();
-          $response->json($res);
-        } else {
-          $server = new Server();
-          if (!$server->register($request)) {
-            $response->code($server->errorCode());
+        if (!empty($request->param("g-recaptcha-response"))) {
+          $validator = Server::validate($request);
+          if ($validator->oneResult() == false) {
+            $response->code(400);
             $res["success"] = false;
-            $res["msg"] = $server->error();
+            $res["msg"] = "Some data were not accepted by the server";
+            $res["validity"] = $validator->invalidList();
             $response->json($res);
           } else {
-            $response->code(200);
-            $res["success"] = true;
-            $res["msg"] = "Success";
-            $response->json($res);
+            $server = new Server();
+            if (!$server->register($request)) {
+              $response->code($server->errorCode());
+              $res["success"] = false;
+              $res["msg"] = $server->error();
+              $response->json($res);
+            } else {
+              $response->code(200);
+              $res["success"] = true;
+              $res["msg"] = "Success";
+              $response->json($res);
+            }
           }
+        } else {
+          $response->code(400);
+          $res["success"] = false;
+          $res["msg"] = "Verify the request with ReCaptcha";
+          $response->json($res);
         }
         break;
 

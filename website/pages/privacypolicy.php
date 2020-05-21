@@ -6,13 +6,15 @@
     We value your privacy. Model UN Uralsk respects your privacy regarding any information we may collect from you across our website, <a href="http://munu.novel.systems">http://munu.novel.systems.</a> <br> <br>
     We only ask for personal information when we truly need it to provide a service to you. We collect it by fair and lawful means, with your knowledge and consent. <br> <br>
     We use your
-    <ul>
-      <li>Name and surname, to search you in our databases and in official documents, such as awarding certificates and diplomas.</li>
-      <li>Email and Phone number, to contact you regarding the event to which you have registered.</li>
-      <li>Country of residence, name of your institution, occupation, and occupation details, to use for statistical purposes.</li>
-      <li>Discord username, to add you to our Discord server.</li>
-      <li>Event topic, country preferences, and motivation letter, to approve your application and to permit you to participate in the event.</li>
-    </ul>
+  </p>
+  <ul>
+    <li>Name and surname, to search you in our databases and in official documents, such as awarding certificates and diplomas.</li>
+    <li>Email and Phone number, to contact you regarding the event to which you have registered.</li>
+    <li>Country of residence, name of your institution, occupation, and occupation details, to use for statistical purposes.</li>
+    <li>Discord username, to add you to our Discord server.</li>
+    <li>Event topic, country preferences, and motivation letter, to approve your application and to permit you to participate in the event.</li>
+  </ul>
+  <p>
     We only retain collected information for at most one year, after which we remove information about name and surname, email address, phone
     number, and discord username. What data we store, we’ll protect within commercially acceptable means to prevent loss and theft, as well as
     unauthorized access, disclosure, copying, use or modification. <br> <br>

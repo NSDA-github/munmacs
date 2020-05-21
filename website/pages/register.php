@@ -297,7 +297,6 @@
                     <a href="/privacypolicy">Privacy Policy</a>
                   </label>
                 </div>
-                <br />
                 <div class="button-wrapper" tabindex="0" style="float: right;">
                   <button type="submit" id="continue" class="btn btn-md btn-primary" onclick="legalfix();">
                     Continue
@@ -347,6 +346,9 @@
             <button type="button" class="btn btn-secondary" id="back" style="float: right; margin-right: 1rem;">
               Back
             </button>
+            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+            <div class="g-recaptcha" data-sitekey="6LdIq_oUAAAAAMGpld_BrSxbOzLJ16-Jb-gqtm8e"></div>
+            <br>
           </div>
         </div>
       </div>

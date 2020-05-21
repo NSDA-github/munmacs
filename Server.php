@@ -24,7 +24,7 @@ class Server
 
   public static function adminPassCheck($pass)
   {
-    if ($pass == "AdminPass3000") {
+    if ($pass == "SnPtl4&d#i") {
       return true;
     } else {
       return false;
