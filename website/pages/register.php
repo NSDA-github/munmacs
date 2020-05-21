@@ -3,7 +3,7 @@
     <h1 style="padding-top: 30px;">Delegate Registration Form</h1>
     <h6 class="card-subtitle mb-2 text-muted">
       Registration is open for everyone. <br />
-      Please consider planning your arrival to the event.
+      Please consider creating a <a href="https://discord.com/register">Discord account</a>
     </h6>
     <form action="../app/register/index.php" id="need-validation">
       <div class="personalinfo dissolve active">
@@ -30,7 +30,7 @@
           </div>
           <div class="col-md-6">
             <div class="form-row">
-              <div class="form-group col-12"><label for="institution">School/College/Usniversity
+              <div class="form-group col-12"><label for="institution">School/College/University
                   <span class="attention">*</span></label>
                 <input name="institution" type="text" class="form-control" id="institution" required />
               </div>

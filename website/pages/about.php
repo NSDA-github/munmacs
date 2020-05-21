@@ -44,7 +44,7 @@
           </div>
           <div class="col-8 col-md-9 col-lg-8">
             <p class="lead">
-              Secretarty General
+              Secretary General
             </p>
             <a href="mailto:madi.lukmanov@gmail.com">madi.lukmanov@gmail.com</a>
             <p style="margin-bottom:0.5rem">+7 (778) 106-2430</p>
@@ -124,7 +124,7 @@
       <p>For questions, partnership and collaboration requests, volunteer applications, please, use the following email:
         <br> <a href="mailto:modelun.uralsk@gmail.com">modelun.uralsk@gmail.com</a></p>
       <h5><b>Phone</b></h5>
-      <p>Leave What's App messages, or call us if there is no time to wait:
+      <p>Leave What's App messages, or call us if it is urgent:
         <br> +7 (778) 106-2430 <br>
         <i>Monday-Friday, 10:00 - 18:00</i>
       </p>
