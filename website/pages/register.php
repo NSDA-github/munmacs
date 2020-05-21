@@ -327,7 +327,7 @@
             <select name="desiredcountry" class="form-control" id="desiredcountry">
             </select>
           </div>
-          <div class="form-group col-md-6 mb-4">
+          <div class="form-group col-md-6 mb-5">
             <div id="interesttext-container" style="position:relative;">
               <label for="interesttext">Short Motivation Letter</label>
               <p><small>Write up to 400 <b>characters</b> to explain why you chose these countries</small></p>
@@ -337,7 +337,11 @@
               </div>
             </div>
           </div>
-          <div style="width: 100%; padding: 0.5rem;">
+          <div class="col-md-6">
+            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+            <div class="g-recaptcha" data-sitekey="6LdIq_oUAAAAAMGpld_BrSxbOzLJ16-Jb-gqtm8e"></div>
+          </div>
+          <div class="col-md-6">
             <div class="button-wrapper" tabindex="0" style="float: right;">
               <button type="submit" style="float: right;" id="submit" class="btn btn-md btn-primary">
                 Submit
@@ -346,9 +350,11 @@
             <button type="button" class="btn btn-secondary" id="back" style="float: right; margin-right: 1rem;">
               Back
             </button>
-            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-            <div class="g-recaptcha" data-sitekey="6LdIq_oUAAAAAMGpld_BrSxbOzLJ16-Jb-gqtm8e"></div>
-            <br>
+
+          </div>
+
+          <div style="width: 100%; padding: 0.5rem;">
+
           </div>
         </div>
       </div>
