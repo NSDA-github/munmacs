@@ -25,10 +25,10 @@
     of these sites, and cannot accept responsibility or liability for their respective privacy policies. <br> <br>
 
     You are free to refuse our request for your personal information, with the understanding that we may be unable to provide you with some of
-    your desired services. To access your full stored personal data or its deletion, email us at <a href="mailto:modelun.uralsk@gmail.com">modelun.uralsk@gmail.com</a>
-    using the email address used during the registration. If the used email is unavailable, include a photo of yourself with your National ID card, Passport or other
-    document verifying your personality with our website in the background. Your name and surname on the ID card, and our logo must be
-    visible in the photo. Keep your face fully visible, and do not cover it. <br> <br>
+    your desired services. To access or delete your full personal data stored in our servers, email us at <a href="mailto:modelun.uralsk@gmail.com">modelun.uralsk@gmail.com</a>
+    using the email address entered during the registration. If the used email is unavailable, include a photo of yourself with your National ID card, Passport or other
+    document verifying your identity with our website in the background. Your name and surname on the document, and our logo must be
+    visible in the photo. Keep your face fully visible, and do not cover it. The photo must not be edited. <br> <br>
 
     Your continued use of our website will be regarded as an acceptance of our practices around privacy and personal information. If you have
     any questions about how we handle user data and personal information, feel free to contact us. <br> <br>
