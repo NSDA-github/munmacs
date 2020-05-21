@@ -19,8 +19,11 @@
 .navbar-light {
   background-color: var(--un-light-grey);
 }
+.navbar-dark .nav-first {
+  margin-left: 1rem;
+}
 
-@media (max-width: 991.98px) {
+/* @media (max-width: 991.98px) {
   .navbar-dark .nav-link {
     border-right: none;
     border-top: 1px dotted var(--un-dark-grey);
@@ -29,4 +32,4 @@
   .navbar-dark .nav-first {
     border-left: none;
   }
-}
+} */

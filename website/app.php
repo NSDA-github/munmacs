@@ -19,9 +19,10 @@ class Website
       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
       <link rel="stylesheet" href="/style.css" />
       <link rel="stylesheet" href="/css/navbar.css" />
+      <link rel="stylesheet" href="/css/website.css" />
       <script src="/js/general.js"></script>
       <script src="/js/navbar.js"></script>
-
+      <link rel="shortcut icon" type="image/png" href="/imgs/icon.png" />
       <?php
       switch ($page) {
         case 'Home':
@@ -49,6 +50,10 @@ class Website
           break;
         case 'Adminregister':
         ?><title>Admin Register | MUN NIS Uralsk</title>
+        <?php
+          break;
+        case 'PrivacyPolicy':
+        ?><title>Privacy Policy | MUN NIS Uralsk</title>
       <?php
           break;
         default:
@@ -82,6 +87,10 @@ class Website
         case 'Adminregister':
           include_once __DIR__ . "/pages/adminregister.php";
           break;
+        case 'PrivacyPolicy':
+          include_once __DIR__ . "/templates/navbar.php";
+          include_once __DIR__ . "/pages/privacypolicy.php";
+          include_once __DIR__ . "/templates/footer.php";
         default:
           break;
       }

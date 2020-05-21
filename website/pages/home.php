@@ -17,10 +17,15 @@
         <hr class="my-4" />
         <p>
           Register now and join the movement to educate students global
-          issues. Registration form is open untill 06.03.20.
+          issues. Registration form is open untill 27.05.20
         </p>
         <a class="btn btn-primary btn-lg" href="/register" role="button">Register</a>
       </div>
+    </div>
+    <div class="col-xl-8 col-lg-7 col-md-12 home-right" style="padding: 0;">
+      <h1 class="display-4 home-welcome-sm">
+        Welcome to MUN Uralsk
+      </h1>
     </div>
   </div>
   <hr class="my-4" />
@@ -52,12 +57,12 @@
       </div>
     </div>
     <div class="col-md-12 col-lg-6">
-      <img src="/imgs/delegate.jpg" class="img-fluid img-thumbnail" alt="Responsive image" />
+      <img src="/imgs/delegate.jpg" class="img-fluid img-thumbnail" alt="Delegate giving public speech" />
     </div>
   </div>
   <hr class="my-4" />
   <div class="row">
-    <div class="col-12">
+    <div class="col-12 mb-3">
       <h1>
         MUN Uralsk 2020 Discussion Topics
       </h1>
@@ -66,54 +71,47 @@
   <div class="row margin-bottom">
     <div class="col-md-6">
       <h2>
-        <i><b>General Assembly:</b> <br />Climate Change <br />Affecting
-          Forest Fires</i>
+        <b>WHO:</b> <i><br>Readiness of the countries <br>for current and future <br> epidemic/pandemic</i>
       </h2>
       <div class="blue-break" style="width: 33%;"></div>
       <blockquote class="blockquote">
-        <img src="/imgs/bushfire.jpg" class="img-fluid" alt="A kangaroo rushes past a burning house in Lake Conjola, New South Wales, Australia." />
+        <img src="/imgs/who-topic-image.jpg" class="img-fluid" alt="" />
         <footer class="blockquote-footer">
-          Matthew Abbott for
-          <cite title="Source Title">The New York Times</cite>
+          Photo by
+          <cite title="Source Title">Tedward Quinn on Unsplash</cite>
         </footer>
       </blockquote>
       <p class="end">
-        In the midst of wildfires around the globe, environmentalists,
-        activists, and global leaders are alarming people about the climate
-        crisis. Brazil, Australia, Russia, Indonesia, the USA, and many
-        other countries experienced record levels of wildfires in 2019 that
-        is rapidly destroying habitat for animals and eliminating the source
-        of oxygen. <br /><br />
-        It is all caused by climate change. But current solutions do not
-        satisfy businesses, and economists. So how to find common ground and
-        start thinking wisely about this problem to preserve the interests
-        of countries and businesses, but prevent further deforestation and
-        save our planet?
+        Unexpected Covid-19 outbreak made clear that today’s world is not ready for pandemics.
+        According to WHO data, there are 4.31 million confirmed infected people and 294 thousand
+        lethal cases. Uncertainty about the pandemic's inflection point and the second wave is
+        also concerning our policymakers. <br> <br> Coronavirus is disrupting the comfortable ecosystem of
+        development. Based on WTO estimates, the world might sacrifice from 2.5% up to 8.8% of
+        global GDP. Delegates would have to present their vision about solutions for current
+        pandemic and ways to prevent possible future epidemics.
       </p>
     </div>
     <div class="col-md-6">
       <h2>
-        <i><b>UNICEF:</b> <br />Elimination of <br />Child Labour</i>
+        <b>ECOSOC:</b> <i><br />The decline of oil prices <br />and it’s effect on the <br> global market</i>
       </h2>
       <div class="blue-break" style="width: 33%;"></div>
       <blockquote class="blockquote">
-        <img src="/imgs/child-labour.jpg" class="img-fluid" alt="A kangaroo rushes past a burning house in Lake Conjola, New South Wales, Australia." />
+        <img src="/imgs/ecosoc-topic-image.jpg" class="img-fluid" />
         <footer class="blockquote-footer">
-          Children working at a construction site in New Delhi from
-          <cite title="Source Title">GETTY IMAGES</cite>
+          Photo by
+          <cite title="Source Title">Zbynek Burival on Unsplash</cite>
         </footer>
       </blockquote>
       <p class="end">
-        Recent global estimates based on data of UNICEF, the ILO and the
-        World Bank indicate that 168 million children aged 5 to 17 are
-        engaged in child labour. Millions of them suffer in the other worst
-        forms of child labour, including slavery-like practices such as
-        forced and bonded labour and child soldiering, sexual exploitation,
-        and drug trafficking. <br /><br />
-        There is a progress of elimination, but it is still low. At current
-        rates, more than 100 million children will still be trapped in child
-        labour by 2020. Delegates should be ready to discuss effective
-        solutions and spread their ideas.
+        The first case of the “negative” oil prices observed in 2020 since the introduction of oil
+        assets to the market in 1983. WTI crude oil prices hit a trough of -40$ per barrel on the
+        20th of April, whereas the price of Urals oil dropped to its 20-year minimum of 7$ per barrel
+        on the 21st of April. <br> <br> Even though today's price of oil is stabilizing, the consequences of
+        this case would be long-lasting. It is also contributing to the crisis combined with the
+        coronavirus outbreak. Delegates should be ready to discuss effective solutions and unite
+        around this problem. It does not affect only producer countries, but it also affects
+        international trade and world economics.
       </p>
     </div>
   </div>
@@ -138,9 +136,9 @@
     <div class="sdg-16"></div>
     <div class="sdg-17"></div>
   </div>
-  <div class="container" style="padding: 2rem;">
+  <div class="container mb-4">
     <div class="row justify-content-center">
-      <div class="col-md-6" style="text-align: center;">
+      <div class="col-12" style="text-align: center;">
         <div class="sdg-heading margin-top">
           <h1>
             Covered <br />
@@ -153,18 +151,36 @@
     </div>
     <div class="row">
       <div class="col-md-4">
-        <a href="https://www.globalgoals.org/13-climate-action">
-          <img src="/imgs/climate-goal.svg" class="img-fluid img-hover" alt="Climate Action" srcset="" />
+        <a target="_blank" href="https://www.globalgoals.org/3-good-health-and-well-being">
+          <img src="/imgs/goal-3.svg" class="img-fluid img-hover" alt="Climate Action" srcset="" />
         </a>
       </div>
       <div class="col-md-4">
-        <a href="https://www.globalgoals.org/12-responsible-consumption-and-production">
-          <img src="/imgs/consumption-goal.svg" class="img-fluid img-hover" alt="Responsible consumption and production" srcset="" />
+        <a target="_blank" href="https://www.globalgoals.org/11-sustainable-cities-and-communities">
+          <img src="/imgs/goal-11.svg" class="img-fluid img-hover" alt="Responsible consumption and production" srcset="" />
         </a>
       </div>
       <div class="col-md-4">
-        <a href="https://www.globalgoals.org/8-decent-work-and-economic-growth">
-          <img src="/imgs/work-goal.svg" class="img-fluid img-hover" alt="Responsible consumption and production" srcset="" />
+        <a target="_blank" href="https://www.globalgoals.org/17-partnerships-for-the-goals">
+          <img src="/imgs/goal-17.svg" class="img-fluid img-hover" alt="Responsible consumption and production" srcset="" />
+        </a>
+      </div>
+    </div>
+    <hr class="my-4" />
+    <div class="row">
+      <div class="col-md-4">
+        <a target="_blank" href="https://www.globalgoals.org/8-decent-work-and-economic-growth">
+          <img src="/imgs/goal-8.svg" class="img-fluid img-hover" alt="Climate Action" srcset="" />
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a target="_blank" href="https://www.globalgoals.org/12-responsible-consumption-and-production">
+          <img src="/imgs/goal-12.svg" class="img-fluid img-hover" alt="Responsible consumption and production" srcset="" />
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a target="_blank" href="https://www.globalgoals.org/7-affordable-and-clean-energy">
+          <img src="/imgs/goal-7.svg" class="img-fluid img-hover" alt="Responsible consumption and production" srcset="" />
         </a>
       </div>
     </div>

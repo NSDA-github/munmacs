@@ -32,6 +32,9 @@ $klein->respond('GET', '/[a:action]', function ($request, $response, $service) {
     case 'adminregister':
       Website::show("Adminregister");
       break;
+    case 'privacypolicy':
+      Website::show("PrivacyPolicy");
+      break;
     default:
       # code...
       break;

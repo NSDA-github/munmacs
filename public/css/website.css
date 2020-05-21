@@ -1,0 +1,98 @@
+:root {
+  --un-blue: #009edb;
+  --un-dark-grey: #333333;
+  --un-grey: #4d4d4d;
+  --un-light-grey: #f2f2f2;
+  --un-slight-grey: #f9f9f9;
+  --un-light-blue: #e4effb;
+}
+
+#img-data {
+  height: 100%;
+  width: 100%;
+  background-image: url(/imgs/data.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+}
+
+.img-team {
+  height: 10rem;
+  width: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 50% 0%;
+}
+
+#img-team-madi {
+  background-image: url(/imgs/madi-portret-lowres.png);
+}
+
+#img-team-yerzhan {
+  background-image: url(/imgs/yerzhan-portret-lowres.png);
+}
+
+#img-team-ulzhanai {
+  background-image: url(/imgs/ulzhanai-image-lowres.jpg);
+}
+
+#img-team-kate {
+  background-image: url(/imgs/kate-image-lowres.jpg);
+}
+
+#img-countries {
+  height: auto;
+  width: 100%;
+  background-image: url(/imgs/countries.jpg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: 50% 0%;
+}
+
+.member {
+  padding: 1.5rem;
+  margin-bottom: 2.5rem;
+  /* background-color: var(--un-slight-grey); */
+  border-radius: 0.5rem;
+  box-shadow: 0 0 1rem -0.3rem rgba(0, 0, 0, 0.5);
+}
+
+.break-on-md {
+  display: none;
+}
+
+.team-img {
+  height: 10rem;
+}
+
+#map {
+  height: 400px; /* The height is 400 pixels */
+  width: 100%; /* The width is the width of the web page */
+}
+
+@media (max-width: 991.98px) {
+  .break-on-md {
+    display: block;
+  }
+}
+
+@media (max-width: 767.98px) {
+  #img-data {
+    height: 20rem;
+  }
+  p {
+    font-size: large;
+  }
+  p.lead {
+    font-size: large;
+  }
+  h1.display-4 {
+    font-size: 3.3rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .team-img {
+    height: 7.5rem;
+  }
+}

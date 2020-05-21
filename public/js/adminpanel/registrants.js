@@ -65,10 +65,12 @@ function handleView(id) {
           (selectedRegistrant["gradeletter"] != null
             ? " " + selectedRegistrant["gradeletter"]
             : ""));
-    phonelink = `<a href="https://web.whatsapp.com/send?phone=${selectedRegistrant[
-      "phone"
-    ].substring(1)}" 
-    target="_blank">${selectedRegistrant["phone"]}</a>`;
+    if (selectedRegistrant["phone"] != null)
+      phonelink = `<a href="https://web.whatsapp.com/send?phone=${selectedRegistrant[
+        "phone"
+      ].substring(1)}" 
+          target="_blank">${selectedRegistrant["phone"]}</a>`;
+    else phonelink = "N/A";
     $("#institution").html(fullinstitution);
     $("#email").html(
       `<a href="mailto:${selectedRegistrant["email"]}">${selectedRegistrant["email"]}</a>`

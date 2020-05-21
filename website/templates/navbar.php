@@ -1,11 +1,11 @@
 <nav>
   <div class="container">
-    <a style="width: 100%;" class="navbar-brand" href="#"><img style="padding: 7px;" height="70px" src="/logo.svg" alt="Model UN Uralsk" /></a>
+    <a style="width: 100%;" class="navbar-brand" href="#"><img style="padding: 7px;" class="logo" height="70px" src="/logo.svg" alt="Model UN Uralsk" /></a>
   </div>
 </nav>
 <div class="sticky-top">
   <div class="blue-line" style="position: sticky;"></div>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-grey">
+  <nav class="navbar navbar-expand navbar-dark bg-grey">
     <div class="container" style="display: block; float: inherit;">
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>

@@ -294,9 +294,7 @@
                   <label class="form-check-label" for="legal">
                     <span class="attention">*</span>
                     I agree to
-                    <a href="#">Privacy Policy</a>
-                    and
-                    <a href="#">Terms of Use</a>
+                    <a href="/privacypolicy">Privacy Policy</a>
                   </label>
                 </div>
                 <br />
@@ -354,7 +352,9 @@
       </div>
     </form>
   </div>
-  <img src="/imgs/countries.jpg" style="height: 50vh; width: 100%;" class="img-fluid" alt="Responsive image" />
+  <div id="img-countries">
+  </div>
+  <img src="/imgs/countries.jpg" class="img-fluid" alt="Responsive image" />
 </div>
 <div class="modal fade" id="registered" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">

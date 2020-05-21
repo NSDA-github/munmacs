@@ -81,12 +81,12 @@ thead tr:nth-child(1) th {
 .img-hover {
   transition: all 0.6s;
   -webkit-transition: all 0.6s;
-  box-shadow: 0 0 5px 0px var(--un-dark-grey);
+  box-shadow: 0 0 7px 0px var(--un-grey);
 }
 
 .img-hover:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 10px -5px var(--un-dark-grey);
+  box-shadow: 0 0 15px -5px var(--un-dark-grey);
 }
 
 .attention {
@@ -147,6 +147,7 @@ thead tr:nth-child(1) th {
   background-color: var(--un-blue);
   width: 100%;
   height: 0.5rem;
+  margin-top: 0.5rem;
   margin-bottom: 1.5rem;
 }
 
@@ -193,7 +194,7 @@ label.is-invalid {
   box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
 }
 
-h1,
+/* h1,
 h2,
 h3,
 h4,
@@ -206,11 +207,10 @@ h6,
 .h5,
 .h6 {
   margin-bottom: 0;
-}
+} */
 
 h1 {
   font-weight: 700;
-  padding-bottom: 10px;
 }
 
 p.end {
@@ -219,9 +219,8 @@ p.end {
 
 .home-welcome-sm {
   display: none;
-  color: white;
+  color: var(--un-light-grey);
   font-weight: 700;
-  text-shadow: 0px 0px 2px black;
   padding: 2rem 1rem;
 }
 
@@ -350,22 +349,26 @@ p.end {
   background-color: #19486a;
 }
 
+.home-img-sm {
+  display: none;
+}
+
 @media (max-width: 991.98px) {
-  .home-row {
-    background-image: url(/imgs/index.png);
-    background-origin: content-box;
-    background-repeat: no-repeat;
-    background-size: cover;
-  }
   .jumbotron {
     background-color: #e9ecef;
   }
   .home-img-sm {
-    height: 350px;
-    background-image: url(/imgs/index.png);
+    display: block;
+    height: 200px;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
+      url(/imgs/index.png);
     background-origin: content-box;
     background-repeat: no-repeat;
     background-size: cover;
+    background-position: 50% 50%;
+  }
+  .home-right {
+    display: none;
   }
   .home-welcome-lg {
     display: none;
@@ -377,6 +380,9 @@ p.end {
 }
 
 @media (max-width: 767.98px) {
+  .logo {
+    height: 4rem;
+  }
   .home-img-sm {
     height: 230px;
   }
@@ -384,6 +390,7 @@ p.end {
     padding-top: 2rem;
   }
   .img-hover {
+    padding: 1rem;
     box-shadow: none;
     transition: all 0.25s;
     -webkit-transition: all 0.4s;
