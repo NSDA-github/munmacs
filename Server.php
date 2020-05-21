@@ -6,6 +6,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/website/app.php';
 require_once __DIR__ . '/adminpanel/app.php';
 require_once __DIR__ . '/generated-conf/config.php';
+require_once __DIR__ . '/config.php';
 
 class Server
 {
@@ -24,7 +25,7 @@ class Server
 
   public static function adminPassCheck($pass)
   {
-    if ($pass == "SnPtl4&d#i") {
+    if ($pass == $adminpass) {
       return true;
     } else {
       return false;

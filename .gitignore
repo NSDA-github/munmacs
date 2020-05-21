@@ -15,6 +15,7 @@
 /generated-conf
 /bin
 *xlsx
+config.php
 
 # misc
 .DS_Store
