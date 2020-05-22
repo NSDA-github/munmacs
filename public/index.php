@@ -5,6 +5,7 @@ session_start();
 use Propel\Runtime\Propel;
 
 require_once __DIR__ . "/../Server.php";
+require_once __DIR__ . "/../config.php";
 header('Content-Type: text/html; charset=utf-8');
 date_default_timezone_set('UTC');
 
@@ -128,7 +129,7 @@ $klein->respond('POST', '/api/reset/[:action]', function ($request, $response, $
         } else {
           $response->code(400);
           $res["success"] = false;
-          $res["msg"] = "Wrong Admin Password";
+          $res["msg"] = "Wrong Admin Password like $request->password.";
           $response->json($res);
           exit();
         }

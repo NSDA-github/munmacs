@@ -25,7 +25,7 @@ class Server
 
   public static function adminPassCheck($pass)
   {
-    if ($pass == $adminpass) {
+    if ($pass == config::$adminpass) {
       return true;
     } else {
       return false;
