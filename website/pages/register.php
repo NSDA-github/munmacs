@@ -330,8 +330,8 @@
           <div class="form-group col-md-6 mb-5">
             <div id="interesttext-container" style="position:relative;">
               <label for="interesttext">Short Motivation Letter</label>
-              <p><small>Write up to 400 <b>characters</b> to explain why you chose these countries</small></p>
-              <textarea name="interesttext" id="interesttext" class="form-control" aria-label="With textarea"></textarea>
+              <p><small>Write up to 400 <b>characters</b> to <b>briefly</b> explain why you chose these countries</small></p>
+              <textarea name="interesttext" id="interesttext" class="form-control" aria-label="With textarea" rows="3"></textarea>
               <div style="position:absolute; bottom:-22px; right:5px; ">
                 <small style="text-align:right;" id="char-count">0</small>
               </div>
