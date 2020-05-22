@@ -22,22 +22,27 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-position: 50% 0%;
+  background-image: url(/imgs/dummy-profile.png);
 }
 
 #img-team-madi {
-  background-image: url(/imgs/madi-portret-lowres.png);
+  background-image: url(/imgs/madi-portret-lowres.png),
+    url(/imgs/dummy-profile.png);
 }
 
 #img-team-yerzhan {
-  background-image: url(/imgs/yerzhan-portret-lowres.png);
+  background-image: url(/imgs/yerzhan-portret-lowres.png),
+    url(/imgs/dummy-profile.png);
 }
 
 #img-team-ulzhanai {
-  background-image: url(/imgs/ulzhanai-image-lowres.jpg);
+  background-image: url(/imgs/ulzhanai-image-lowres.jpg),
+    url(/imgs/dummy-profile.png);
 }
 
 #img-team-kate {
-  background-image: url(/imgs/kate-image-lowres.jpg);
+  background-image: url(/imgs/kate-image-lowres.jpg),
+    url(/imgs/dummy-profile.png);
 }
 
 #img-countries {

@@ -93,7 +93,7 @@
     </div>
     <div class="col-md-6">
       <h2>
-        <b>ECOSOC:</b> <i><br />The decline of oil prices <br />and it’s effect on the <br> global market</i>
+        <b>ECOSOC:</b> <i><br />The decline of oil prices <br />and its effect on the <br> global market</i>
       </h2>
       <div class="blue-break" style="width: 33%;"></div>
       <blockquote class="blockquote">
@@ -152,17 +152,17 @@
     <div class="row">
       <div class="col-md-4">
         <a target="_blank" href="https://www.globalgoals.org/3-good-health-and-well-being">
-          <img src="/imgs/goal-3.svg" class="img-fluid img-hover" alt="Climate Action" srcset="" />
+          <img src="/imgs/goal-3.svg" class="img-fluid img-hover" alt="Good health and well being" srcset="" />
         </a>
       </div>
       <div class="col-md-4">
         <a target="_blank" href="https://www.globalgoals.org/11-sustainable-cities-and-communities">
-          <img src="/imgs/goal-11.svg" class="img-fluid img-hover" alt="Responsible consumption and production" srcset="" />
+          <img src="/imgs/goal-11.svg" class="img-fluid img-hover" alt="Sustainable cities and communities" srcset="" />
         </a>
       </div>
       <div class="col-md-4">
         <a target="_blank" href="https://www.globalgoals.org/17-partnerships-for-the-goals">
-          <img src="/imgs/goal-17.svg" class="img-fluid img-hover" alt="Responsible consumption and production" srcset="" />
+          <img src="/imgs/goal-17.svg" class="img-fluid img-hover" alt="Partnerships for the goals" srcset="" />
         </a>
       </div>
     </div>
@@ -170,7 +170,7 @@
     <div class="row">
       <div class="col-md-4">
         <a target="_blank" href="https://www.globalgoals.org/8-decent-work-and-economic-growth">
-          <img src="/imgs/goal-8.svg" class="img-fluid img-hover" alt="Climate Action" srcset="" />
+          <img src="/imgs/goal-8.svg" class="img-fluid img-hover" alt="Decent work and economic growth" srcset="" />
         </a>
       </div>
       <div class="col-md-4">
@@ -180,7 +180,7 @@
       </div>
       <div class="col-md-4">
         <a target="_blank" href="https://www.globalgoals.org/7-affordable-and-clean-energy">
-          <img src="/imgs/goal-7.svg" class="img-fluid img-hover" alt="Responsible consumption and production" srcset="" />
+          <img src="/imgs/goal-7.svg" class="img-fluid img-hover" alt="Affordable and clean energy" srcset="" />
         </a>
       </div>
     </div>

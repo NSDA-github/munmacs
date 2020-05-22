@@ -3,7 +3,7 @@
     <h1 style="padding-top: 30px;">Delegate Registration Form</h1>
     <h6 class="card-subtitle mb-2 text-muted">
       Registration is open for everyone. <br />
-      Please consider creating a <a href="https://discord.com/register">Discord account</a>
+      Please consider creating a <a target="_blank" href="https://discord.com/register">Discord account</a>
     </h6>
     <form action="../app/register/index.php" id="need-validation">
       <div class="personalinfo dissolve active">
@@ -18,12 +18,12 @@
             </label>
             <input name="surname" type="text" class="form-control" id="surname" required />
           </div>
-          <div class="form-group col-lg-6">
+          <div class="form-group col-md-6">
             <label for="email">Email <span class="attention">*</span><br />
             </label>
             <input name="email" type="email" class="form-control" id="email" required />
           </div>
-          <div class="form-group col-lg-6">
+          <div class="form-group col-md-6">
             <label for="confirmemail">Confirm email <span class="attention">*</span><br />
             </label>
             <input name="confirmemail" type="text" class="form-control" id="confirmemail" required />
@@ -294,7 +294,7 @@
                   <label class="form-check-label" for="legal">
                     <span class="attention">*</span>
                     I agree to
-                    <a href="/privacypolicy">Privacy Policy</a>
+                    <a target="_blank" href="/privacypolicy">Privacy Policy</a>
                   </label>
                 </div>
                 <div class="button-wrapper" tabindex="0" style="float: right;">

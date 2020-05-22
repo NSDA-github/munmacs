@@ -110,7 +110,7 @@ thead tr:nth-child(1) th {
 
 .home-row {
   margin: 0;
-  background-image: url(/imgs/index.png);
+  background-image: url(/imgs/index.jpg);
   background-origin: content-box;
   background-repeat: no-repeat;
   background-size: cover;
@@ -361,7 +361,7 @@ p.end {
     display: block;
     height: 200px;
     background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
-      url(/imgs/index.png);
+      url(/imgs/index.jpg);
     background-origin: content-box;
     background-repeat: no-repeat;
     background-size: cover;
