@@ -114,7 +114,7 @@ class Server
     $validator->validate("desiredcountry", $request->desiredcountry)->regex("/^[0-9]*$/")->len(0, 3);
     $validator->validate("residence", $request->residence)->regex("/^[0-9]*$/")->len(0, 3);
     $validator->validate("interesttext", $request->interesttext)->len(0, 401);
-    $validator->validate("phone", $request->phone)->regex("/^[\+][0-9]{11}$|$/");
+    $validator->validate("phone", $request->phone)->regex("/^[\+][0-9]{11,12}$|$/");
     $validator->validate("discord", $request->discord)->regex("/^[\s\S]*#[0-9]{4}$|$/");
     return $validator;
   }
