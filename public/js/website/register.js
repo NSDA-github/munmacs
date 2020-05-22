@@ -160,7 +160,7 @@ $(document).ready(function () {
         regex: "^[\\p{Lu}]$",
       },
       phone: {
-        regex: "^([\\+][0-9]{11,12})$",
+        regex: "^([\\+][0-9]{11,13})$",
       },
       discord: {
         regex: "^[^=#]+#[0-9]{4}$",
@@ -201,7 +201,7 @@ $(document).ready(function () {
       },
       phone: {
         regex:
-          'Must resemble <span style="color:blue"> +xxxxxxxxxxx </span> (+ and 11 or 12 digits) format',
+          'Must resemble <span style="color:blue"> +xxxxxxxxxxx </span> (+ and 11-13 digits) format',
         required: "Required to contact you",
       },
       discord: {
