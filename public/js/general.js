@@ -31,7 +31,6 @@ function reportError(data) {
     alert("Unexpected Error. Please contact the administrator");
     console.log(data);
   }
-  alert("Unexpected Error. Please contact the administrator");
   console.log(data);
 }
 
