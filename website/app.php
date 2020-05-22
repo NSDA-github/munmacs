@@ -42,6 +42,8 @@ class Website
           <link href="/dist/css/bootstrap-select.min.css" rel="stylesheet" />
           <script src="/dist/js/bootstrap-select.min.js"></script>
           <script src="/js/website/register.js"></script>
+          <meta http-equiv="Expires" content="Mon, 26 Jul 1997 05:00:00 GMT">
+          <meta http-equiv="Pragma" content="no-cache">
         <?php
           break;
         case 'Adminlogin':
