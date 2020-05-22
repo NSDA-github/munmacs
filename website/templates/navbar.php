@@ -6,7 +6,7 @@
 <div class="sticky-top">
   <div class="blue-line" style="position: sticky;"></div>
   <nav class="navbar navbar-expand navbar-dark bg-grey">
-    <div class="container" style="display: block; float: inherit;">
+    <div class="container">
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>

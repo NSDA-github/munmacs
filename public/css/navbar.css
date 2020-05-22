@@ -20,7 +20,7 @@
   background-color: var(--un-light-grey);
 }
 .navbar-dark .nav-first {
-  margin-left: 1rem;
+  margin-left: 15px;
 }
 
 /* @media (max-width: 991.98px) {
