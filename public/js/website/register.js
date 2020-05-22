@@ -163,7 +163,7 @@ $(document).ready(function () {
         regex: "^([\\+][0-9]{11})$",
       },
       discord: {
-        regex: "^.*#[0-9]{4}$",
+        regex: "^[^=# ]+#[0-9]{4}$",
       },
       email: {
         email: true,
