@@ -8,15 +8,30 @@ function reportError(data) {
   try {
     if (typeof data.responseJSON != "undefined") {
       if (typeof data.responseJSON.error != "undefined")
-        alert(data.responseJSON.msg + "\n" + data.responseJSON.error);
+        alert(
+          "Unexpected Error. Please contact the administrator" +
+            "\n" +
+            data.responseJSON.msg +
+            "\n" +
+            data.responseJSON.error
+        );
       else alert(data.responseJSON.msg);
     } else {
-      if (data.error != null) alert(data.msg + "\n" + data.error);
+      if (data.error != null)
+        alert(
+          "Unexpected Error. Please contact the administrator" +
+            "\n" +
+            data.msg +
+            "\n" +
+            data.error
+        );
       else alert(data.msg);
     }
   } catch (error) {
+    alert("Unexpected Error. Please contact the administrator");
     console.log(data);
   }
+  alert("Unexpected Error. Please contact the administrator");
   console.log(data);
 }
 
@@ -80,17 +95,14 @@ function getRegistrants(searchText = "", searchMode = "surname") {
   if (searchText != "")
     data.push(Object({ name: "search", value: searchText }));
 
-  console.log(data);
   return $.ajax({
     type: "POST",
     url: "/api/registrants",
     data: data,
     dataType: "json",
     success: function (data) {
-      console.log(data);
       if (data.success) {
         registrantsData = data.registrants;
-        console.log(registrantsData);
       } else {
         reportError(data);
       }
@@ -104,7 +116,6 @@ function getRegistrants(searchText = "", searchMode = "surname") {
 
 function search(searchMode = "surname") {
   event.preventDefault();
-  console.log(searchMode);
   updateRegistrants({
     searchText: $(`#${searchMode}-search`).val(),
     searchMode,
@@ -144,7 +155,6 @@ function updateProgress() {
   var topicProgress;
   if (topic != "") {
     var index = registrantsData["info"]["topicid"].indexOf(Number(topic));
-    console.log("HAHA " + index);
     if (registrantsData["info"]["totalnumberbytopic"][index])
       topicProgress =
         (registrantsData["info"]["totalapprovedbytopic"][index] /
@@ -178,7 +188,6 @@ function handleAction(action) {
         name: "id",
         value: selectedRegistrant["registrant_id"],
       });
-      console.log(data);
       $.ajax({
         type: "POST",
         url: "/api/editdiscord",
@@ -186,7 +195,6 @@ function handleAction(action) {
         dataType: "json",
         success: function (data) {
           if (data.success) {
-            console.log(data);
             updateRegistrants();
             handleView(0);
           } else {

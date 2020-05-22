@@ -44,7 +44,6 @@ function getAvailableCountries(reserved = 0) {
     dataType: "json",
     success: function (data) {
       if (data.success) {
-        console.log(data.countries);
         if (reserved == 0) {
           $("#country").empty();
           data.countries.map(function (country) {
@@ -225,7 +224,6 @@ $(document).ready(function () {
   });
 
   $("#interesttext").keyup(function () {
-    console.log("text changed");
     $("#char-count").html($("#interesttext").val().length);
     if ($("#interesttext").val().length > 400) {
       $("#char-count").attr("style", "color:red");
@@ -316,14 +314,12 @@ $(document).ready(function () {
     } else {
       if ($(this).valid()) {
         var data = $(this).serializeArray();
-        console.log(data);
         $.ajax({
           type: "POST",
           url: "/api/register",
           data: data,
           dataType: "json",
           success: function (data) {
-            console.log(data);
             if (data.success) {
               disableForm();
               $("#registered").modal({
