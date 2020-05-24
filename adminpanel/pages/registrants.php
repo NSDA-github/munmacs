@@ -54,47 +54,24 @@
         </div>
       </div>
       <div id="registrant-info">
-        <table class="table-borderless col-8 table-sm mb-4">
+        <strong><label style="font-size: 1.5rem;" id="name"></label></strong>
+        <strong><label style="font-size: 1.5rem;" id="surname"></label></strong>
+        <table class="table-borderless col-8 table-sm mb-2">
           <thead>
-            <th style="width: 175px;"></th>
-            <th></th>
+            <th>Event Info:</th>
+            <th>Contacts:</th>
+            <th>Institution:</th>
           </thead>
           <tbody>
             <tr>
-              <th>Name:</th>
-              <td id="name">N/A</td>
-            </tr>
-            <tr>
-              <th>Surname:</th>
-              <td id="surname">N/A</td>
-            </tr>
-            <tr>
-              <th>Registration Datetime:</th>
-              <td id="time">N/A</td>
-            </tr>
-            <tr>
-              <th></th>
-              <td></td>
-            </tr>
-            <tr>
-              <th>Institution:</th>
+              <td id="topicname">N/A</td>
+              <td id="email">N/A</td>
               <td id="institution">N/A</td>
             </tr>
             <tr>
-              <th>Email:</th>
-              <td id="email">N/A</td>
-            </tr>
-            <tr>
-              <th>Phone:</th>
-              <td id="phone">N/A</td>
-            </tr>
-            <tr>
-              <th></th>
-              <td id="name"></td>
-            </tr>
-            <tr>
-              <th>Country:</th>
               <td id="country">N/A</td>
+              <td id="phone">N/A</td>
+              <td id="institution-details">N/A</td>
             </tr>
           </tbody>
         </table>
