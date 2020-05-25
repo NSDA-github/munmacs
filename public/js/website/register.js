@@ -168,9 +168,9 @@ $(document).ready(function () {
       email: {
         email: true,
       },
-      confirmemail: {
-        equalTo: email,
-      },
+      // confirmemail: {
+      //   equalTo: email,
+      // },
       subject: {
         maxlength: 40,
         regex: "^(([,.'`\"\\-\\p{L}])+[ ]?)*$",
