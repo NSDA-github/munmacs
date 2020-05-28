@@ -46,6 +46,11 @@ class Website
           <meta http-equiv="Pragma" content="no-cache">
         <?php
           break;
+        case "Registration Closed":
+        ?>
+          <title>MUN deputy registration</title>
+        <?php
+          break;
         case 'Adminlogin':
         ?><title>Log In | MUN NIS Uralsk</title>
         <?php
@@ -81,6 +86,11 @@ class Website
         case 'Register':
           include_once __DIR__ . "/templates/navbar.php";
           include_once __DIR__ . "/pages/register.php";
+          include_once __DIR__ . "/templates/footer.php";
+          break;
+        case 'Registration Closed':
+          include_once __DIR__ . "/templates/navbar.php";
+          include_once __DIR__ . "/pages/registration-closed.php";
           include_once __DIR__ . "/templates/footer.php";
           break;
         case 'Adminlogin':

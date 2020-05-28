@@ -19,7 +19,7 @@ $klein->respond('GET', '/', function () {
 $klein->respond('GET', '/[a:action]', function ($request, $response, $service) {
   switch ($request->action) {
     case 'register':
-      Website::show("Register");
+      Website::show("Registration Closed");
       break;
     case 'home':
       Website::show("Home");
