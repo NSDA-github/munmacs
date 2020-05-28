@@ -1,10 +1,10 @@
-var approved = 0;
+var approved = -1;
 nodesired = 1;
 
 function appendTableData() {
   registrantsData["registrants"].map(function (registrant) {
     $("#registrants-table").append(
-      `<tr>
+      `<tr onclick="handleView(${registrant["registrant_id"]})">
         <th scope="row">${registrant["registrant_id"]}</th>
         <td>${registrant["name"]}</td>
         <td>${registrant["surname"]}</td>
@@ -13,7 +13,6 @@ function appendTableData() {
         <td>${
           registrant["discord"] == null ? "N/A" : registrant["discord"]
         }</td>
-        <td>${viewButton(registrant["registrant_id"])}</td>
       </tr>`
     );
   });
@@ -22,14 +21,9 @@ function appendTableData() {
 $(document).ready(function (event) {
   $("#registrant-info").hide();
   $.when(getTopics()).done(function () {
-    setTimeout(updateRegistrants({ approval: true }), 1000);
+    setTimeout(updateRegistrants(), 1000);
   });
 });
-
-function showInterestText() {
-  $("#interesttext").text(selectedRegistrant["interesttext"]);
-  $("#interesttext-modal").modal("show");
-}
 
 function confirmDiscordEdit(event, action) {
   event.preventDefault();
@@ -57,6 +51,14 @@ function confirmDiscordEdit(event, action) {
   }
 }
 
+function confirmApproval(action) {
+  $("#confirm").modal("show");
+  $("#confirm-text").html(
+    `Do you want to ${action} ${selectedRegistrant["name"]} ${selectedRegistrant["surname"]} application?`
+  );
+  $("#confirm-btn").val(action);
+}
+
 function handleView(id) {
   if (id != 0) {
     selectedRegistrant = registrantsData["registrants"].find(checkID, id);
@@ -82,6 +84,9 @@ function handleView(id) {
     $("#name").html(selectedRegistrant["name"]);
     $("#surname").html(selectedRegistrant["surname"]);
     $("#time").html(date);
+    countrydesired = selectedRegistrant["countrydesired"]
+      ? " <b>OR</b> " + selectedRegistrant["countrydesired"]
+      : "";
     institution =
       selectedRegistrant["institution"] +
       ` | <a target="_blank" rel="noopener noreferrer" href="https://2gis.kz/kazakhstan/search/${selectedRegistrant["institution"]}">View Map</a>`;
@@ -107,8 +112,9 @@ function handleView(id) {
       phonelink = `<a href="https://web.whatsapp.com/send?phone=${selectedRegistrant[
         "phone"
       ].substring(1)}" 
-    target="_blank">${selectedRegistrant["phone"]}</a>`;
+          target="_blank">${selectedRegistrant["phone"]}</a>`;
     else phonelink = "N/A";
+    $("#residence").html("From " + selectedRegistrant["residence"]);
     $("#institution").html(institution);
     $("#institution-details").html(institutionDetails);
     $("#email").html(
@@ -116,7 +122,7 @@ function handleView(id) {
     );
     $("#phone").html(phonelink);
     $("#discordEdit").val(selectedRegistrant["discord"]);
-    $("#country").html(selectedRegistrant["country"]);
+    $("#country").html(selectedRegistrant["country"] + countrydesired);
     $("#topicname").html(selectedRegistrant["topic"]);
     $("#registrant-info").show();
   } else {

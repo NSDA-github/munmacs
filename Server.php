@@ -1,5 +1,6 @@
 <?php
 
+use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Propel;
 
 require_once __DIR__ . '/vendor/autoload.php';
@@ -217,7 +218,10 @@ class Server
       else
         $dbRegistrantEvents = $dbRegistrantEventQ->filterByHasAttended(null)->find();
     if (isset($request->approved))
-      $dbRegistrantEvents = $dbRegistrantEventQ->filterByApproved($request->approved)->find();
+      if ($request->approved != -1)
+        $dbRegistrantEvents = $dbRegistrantEventQ->filterByApproved($request->approved)->find();
+      else
+        $dbRegistrantEvents = $dbRegistrantEventQ->filterByApproved(null)->find();
     if (isset($request->orderby)) {
       switch ($request->orderby) {
         case 'surname':
@@ -228,6 +232,9 @@ class Server
           break;
         case 'country':
           $dbRegistrantEvents = $dbRegistrantEventQ->useCountryRelatedByCountryIdQuery()->orderByCountryName()->endUse()->find();
+          break;
+        case 'countrydesired':
+          $dbRegistrantEvents = $dbRegistrantEventQ->useCountryRelatedByCountryDesiredQuery()->orderByCountryName()->endUse()->find();
           break;
         case 'time':
           $dbRegistrantEvents = $dbRegistrantEventQ->orderByRegistrationTime()->find();
@@ -258,6 +265,8 @@ class Server
     foreach ($dbRegistrantEvents as $dbRegistrantEvent) {
       $registrant = array();
       $dbCountry = $dbRegistrantEvent->getCountryRelatedByCountryId();
+      $dbCountryDesired = $dbRegistrantEvent->getCountryRelatedByCountryDesired();
+      $dbResidence = $dbRegistrantEvent->getRegistrant()->getCountry();
       $dbRegistrant = $dbRegistrantEvent->getRegistrant();
       $dbTopic = $dbRegistrantEvent->getTopic();
       $registrant['registrant_id'] = $dbRegistrant->getPrimaryKey();
@@ -269,6 +278,9 @@ class Server
       $registrant['surname'] = $dbRegistrant->getSurname();
       $registrant['topic'] = $dbTopic->getTopicName();
       $registrant['country'] = $dbCountry->getCountryName();
+      if (!is_null($dbCountryDesired))
+        $registrant['countrydesired'] = $dbCountryDesired->getCountryName();
+      $registrant['residence'] = $dbResidence->getCountryName();
       $registrant['interesttext'] = $dbRegistrantEvent->getInterestText();
       $registrant['institution'] = $dbRegistrant->getInstitution();
       $registrant['email'] = $dbRegistrant->getEmail();
@@ -289,7 +301,7 @@ class Server
           $registrant['subject'] = $dbRegistrant->getRegistrantTeacher()->getSubject();
           break;
         default:
-          throw new Exception("Roles do not match the occupation in a databse", 1);
+          throw new Exception("Roles do not match the occupation in a database", 1);
           break;
       }
       array_push($registrants, $registrant);
@@ -305,7 +317,7 @@ class Server
     foreach ($topics as $topic) {
       array_push($registrantsInfo['topicid'], $topic->getTopicId());
       array_push($registrantsInfo['totalnumberbytopic'], $dbRegistrantEventQ->create()->filterByTopicId($topic->getTopicId())->find()->count());
-      array_push($registrantsInfo['totalapprovedbytopic'], $dbRegistrantEventQ->create()->filterByTopicId($topic->getTopicId())->filterByApproved(1)->find()->count());
+      array_push($registrantsInfo['totalapprovedbytopic'], $dbRegistrantEventQ->create()->filterByTopicId($topic->getTopicId())->filterByApproved(null, Criteria::NOT_EQUAL)->find()->count());
     }
     $registrantsInfo['totalnumber'] = $dbRegistrantEventQ->create()->find()->count();
     $registrantsInfo['totalapproved'] = $dbRegistrantEventQ->filterByApproved(1)->find()->count();
@@ -317,37 +329,24 @@ class Server
   public static function approval($request)
   {
     $dbRegistrantEventQ = new db\db\RegistrantEventQuery();
+    $dbTopicCountryQ = new db\db\TopicCountryQuery();
     $dbRegistrantEvent = $dbRegistrantEventQ->findPK($request->id);
     switch ($request->action) {
-      case 'local':
-        $dbRegistrantEvent->setLocal(true)->setApproved(true)->setApprovedTime(date('Y-m-d h:i:s', time()))->save();
-        break;
-      case 'foreign':
-        $dbRegistrantEvent->setLocal(false)->setApproved(true)->setApprovedTime(date('Y-m-d h:i:s', time()))->save();
+      case 'accept':
+        $dbRegistrantEvent->setApproved(true)->setApprovedTime(date('Y-m-d h:i:s', time()))->save();
+        $dbRegistrantEvents = $dbRegistrantEventQ->create()->filterByTopicId($dbRegistrantEvent->getTopicId())->filterByCountryDesired($dbRegistrantEvent->getCountryId())->find();
+        foreach ($dbRegistrantEvents as $registrant) {
+          $registrant->setCountryDesired(null)->save();
+        }
+        $dbTopicCountryQ->filterByCountryId($dbRegistrantEvent->getCountryId())->filterByTopicId($dbRegistrantEvent->getTopicId())->findOne()->setAvailable(false)->setReserved(0)->save();
         break;
       case 'deny':
-        $dbTopicCountryQ = new db\db\TopicCountryQuery();
-        $dbRegistant = $dbRegistrantEvent->getRegistrant();
-        $dbRegistantOccupation = $dbRegistant->getRegistrantOccupation();
-        switch ($dbRegistantOccupation->getOccupation()->getOccupationName()) {
-          case 'teacher':
-            $dbRegistant->getRegistrantTeacher()->delete();
-            break;
-          case 'student':
-            $dbRegistant->getRegistrantStudent()->delete();
-            break;
-          case 'schoolstudent':
-            $dbRegistant->getRegistrantSchoolStudent()->delete();
-            break;
-          default:
-            # code...
-            break;
-        }
-        $dbRegistantOccupation->delete();
-        $dbRegistrantEvent->delete();
-        $dbRegistant->delete();
-        $dbTopicCountry = $dbTopicCountryQ->filterByTopicId($dbRegistrantEvent->getTopicId())->filterByCountryId($dbRegistrantEvent->getCountryId())->findOne();
-        $dbTopicCountry->setAvailable(true)->save();
+        $dbTopicCountry = $dbTopicCountryQ->filterByCountryId($dbRegistrantEvent->getCountryId())->filterByTopicId($dbRegistrantEvent->getTopicId())->findOne();
+        $dbRegistrantEvents = $dbRegistrantEventQ->create()->filterByTopicId($dbRegistrantEvent->getTopicId())->filterByCountryDesired($dbRegistrantEvent->getCountryId())->orderByRegistrationTime()->find();
+        $dbRegistrantEvent->setApproved(false)->setApprovedTime(date('Y-m-d h:i:s', time()))->setCountryDesired(null)->setCountryId(null)->save();
+        if ($dbTopicCountry->getReserved() > 1)
+          $dbRegistrantEvents[0]->setCountryId($dbRegistrantEvents[0]->getCountryDesired())->setCountryDesired(null)->save();
+        $dbTopicCountry->setReserved($dbTopicCountry->getReserved() - 1)->save();
         break;
 
       default:

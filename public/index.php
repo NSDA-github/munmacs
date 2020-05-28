@@ -389,12 +389,16 @@ $klein->respond('POST', '/api/[a:title]', function ($request, $response, $servic
       case "login":
         $dbAdminQ = new db\db\AdminQuery();
         $user = $dbAdminQ->findOneByUsername($request->username);
-        $password_hash = $user->getPassword();
-        if (password_verify($request->password, $password_hash)) {
-          $_SESSION["user"] = $user->getUsername();
-          $_SESSION["user_id"] = $user->getPrimaryKey();
-          header('Location: /adminpanel');
-          exit();
+        if (!is_null($user)) {
+          $password_hash = $user->getPassword();
+          if (password_verify($request->password, $password_hash)) {
+            $_SESSION["user"] = $user->getUsername();
+            $_SESSION["user_id"] = $user->getPrimaryKey();
+            header('Location: /adminpanel');
+            exit();
+          } else {
+            return 'Wrong authentication details. <a href="/adminlogin">Try Again</a>';
+          }
         } else {
           return 'Wrong authentication details. <a href="/adminlogin">Try Again</a>';
         }

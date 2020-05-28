@@ -5,7 +5,7 @@
       <div class="row mb-3">
         <div class="col-8">
           <div class="table-scroll mb-3">
-            <table class="table table-striped table-bordered">
+            <table class="table table-hover table-bordered">
               <thead>
                 <tr>
                   <th style="width: 20px;" scope="col">ID</th>
@@ -14,7 +14,6 @@
                   <th scope="col">Country</th>
                   <th scope="col">Relevancy</th>
                   <th scope="col">Discord</th>
-                  <th style="width: 95px;" scope="col">Action</th>
                 </tr>
               </thead>
               <tbody id="registrants-table"></tbody>
@@ -104,11 +103,11 @@
             Interest Verification | <button class="btn btn-sm btn-link" onclick="showInterestText()">View</button>
           </label>
         </div>
-        <button class="btn btn-danger" value="absent" onclick="confirmCheckIn(value)">
-          Absent
+        <button class="btn btn-danger" value="deny" onclick="confirmApproval(value)">
+          Deny
         </button>
-        <button class="btn btn-success" value="attended" onclick="confirmCheckIn(value)">
-          Attended
+        <button class="btn btn-success" value="accept" onclick="confirmApproval(value)">
+          Accept
         </button>
       </div>
     </div>

@@ -5,15 +5,15 @@
       <div class="row mb-3">
         <div class="col-8">
           <div class="table-scroll mb-3">
-            <table class="table table-striped table-bordered">
+            <table class="table table-bordered table-hover">
               <thead>
                 <tr>
                   <th style="width: 20px;" scope="col">ID</th>
                   <th scope="col">Name</th>
                   <th scope="col">Surname</th>
                   <th scope="col">Topic</th>
-                  <th scope="col">Country</th>
-                  <th style="width: 95px;" scope="col">Action</th>
+                  <th scope="col">Country I</th>
+                  <th scope="col">Country II</th>
                 </tr>
               </thead>
               <tbody id="registrants-table"></tbody>
@@ -29,7 +29,8 @@
             <select onchange="updateRegistrants()" class="custom-select" style="width:200px" name="orderby" id="orderby">
               <option value="name">Name</option>
               <option value="surname" selected>Surname</option>
-              <option value="country">Country</option>
+              <option value="country">Country I</option>
+              <option value="countrydesired">Country II</option>
               <option value="time">Registration Time</option>
             </select>
           </div>
@@ -54,9 +55,14 @@
         </div>
       </div>
       <div id="registrant-info">
-        <strong><label style="font-size: 1.5rem;" id="name"></label></strong>
-        <strong><label style="font-size: 1.5rem;" id="surname"></label></strong>
-        <table class="table-borderless col-8 table-sm mb-2">
+        <label>
+          <strong style="font-size: 1.5rem;" id="name"></strong>
+          <strong style="font-size: 1.5rem;" id="surname"></strong> <br>
+          <small id="residence"></small>
+        </label>
+        <br>
+        <button class="btn btn-sm btn-primary mb-4" onclick="showInterestText()">View Interest Text</button>
+        <table class="table-borderless col-8 table-sm mb-5">
           <thead>
             <th>Event Info:</th>
             <th>Contacts:</th>
@@ -95,6 +101,23 @@
             </button>
             <button id="confirm-btn" value="" onclick="handleApproval(value)" type="button" class="btn btn-primary">
               Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="interesttext-modal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabelinteresttext">
+              Interest Text
+            </h5>
+          </div>
+          <div id="interesttext" class="modal-body"></div>
+          <div class="modal-footer">
+            <button id="confirm-btn" type="button" class="btn btn-primary" data-dismiss="modal" autofocus>
+              Ok
             </button>
           </div>
         </div>

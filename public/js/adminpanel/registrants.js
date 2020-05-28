@@ -1,15 +1,17 @@
-var approved = 0;
+var approved = -1;
 
 function appendTableData() {
   registrantsData["registrants"].map(function (registrant) {
     $("#registrants-table").append(
-      `<tr>
+      `<tr onclick="handleView(${registrant["registrant_id"]})" >
         <th scope="row">${registrant["registrant_id"]}</th>
         <td>${registrant["name"]}</td>
         <td>${registrant["surname"]}</td>
         <td>${registrant["topic"]}</td>
         <td>${registrant["country"]}</td>
-        <td>${viewButton(registrant["registrant_id"])}</td>
+        <td>${
+          registrant["countrydesired"] ? registrant["countrydesired"] : "N/A"
+        }</td>
       </tr>`
     );
   });
@@ -18,6 +20,10 @@ function appendTableData() {
 $(document).ready(function (event) {
   $("#registrant-info").hide();
   $.when(getTopics()).done(updateRegistrants({ updateProgress: true }));
+
+  $(".registrant-row").click(function () {
+    console.log("haha");
+  });
 });
 
 function handleView(id) {
@@ -45,62 +51,50 @@ function handleView(id) {
     $("#name").html(selectedRegistrant["name"]);
     $("#surname").html(selectedRegistrant["surname"]);
     $("#time").html(date);
-    fullinstitution =
+    countrydesired = selectedRegistrant["countrydesired"]
+      ? " <b>OR</b> " + selectedRegistrant["countrydesired"]
+      : "";
+    institution =
       selectedRegistrant["institution"] +
-      ` | <a target="_blank" rel="noopener noreferrer" href="https://2gis.kz/kazakhstan/search/${selectedRegistrant["institution"]}">View Map</a>` +
-      (selectedRegistrant["occupation"] == "teacher"
-        ? "<br>Teacher" +
+      ` | <a target="_blank" rel="noopener noreferrer" href="https://2gis.kz/kazakhstan/search/${selectedRegistrant["institution"]}">View Map</a>`;
+    institutionDetails =
+      selectedRegistrant["occupation"] == "teacher"
+        ? "Teacher" +
           (selectedRegistrant["subject"] != null
             ? ": " + selectedRegistrant["subject"]
             : "")
         : selectedRegistrant["occupation"] == "student"
-        ? "<br>Student" +
+        ? "Student" +
           (selectedRegistrant["major"] != null
             ? ": " + selectedRegistrant["major"]
             : "")
-        : "<br>School Student" +
+        : "School Student" +
           (selectedRegistrant["grade"] != null
             ? ": " + selectedRegistrant["grade"]
             : "") +
           (selectedRegistrant["gradeletter"] != null
             ? " " + selectedRegistrant["gradeletter"]
-            : ""));
+            : "");
     if (selectedRegistrant["phone"] != null)
       phonelink = `<a href="https://web.whatsapp.com/send?phone=${selectedRegistrant[
         "phone"
       ].substring(1)}" 
           target="_blank">${selectedRegistrant["phone"]}</a>`;
     else phonelink = "N/A";
-    $("#institution").html(fullinstitution);
+    $("#residence").html("From " + selectedRegistrant["residence"]);
+    $("#institution").html(institution);
+    $("#institution-details").html(institutionDetails);
     $("#email").html(
       `<a href="mailto:${selectedRegistrant["email"]}">${selectedRegistrant["email"]}</a>`
     );
     $("#phone").html(phonelink);
-    $("#country").html(selectedRegistrant["country"]);
+    $("#discordEdit").val(selectedRegistrant["discord"]);
+    $("#country").html(selectedRegistrant["country"] + countrydesired);
+    $("#topicname").html(selectedRegistrant["topic"]);
     $("#registrant-info").show();
   } else {
     $("#registrant-info").hide();
   }
-}
-
-function confirmApproval(action) {
-  $("#confirm").modal("show");
-  $("#confirm-text").html(
-    `Do you want to ${
-      action == "local"
-        ? "approve "
-        : action == "foreign"
-        ? "approve "
-        : "deny "
-    } ${selectedRegistrant["name"]} ${selectedRegistrant["surname"]} ${
-      action == "local"
-        ? "as a participant from host institution?"
-        : action == "foreign"
-        ? "as a participant from foreign institution?"
-        : "?"
-    }`
-  );
-  $("#confirm-btn").val(action);
 }
 
 function handleApproval(action) {

@@ -1,9 +1,10 @@
 var approved = 1;
 
 function appendTableData() {
-  registrantsList.map(function (registrant) {
+  registrantsData["registrants"].map(function (registrant) {
     $("#registrants-table").append(
-      `<tr>
+      `
+    <tr onclick="handleView(${registrant["registrant_id"]})>
       <th scope="row">${registrant["registrant_id"]}</th>
       <td>${registrant["name"]}</td>
       <td>${registrant["surname"]}</td>
@@ -13,7 +14,6 @@ function appendTableData() {
           ? '<span style="color: green;">Yes<span>'
           : '<span style="color: black;">No<span>'
       }</td>
-      <td>${viewButton(registrant["registrant_id"])}</td>
     </tr>`
     );
   });
@@ -21,7 +21,9 @@ function appendTableData() {
 
 $(document).ready(function (event) {
   $("#registrant-info").hide();
-  getTopics({ update: true });
+  $.when(getTopics()).done(function () {
+    setTimeout(updateRegistrants(), 1000);
+  });
   $("#search-form").submit(function (event) {
     event.preventDefault();
   });

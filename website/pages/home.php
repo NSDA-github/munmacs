@@ -17,7 +17,7 @@
         <hr class="my-4" />
         <p>
           Register now and join the movement to educate students global
-          issues. Registration form is open untill 27.05.20
+          issues. Registration form is open untill 29.05.20
         </p>
         <a class="btn btn-primary btn-lg" href="/register" role="button">Register</a>
       </div>

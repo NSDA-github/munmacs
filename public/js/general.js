@@ -38,16 +38,9 @@ $(document).ready(function () {
   $("#tab-panel").tab("show");
 });
 
-function viewButton(id) {
-  return `
-      <button
-        onclick="handleView(value)"
-        value="${id}"
-        class="btn btn-primary btn-sm"
-      >
-        View Details
-      </button>
-      `;
+function showInterestText() {
+  $("#interesttext").text(selectedRegistrant["interesttext"]);
+  $("#interesttext-modal").modal("show");
 }
 
 function getTopics(options = Object({})) {
@@ -93,7 +86,7 @@ function getRegistrants(searchText = "", searchMode = "surname") {
   data.push(Object({ name: "searchmode", value: searchMode }));
   if (searchText != "")
     data.push(Object({ name: "search", value: searchText }));
-
+  console.log(data);
   return $.ajax({
     type: "POST",
     url: "/api/registrants",
@@ -208,7 +201,36 @@ function handleAction(action) {
         },
       });
       break;
+    case ("deny", "accept"):
+      console.log(action);
+      data = Array(2);
+      data[0] = Object({ name: "action", value: action });
+      data[1] = Object({
+        name: "id",
+        value: selectedRegistrant["registrant_id"],
+      });
+      $.ajax({
+        type: "POST",
+        url: "/api/approval",
+        data: data,
+        dataType: "json",
+        success: function (data) {
+          if (data.success) {
+            console.log(data);
+            updateRegistrants();
+            handleView(0);
+          } else {
+            reportError(data);
+          }
+          $("#confirm").modal("hide");
+        },
 
+        error: function (data) {
+          $("#confirm").modal("hide");
+          reportError(data);
+        },
+      });
+      break;
     default:
       break;
   }
